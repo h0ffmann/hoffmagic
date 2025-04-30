@@ -1,10 +1,10 @@
 # Stage 1: Base Image with Python and Nix
 FROM nixos/nix:latest AS base
 
-# Install Python, Node.js, and UV using Nix
-RUN nix-env -iA nixpkgs.python313 nixpkgs.nodejs nixpkgs.uv || nix-env -iA nixpkgs.python312 nixpkgs.nodejs nixpkgs.uv
+# Install Python, Node.js, UV, and TailwindCSS using Nix
+RUN nix-env -iA nixpkgs.python313 nixpkgs.nodejs nixpkgs.uv nixpkgs.tailwindcss || nix-env -iA nixpkgs.python312 nixpkgs.nodejs nixpkgs.uv nixpkgs.tailwindcss
 
-# UV is now installed via Nix, no need for pip install uv
+# UV and TailwindCSS are now installed via Nix
 
 # Set up working directory
 WORKDIR /app
