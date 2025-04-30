@@ -14,11 +14,10 @@
         pkgs = import nixpkgs { inherit system; };
 
         # 2. Choose your Python version
-        #    Common choices: pkgs.python311, pkgs.python310, pkgs.python3
-        python = pkgs.python312; # Adjusted to match previous version
+        #    Using python312 based on previous configuration
+        python = pkgs.python312;
 
         # 3. Define pythonPackages based on the chosen interpreter
-        #    This was the missing piece causing your error.
         pythonPackages = python.pkgs;
 
       in
@@ -33,8 +32,8 @@
             pythonPackages.pip  # For managing packages during development (if needed)
             pythonPackages.pytest # For running tests
 
-            # Add other development tools here:
-            pkgs.uv # Use uv from nixpkgs
+            # Tools from previous configuration:
+            pkgs.uv
             pkgs.nodePackages.tailwindcss
             pkgs.nodePackages.postcss
             pkgs.nodePackages.autoprefixer
@@ -43,14 +42,15 @@
             pkgs.docker-compose
             pkgs.kubectl
             pkgs.repomix
-            pkgs.just # Add just command
+            pkgs.just
             pythonPackages.black
             pythonPackages.isort
             pythonPackages.mypy
             pythonPackages.ruff
+            pythonPackages.alembic # Added for db-migrate/db-upgrade
           ];
 
-          # Environment variables for the shell (optional)
+          # Environment variables for the shell (from previous configuration)
           shellHook = ''
             echo "Entering hoffmagic dev shell!"
             
@@ -90,8 +90,7 @@
           src = ./.;
 
           # Dependencies needed to *run* the installed package
-          # These are listed in your setup.py, setup.cfg, or pyproject.toml
-          # and Nix needs to know about them too.
+          # From previous configuration & pyproject.toml
           propagatedBuildInputs = with pythonPackages; [
             fastapi
             uvicorn
@@ -115,6 +114,11 @@
           # Often includes testing frameworks
           nativeCheckInputs = [
             pythonPackages.pytestCheckHook # To run pytest tests during the build
+          ];
+          
+          # Build dependencies
+          nativeBuildInputs = with pythonPackages; [
+            hatchling # From pyproject.toml
           ];
 
           # Set to True if your package includes tests that Nix should run
