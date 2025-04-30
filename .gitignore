@@ -63,3 +63,4 @@ kubeconfig
 *.sqlite3
 
 hoffmagic.md
+.aider*
