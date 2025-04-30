@@ -35,18 +35,32 @@ class Settings(BaseSettings):
     
     # Cache settings
     CACHE_TTL: int = 60 * 5  # 5 minutes
-
+    
     @validator("ALLOWED_HOSTS", pre=True)
     def parse_allowed_hosts(cls, v):
-        """Parse ALLOWED_HOSTS from string to list, handling JSON or comma-separated."""
+        # If already a list, return it
+        if isinstance(v, list):
+            return v
+            
+        # If it's a string, try several parsing methods
         if isinstance(v, str):
-            # Try to parse as JSON first
+            # Handle empty string case
+            if not v:
+                return ["localhost", "127.0.0.1"]  # Default value
+                
+            # Try to parse as JSON
             try:
+                # Ensure outer quotes aren't causing issues if present
+                if (v.startswith("'") and v.endswith("'")) or \
+                   (v.startswith('"') and v.endswith('"')):
+                    v = v[1:-1]
                 return json.loads(v)
             except json.JSONDecodeError:
-                # If that fails, try to parse as comma-separated list
+                # Try to parse as comma-separated list
                 return [host.strip() for host in v.split(",") if host.strip()]
-        return v
+                
+        # For any other case, return default
+        return ["localhost", "127.0.0.1"]
     
     @validator("BLOG_DIR", "ESSAYS_DIR", "CONTENT_DIR")
     def create_dirs(cls, v):
