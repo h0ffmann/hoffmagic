@@ -28,6 +28,9 @@ RUN nix build .#default -o /app/result
 FROM base AS final
 WORKDIR /app
 
+# Install sed for fixing line endings
+RUN nix-env -iA nixpkgs.sed
+
 # Copy the built Python package from the builder stage
 COPY --from=builder /app/result /app/result
 
