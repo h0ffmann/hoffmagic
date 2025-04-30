@@ -14,9 +14,9 @@ WORKDIR /app
 FROM base AS builder
 
 # Copy project files
-COPY pyproject.toml README.md ./
+COPY pyproject.toml ./
 COPY src ./src
-COPY nix ./nix
+COPY flake.nix ./flake.nix
 
 # Create a virtualenv and install dependencies with UV
 RUN uv venv /app/.venv
