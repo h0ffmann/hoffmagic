@@ -39,7 +39,10 @@ COPY content ./content
 
 # Add entrypoint script
 COPY scripts/entrypoint.sh /entrypoint.sh
+# Ensure LF line endings (remove potential CRLF from Windows)
+RUN sed -i 's/\r$//' /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+RUN ls -l /entrypoint.sh # Optional: Add temporarily to verify file exists during build
 
 # Set environment path to use executables from the built package
 # Adjust python version based on your flake.nix (e.g., python3.12)
