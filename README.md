@@ -40,7 +40,7 @@ a beautiful python-based blog application built with fastapi, jinja2, and tailwi
    # OR using Nix Flakes (recommended for Nix users)
    # This command enters a shell with all dependencies ready.
    # It will also create/activate a .venv and install Python packages.
-   nix develop 
+   nix develop
    # Alternatively, if you have 'just' installed:
    just nix-shell
    ```
