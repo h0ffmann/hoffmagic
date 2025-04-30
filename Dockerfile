@@ -13,7 +13,7 @@ WORKDIR /app
 FROM base AS builder
 
 # Copy project files
-COPY pyproject.toml ./
+COPY pyproject.toml README.md ./
 COPY src ./src
 COPY flake.nix ./flake.nix
 
