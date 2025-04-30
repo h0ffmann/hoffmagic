@@ -126,6 +126,9 @@
             hatchling # From pyproject.toml
           ];
 
+          # Specify the build format (PEP 517/pyproject.toml)
+          format = "pyproject";
+
           # Set to True if your package includes tests that Nix should run
           doCheck = true;
 
