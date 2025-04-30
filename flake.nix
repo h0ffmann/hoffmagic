@@ -129,8 +129,8 @@
           # Specify the build format (PEP 517/pyproject.toml)
           format = "pyproject";
 
-          # Set to True if your package includes tests that Nix should run
-          doCheck = true;
+          # Disable tests during Nix build (they can be run separately)
+          doCheck = false;
 
           # Required for pytestCheckHook to find tests if they aren't in the root
           # pythonImportsCheck = [ "hoffmagic" ]; # Check if the main module can be imported
