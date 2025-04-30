@@ -4,6 +4,7 @@ Configuration management for HoffMagic Blog.
 from typing import List, Optional
 from pathlib import Path
 import os
+import json # Add json import
 
 from pydantic import PostgresDsn, validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
