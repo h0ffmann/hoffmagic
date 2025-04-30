@@ -38,7 +38,7 @@
             pkgs.nodePackages.tailwindcss
             pkgs.nodePackages.postcss
             pkgs.nodePackages.autoprefixer
-            pkgs.postgresql
+            # pkgs.postgresql # Removed, DB server is in Docker, only need libpq client
             pkgs.docker
             pkgs.docker-compose
             pkgs.kubectl
@@ -55,11 +55,13 @@
           shellHook = ''
             echo "Entering hoffmagic dev shell!"
             
-            # Check if venv exists, create if not
-            if [ ! -d ".venv" ]; then
-              echo "Creating virtual environment..."
-              ${python}/bin/python -m venv .venv
+            # Force recreate virtual environment for clean state
+            if [ -d ".venv" ]; then
+              echo "Removing existing virtual environment..."
+              rm -rf .venv
             fi
+            echo "Creating virtual environment..."
+            ${python}/bin/python -m venv .venv
             
             # Activate venv
             source .venv/bin/activate
