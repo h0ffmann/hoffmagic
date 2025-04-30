@@ -32,6 +32,7 @@
             pythonPackages.pip  # For managing packages during development (if needed)
             pythonPackages.pytest # For running tests
 
+            pkgs.libpq          # <-- Add PostgreSQL client C library
             # Tools from previous configuration:
             pkgs.uv
             pkgs.nodePackages.tailwindcss
