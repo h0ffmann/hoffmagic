@@ -3,6 +3,12 @@
 # Default command
 default: run
 
+# --- Environment ---
+
+# Enter the Nix development shell using flakes
+nix-shell:
+    nix develop
+
 # --- Development ---
 
 # Run the FastAPI development server with reload

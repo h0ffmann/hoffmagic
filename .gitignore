@@ -68,3 +68,6 @@ hoffmagic.md
 # Repomix Output
 hoffmagic-*.md
 hoffmagic-*.xml
+
+# Nix Flakes
+flake.lock
