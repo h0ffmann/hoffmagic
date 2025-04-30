@@ -1,0 +1,354 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} | HoffMagic Blog{% endblock %}
+{% block description %}{{ post.summary }}{% endblock %}
+
+{% block meta %}
+<meta property="og:title" content="{{ post.title }}" />
+<meta property="og:description" content="{{ post.summary }}" />
+{% if post.featured_image %}
+<meta property="og:image" content="{{ post.featured_image }}" />
+{% endif %}
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="{{ post.publish_date }}" />
+<meta property="article:modified_time" content="{{ post.updated_at }}" />
+{% for tag in post.tags %}
+<meta property="article:tag" content="{{ tag.name }}" />
+{% endfor %}
+{% endblock %}
+
+{% block content %}
+<!-- Article Header -->
+<header class="relative">
+    {% if post.featured_image %}
+    <div class="w-full h-96 bg-center bg-cover" style="background-image: url('{{ post.featured_image }}')">
+        <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-70"></div>
+    </div>
+    {% else %}
+    <div class="w-full h-96 bg-gradient-to-r from-brand-primary to-brand-dark">
+        <div class="absolute inset-0 opacity-20 bg-pattern"></div>
+    </div>
+    {% endif %}
+    
+    <div class="container mx-auto px-4 md:px-6 absolute inset-0 flex items-center justify-center">
+        <div class="max-w-4xl text-center text-white">
+            <div class="mb-6 flex justify-center space-x-2">
+                {% for tag in post.tags %}
+                <span class="bg-brand-accent bg-opacity-80 px-3 py-1 rounded-full text-sm font-medium">
+                    {{ tag.name }}
+                </span>
+                {% endfor %}
+            </div>
+            <h1 class="text-3xl md:text-4xl lg:text-5xl font-serif font-bold mb-4">{{ post.title }}</h1>
+            <div class="flex items-center justify-center space-x-4">
+                <div class="flex items-center">
+                    <img src="{{ post.author.avatar or 'https://source.unsplash.com/random/100x100/?portrait' }}" alt="{{ post.author.name }}" class="w-10 h-10 rounded-full mr-2">
+                    <span class="text-lg">{{ post.author.name }}</span>
+                </div>
+                <span class="text-brand-light">{{ post.publish_date.strftime('%B %d, %Y') }}</span>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Article Content -->
+<article class="py-12 bg-white">
+    <div class="container mx-auto px-4 md:px-6">
+        <div class="max-w-3xl mx-auto">
+            {% if post.summary %}
+            <div class="text-xl text-gray-600 mb-8 font-serif italic border-l-4 border-brand-primary pl-6 py-2">
+                {{ post.summary }}
+            </div>
+            {% endif %}
+            
+            <div class="prose prose-lg mx-auto">
+                {{ post.content | safe }}
+            </div>
+            
+            <!-- Tags and Share -->
+            <div class="mt-10 pt-6 border-t border-gray-200 flex flex-wrap justify-between items-center">
+                <div class="flex flex-wrap gap-2 mb-4 md:mb-0">
+                    {% for tag in post.tags %}
+                    <a href="/blog?tag={{ tag.slug }}" class="px-3 py-1 rounded-full text-sm font-medium bg-gray-200 text-brand-dark hover:bg-gray-300 transition">
+                        {{ tag.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button class="text-gray-500 hover:text-brand-accent transition" id="share-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                        </svg>
+                    </button>
+                    <button class="text-gray-500 hover:text-brand-accent transition" id="bookmark-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Author Bio -->
+            <div class="mt-10 bg-gray-50 rounded-lg p-6 flex flex-col md:flex-row items-center md:items-start">
+                <img src="{{ post.author.avatar or 'https://source.unsplash.com/random/200x200/?portrait' }}" alt="{{ post.author.name }}" class="w-24 h-24 rounded-full mb-4 md:mb-0 md:mr-6">
+                <div>
+                    <h3 class="text-xl font-bold mb-2">{{ post.author.name }}</h3>
+                    <p class="text-gray-600 mb-4">{{ post.author.bio or 'Writer at HoffMagic Blog' }}</p>
+                    <div class="flex space-x-3">
+                        <a href="#" class="text-brand-primary hover:text-brand-accent transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-brand-primary hover:text-brand-accent transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                            </svg>
+                        </a>
+                        <a href="mailto:{{ post.author.email }}" class="text-brand-primary hover:text-brand-accent transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- Comments Section -->
+<section class="py-12 bg-gray-50">
+    <div class="container mx-auto px-4 md:px-6">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-2xl font-serif font-bold mb-8">Comments</h2>
+            
+            <!-- Comment Form -->
+            <form id="comment-form" class="mb-10 bg-white rounded-lg p-6 shadow-md">
+                <div class="mb-4">
+                    <label for="comment-name" class="block text-gray-700 mb-2">Name</label>
+                    <input type="text" id="comment-name" name="author_name" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-accent">
+                </div>
+                <div class="mb-4">
+                    <label for="comment-email" class="block text-gray-700 mb-2">Email</label>
+                    <input type="email" id="comment-email" name="author_email" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-accent">
+                    <p class="text-sm text-gray-500 mt-1">Your email will not be published</p>
+                </div>
+                <div class="mb-4">
+                    <label for="comment-content" class="block text-gray-700 mb-2">Comment</label>
+                    <textarea id="comment-content" name="content" rows="5" required
+                              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-accent"></textarea>
+                </div>
+                <button type="submit" class="bg-brand-primary hover:bg-opacity-90 text-white px-6 py-3 rounded-md font-medium transition duration-200">
+                    Post Comment
+                </button>
+            </form>
+            
+            <!-- Comments List -->
+            <div id="comments-list" class="space-y-8">
+                <!-- Comments will be loaded dynamically -->
+                <div class="text-center py-10">
+                    <p class="text-gray-500">Loading comments...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Posts -->
+<section class="py-12 bg-white">
+    <div class="container mx-auto px-4 md:px-6">
+        <h2 class="text-2xl font-serif font-bold mb-8 text-center">You May Also Like</h2>
+        
+        <div id="related-posts" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Related posts will be loaded dynamically -->
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const slug = window.location.pathname.split('/').pop();
+        
+        // Fetch post data if not already available
+        if (!window.postData) {
+            fetchPostData(slug);
+        }
+        
+        // Handle comment form submission
+        const commentForm = document.getElementById('comment-form');
+        
+        commentForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                author_name: document.getElementById('comment-name').value,
+                author_email: document.getElementById('comment-email').value,
+                content: document.getElementById('comment-content').value,
+                post_id: window.postData?.id || 0
+            };
+            
+            try {
+                const response = await fetch(`/api/blog/${slug}/comments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData),
+                });
+                
+                if (response.ok) {
+                    alert('Your comment has been submitted and is awaiting approval.');
+                    commentForm.reset();
+                    loadComments(slug);
+                } else {
+                    const error = await response.json();
+                    alert(`Error: ${error.detail || 'Something went wrong'}`);
+                }
+            } catch (error) {
+                alert('Error: Could not connect to the server');
+                console.error('Error:', error);
+            }
+        });
+        
+        // Share button
+        document.getElementById('share-button').addEventListener('click', function() {
+            if (navigator.share) {
+                navigator.share({
+                    title: document.title,
+                    url: window.location.href
+                })
+                .catch(console.error);
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                prompt("Copy this link:", window.location.href);
+            }
+        });
+        
+        // Load related posts
+        loadRelatedPosts(slug);
+    });
+    
+    async function fetchPostData(slug) {
+        try {
+            const response = await fetch(`/api/blog/${slug}`);
+            
+            if (!response.ok) {
+                throw new Error('Post not found');
+            }
+            
+            const data = await response.json();
+            window.postData = data;
+            
+            // Load comments
+            loadComments(slug);
+            
+            return data;
+        } catch (error) {
+            console.error('Error fetching post data:', error);
+            return null;
+        }
+    }
+    
+    async function loadComments(slug) {
+        const commentsContainer = document.getElementById('comments-list');
+        
+        try {
+            const postData = window.postData || await fetchPostData(slug);
+            
+            if (!postData || !postData.comments) {
+                commentsContainer.innerHTML = `
+                    <div class="text-center py-10">
+                        <p class="text-gray-500">No comments yet. Be the first to share your thoughts!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const approvedComments = postData.comments.filter(comment => comment.is_approved);
+            
+            if (approvedComments.length === 0) {
+                commentsContainer.innerHTML = `
+                    <div class="text-center py-10">
+                        <p class="text-gray-500">No comments yet. Be the first to share your thoughts!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            commentsContainer.innerHTML = approvedComments.map(comment => `
+                <div class="mb-8 border-b pb-8 last:border-b-0">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 mr-4">
+                            <div class="w-12 h-12 rounded-full bg-brand-primary flex items-center justify-center text-white font-bold">
+                                ${comment.author_name[0].toUpperCase()}
+                            </div>
+                        </div>
+                        <div class="flex-grow">
+                            <div class="flex items-center mb-2">
+                                <h4 class="font-bold text-lg">${comment.author_name}</h4>
+                                <span class="ml-2 text-sm text-gray-500">${new Date(comment.created_at).toLocaleDateString()}</span>
+                            </div>
+                            <div class="prose prose-sm">
+                                ${comment.content}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        } catch (error) {
+            console.error('Error loading comments:', error);
+            commentsContainer.innerHTML = `
+                <div class="text-center py-10">
+                    <p class="text-gray-500">Failed to load comments. Please try again later.</p>
+                </div>
+            `;
+        }
+    }
+    
+    async function loadRelatedPosts(slug) {
+        const container = document.getElementById('related-posts');
+        
+        try {
+            // Fetch related posts - we'll just get the latest 3 posts
+            const response = await fetch(`/api/blog?page=1&page_size=4`);
+            const data = await response.json();
+            
+            // Filter out the current post
+            const relatedPosts = data.items.filter(post => post.slug !== slug).slice(0, 3);
+            
+            if (relatedPosts.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+            
+            container.innerHTML = relatedPosts.map(post => `
+                <article class="bg-white rounded-lg overflow-hidden shadow-md transition duration-300 hover:shadow-xl">
+                    <img src="${post.featured_image || 'https://source.unsplash.com/random/800x600/?nature'}" alt="Related post" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-lg font-serif font-bold mb-2">
+                            <a href="/blog/${post.slug}" class="text-brand-dark hover:text-brand-accent transition duration-200">
+                                ${post.title}
+                            </a>
+                        </h3>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">${new Date(post.publish_date).toLocaleDateString()}</span>
+                            <a href="/blog/${post.slug}" class="text-brand-primary hover:text-brand-accent transition duration-200 text-sm font-medium">
+                                Read →
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            `).join('');
+        } catch (error) {
+            console.error('Error loading related posts:', error);
+            container.style.display = 'none';
+        }
+    }
+</script>
+{% endblock %}

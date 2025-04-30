@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ title if title else "HoffMagic Blog" }}{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', path='images/favicon.png') }}">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', path='css/main.css') }}">
+    
+    <!-- Meta tags -->
+    <meta name="description" content="{% block description %}A beautiful blog built with Python{% endblock %}">
+    {% block meta %}{% endblock %}
+</head>
+<body class="min-h-screen flex flex-col bg-brand-light text-brand-dark">
+    <!-- Header -->
+    <header class="bg-brand-dark text-white py-6">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <a href="/" class="text-3xl font-serif font-bold">HoffMagic</a>
+                    <p class="text-sm text-brand-secondary">Insights & Reflections</p>
+                </div>
+                
+                <nav class="flex items-center space-x-6 text-sm md:text-base">
+                    <a href="/" class="text-white hover:text-brand-accent transition duration-200">Home</a>
+                    <a href="/blog" class="text-white hover:text-brand-accent transition duration-200">Blog</a>
+                    <a href="/essays" class="text-white hover:text-brand-accent transition duration-200">Essays</a>
+                    <a href="/about" class="text-white hover:text-brand-accent transition duration-200">About Me</a>
+                    <a href="/contact" class="text-white hover:text-brand-accent transition duration-200">Contact</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Newsletter -->
+    <section class="bg-brand-primary text-white py-12">
+        <div class="container mx-auto px-4 md:px-6 text-center">
+            <h2 class="text-2xl md:text-3xl font-serif mb-4">Join the Newsletter</h2>
+            <p class="max-w-2xl mx-auto mb-6">Stay updated with the latest posts and essays. No spam, unsubscribe anytime.</p>
+            
+            <form id="newsletter-form" class="max-w-md mx-auto flex flex-col sm:flex-row gap-2">
+                <input type="email" name="email" placeholder="Your email address" required
+                       class="flex-grow px-4 py-2 rounded-md text-brand-dark focus:outline-none focus:ring-2 focus:ring-brand-accent">
+                <button type="submit" class="bg-brand-accent hover:bg-opacity-90 text-white px-6 py-2 rounded-md transition duration-200">
+                    Subscribe
+                </button>
+            </form>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="bg-brand-dark text-white py-8">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <a href="/" class="text-xl font-serif font-bold">HoffMagic</a>
+                    <p class="text-sm text-brand-secondary mt-1">© {{ now.year }} All rights reserved.</p>
+                </div>
+                
+                <div class="flex space-x-4">
+                    <a href="#" class="text-white hover:text-brand-accent transition duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </a>
+                    <a href="#" class="text-white hover:text-brand-accent transition duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                        </svg>
+                    </a>
+                    <a href="#" class="text-white hover:text-brand-accent transition duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M5 3a2 2 0 00-2 2v1c0 8.284 6.716 15 15 15h1a2 2 0 002-2v-3.28a1 1 0 00-.684-.948l-4.493-1.498a1 1 0 00-1.21.502l-1.13 2.257a11.042 11.042 0 01-5.516-5.517l2.257-1.128a1 1 0 00.502-1.21L9.228 3.683A1 1 0 008.279 3H5z" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="mt-6 pt-6 border-t border-gray-700 text-center text-sm text-gray-400">
+                <p>Built with ❤️ using Python, FastAPI, and Tailwind CSS</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Scripts -->
+    <script>
+        // Simple form handling for the newsletter
+        document.getElementById('newsletter-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = this.email.value;
+            
+            try {
+                const response = await fetch('/api/contact/subscribe', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email }),
+                });
+                
+                if (response.ok) {
+                    alert('Thank you for subscribing!');
+                    this.reset();
+                } else {
+                    const error = await response.json();
+                    alert(`Error: ${error.detail || 'Something went wrong'}`);
+                }
+            } catch (error) {
+                alert('Error: Could not connect to the server');
+            }
+        });
+    </script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

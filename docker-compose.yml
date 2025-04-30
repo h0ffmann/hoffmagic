@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=hoffmagic
+      - POSTGRES_PASSWORD=hoffmagic
+      - POSTGRES_DB=hoffmagic
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hoffmagic"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: final
+    volumes:
+      - ./src:/app/src
+      - ./content:/app/content
+    environment:
+      - DATABASE_URL=postgresql+psycopg://hoffmagic:hoffmagic@db:5432/hoffmagic
+      - DEBUG=true
+      - SECRET_KEY=dev_secret_key_change_in_production
+      - ALLOWED_HOSTS=localhost,127.0.0.1
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["uvicorn", "hoffmagic.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+volumes:
+  postgres_data:

@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hoffmagic
+  labels:
+    app: hoffmagic
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hoffmagic
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: hoffmagic
+    spec:
+      containers:
+      - name: hoffmagic
+        image: ${DOCKER_REGISTRY}/hoffmagic:${IMAGE_TAG}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          name: web
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: hoffmagic-secrets
+              key: database-url
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: hoffmagic-secrets
+              key: secret-key
+        - name: ALLOWED_HOSTS
+          valueFrom:
+            configMapKeyRef:
+              name: hoffmagic-config
+              key: allowed-hosts
+        - name: ENV
+          valueFrom:
+            configMapKeyRef:
+              name: hoffmagic-config
+              key: environment
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: web
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: web
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        volumeMounts:
+        - name: content
+          mountPath: /app/content
+      volumes:
+      - name: content
+        persistentVolumeClaim:
+          claimName: hoffmagic-content-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: hoffmagic-content-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: standard

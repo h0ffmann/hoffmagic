@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block description %}HoffMagic - A beautiful blog featuring insightful articles and essays{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-gradient-to-b from-brand-dark to-brand-primary text-white py-20">
+    <div class="container mx-auto px-4 md:px-6">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-6">Welcome to HoffMagic</h1>
+            <p class="text-xl md:text-2xl text-brand-light mb-8">
+                Exploring ideas through thoughtful writing and reflection
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="/blog" class="bg-brand-accent hover:bg-opacity-90 text-white px-8 py-3 rounded-md font-medium transition duration-200">
+                    Read the Blog
+                </a>
+                <a href="/about" class="border border-brand-light text-brand-light hover:bg-brand-light hover:text-brand-dark px-8 py-3 rounded-md font-medium transition duration-200">
+                    About Me
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Posts -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4 md:px-6">
+        <h2 class="text-3xl font-serif font-bold mb-12 text-center">Featured Posts</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Featured Post 1 -->
+            <article class="bg-white rounded-lg overflow-hidden shadow-md transition duration-300 hover:shadow-xl">
+                <div class="relative">
+                    <img src="https://source.unsplash.com/random/800x600/?nature" alt="Featured post" class="w-full h-48 object-cover">
+                    <div class="absolute top-4 left-4">
+                        <span class="bg-brand-accent text-white px-3 py-1 rounded-full text-sm font-medium">Featured</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-serif font-bold mb-3">
+                        <a href="/blog/post-1" class="text-brand-dark hover:text-brand-accent transition duration-200">
+                            The Art of Mindful Thinking
+                        </a>
+                    </h3>
+                    <p class="text-gray-600 mb-4">
+                        An exploration of how mindfulness can transform our thought patterns and lead to greater clarity and purpose.
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-500">June 12, 2024</span>
+                        <a href="/blog/post-1" class="text-brand-primary hover:text-brand-accent transition duration-200 font-medium">
+                            Read More →
+                        </a>
+                    </div>
+                </div>
+            </article>
+            
+            <!-- Featured Post 2 -->
+            <article class="bg-white rounded-lg overflow-hidden shadow-md transition duration-300 hover:shadow-xl">
+                <div class="relative">
+                    <img src="https://source.unsplash.com/random/800x600/?technology" alt="Featured post" class="w-full h-48 object-cover">
+                    <div class="absolute top-4 left-4">
+                        <span class="bg-brand-primary text-white px-3 py-1 rounded-full text-sm font-medium">Technology</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-serif font-bold mb-3">
+                        <a href="/blog/post-2" class="text-brand-dark hover:text-brand-accent transition duration-200">
+                            The Future of AI in Creative Industries
+                        </a>
+                    </h3>
+                    <p class="text-gray-600 mb-4">
+                        How artificial intelligence is transforming creative work and what it means for human creativity.
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-500">May 28, 2024</span>
+                        <a href="/blog/post-2" class="text-brand-primary hover:text-brand-accent transition duration-200 font-medium">
+                            Read More →
+                        </a>
+                    </div>
+                </div>
+            </article>
+            
+            <!-- Featured Post 3 -->
+            <article class="bg-white rounded-lg overflow-hidden shadow-md transition duration-300 hover:shadow-xl">
+                <div class="relative">
+                    <img src="https://source.unsplash.com/random/800x600/?books" alt="Featured post" class="w-full h-48 object-cover">
+                    <div class="absolute top-4 left-4">
+                        <span class="bg-green-600 text-white px-3 py-1 rounded-full text-sm font-medium">Books</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-serif font-bold mb-3">
+                        <a href="/blog/post-3" class="text-brand-dark hover:text-brand-accent transition duration-200">
+                            Five Books That Changed My Perspective
+                        </a>
+                    </h3>
+                    <p class="text-gray-600 mb-4">
+                        A review of five transformative books that offer profound insights into life, philosophy, and human nature.
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-500">May 15, 2024</span>
+                        <a href="/blog/post-3" class="text-brand-primary hover:text-brand-accent transition duration-200 font-medium">
+                            Read More →
+                        </a>
+                    </div>
+                </div>
+            </article>
+        </div>
+        
+        <div class="text-center mt-12">
+            <a href="/blog" class="inline-block bg-brand-primary hover:bg-opacity-90 text-white px-8 py-3 rounded-md font-medium transition duration-200">
+                View All Posts
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Latest Essays -->
+<section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4 md:px-6">
+        <h2 class="text-3xl font-serif font-bold mb-12 text-center">Latest Essays</h2>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Essay 1 -->
+            <article class="bg-white rounded-lg overflow-hidden shadow-md p-8 transition duration-300 hover:shadow-xl">
+                <h3 class="text-2xl font-serif font-bold mb-4">
+                    <a href="/essays/essay-1" class="text-brand-dark hover:text-brand-accent transition duration-200">
+                        The Paradox of Choice in Modern Society
+                    </a>
+                </h3>
+                <p class="text-gray-700 mb-6">
+                    An exploration of how abundance of choice affects our decision-making, happiness, and sense of fulfillment in the modern world.
+                </p>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-500">April 20, 2024</span>
+                    <a href="/essays/essay-1" class="text-brand-primary hover:text-brand-accent transition duration-200 font-medium">
+                        Read Full Essay →
+                    </a>
+                </div>
+            </article>
+            
+            <!-- Essay 2 -->
+            <article class="bg-white rounded-lg overflow-hidden shadow-md p-8 transition duration-300 hover:shadow-xl">
+                <h3 class="text-2xl font-serif font-bold mb-4">
+                    <a href="/essays/essay-2" class="text-brand-dark hover:text-brand-accent transition duration-200">
+                        Digital Minimalism: Finding Balance in a Connected World
+                    </a>
+                </h3>
+                <p class="text-gray-700 mb-6">
+                    A reflection on the principles of digital minimalism and strategies for reclaiming attention in an age of constant distraction.
+                </p>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-500">March 15, 2024</span>
+                    <a href="/essays/essay-2" class="text-brand-primary hover:text-brand-accent transition duration-200 font-medium">
+                        Read Full Essay →
+                    </a>
+                </div>
+            </article>
+        </div>
+        
+        <div class="text-center mt-12">
+            <a href="/essays" class="inline-block border border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white px-8 py-3 rounded-md font-medium transition duration-200">
+                View All Essays
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- About Section Preview -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4 md:px-6">
+        <div class="flex flex-col lg:flex-row items-center gap-12">
+            <div class="lg:w-1/3">
+                <img src="https://source.unsplash.com/random/600x800/?portrait" alt="Author portrait" class="rounded-lg shadow-xl w-full max-w-md mx-auto">
+            </div>
+            
+            <div class="lg:w-2/3">
+                <h2 class="text-3xl font-serif font-bold mb-6">About Me</h2>
+                <p class="text-gray-700 mb-6 text-lg">
+                    I'm a writer, thinker, and lifelong learner passionate about exploring the intersections of philosophy, technology, and human experience. Through this blog, I share my thoughts on a range of topics from mindfulness to artificial intelligence, always with an emphasis on practical wisdom.
+                </p>
+                <p class="text-gray-700 mb-8 text-lg">
+                    My background spans both technical and creative disciplines, giving me a unique perspective on the challenges and opportunities of our rapidly changing world.
+                </p>
+                <a href="/about" class="inline-block bg-brand-dark hover:bg-opacity-90 text-white px-8 py-3 rounded-md font-medium transition duration-200">
+                    Learn More About Me
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

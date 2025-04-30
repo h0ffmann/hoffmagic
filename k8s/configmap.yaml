@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hoffmagic-config
+data:
+  allowed-hosts: "blog.example.com"
+  environment: "production"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: hoffmagic-secrets
+type: Opaque
+data:
+  # These values are base64 encoded placeholders
+  # In production, these should be properly managed with a secret management solution
+  database-url: cG9zdGdyZXNxbCtwc3ljb3BnOi8vaG9mZm1hZ2ljOnBhc3N3b3JkQGRiOjU0MzIvaG9mZm1hZ2lj
+  secret-key: Y2hhbmdlX3RoaXNfdG9fYV9zZWN1cmVfc2VjcmV0X2tleV9pbl9wcm9kdWN0aW9u

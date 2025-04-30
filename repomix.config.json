@@ -1,0 +1,39 @@
+{
+  "output": {
+    "filePath": "hoffmagic.md",
+    "style": "markdown",
+    "compress": true,
+    "headerText": "This repository contains the source code for the HoffMagic blog application.\nHoffMagic is a Python-based blog application built with FastAPI, Jinja2, and TailwindCSS.\n\nKey Features:\n- Modern and clean blog interface\n- Separate sections for Blog Posts and Essays\n- About Me and Contact pages\n- Markdown support for content\n- Fully deployable to Kubernetes or VPS\n\nPlease refer to the README.md file for more detailed information on usage and configuration.\n",
+    "fileSummary": true,
+    "directoryStructure": true,
+    "removeComments": true,
+    "removeEmptyLines": true,
+    "topFilesLength": 5,
+    "showLineNumbers": true,
+    "includeEmptyDirectories": true,
+    "git": {
+      "sortByChanges": true,
+      "sortByChangesMaxCommits": 100
+    }
+  },
+  "include": [],
+  "ignore": {
+    "useGitignore": true,
+    "useDefaultPatterns": true,
+    "patterns": [
+      ".env",
+      ".venv/**",
+      "__pycache__/**",
+      "*.pyc",
+      "node_modules/**",
+      "dist/**",
+      "build/**",
+      "*.sqlite3",
+      ".DS_Store",
+      "Thumbs.db"
+    ]
+  },
+  "security": {
+    "checkSensitiveInfo": true
+  }
+}

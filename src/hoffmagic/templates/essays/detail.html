@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+
+{% block title %}{{ essay.title }} | HoffMagic Essays{% endblock %}
+{% block description %}{{ essay.summary }}{% endblock %}
+
+{% block meta %}
+<meta property="og:title" content="{{ essay.title }}" />
+<meta property="og:description" content="{{ essay.summary }}" />
+{% if essay.featured_image %}
+<meta property="og:image" content="{{ essay.featured_image }}" />
+{% endif %}
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="{{ essay.publish_date }}" />
+<meta property="article:modified_time" content="{{ essay.updated_at }}" />
+{% for tag in essay.tags %}
+<meta property="article:tag" content="{{ tag.name }}" />
+{% endfor %}
+{% endblock %}
+
+{% block content %}
+<!-- Essay Header -->
+<header class="bg-brand-dark text-white py-16">
+    <div class="container mx-auto px-4 md:px-6">
+        <div class="max-w-4xl mx-auto text-center">
+            <div class="mb-6 flex justify-center space-x-2">
+                {% for tag in essay.tags %}
+                <span class="bg-brand-accent bg-opacity-80 px-3 py-1 rounded-full text-sm font-medium">
+                    {{ tag.name }}
+                </span>
+                {% endfor %}
+            </div>
+            <h1 class="text-3xl md:text-4xl lg:text-5xl font-serif font-bold mb-6">{{ essay.title }}</h1>
+            
+            <div class="flex items-center justify-center">
+                <img src="{{ essay.author.avatar or 'https://source.unsplash.com/random/100x100/?portrait' }}" alt="{{ essay.author.name }}" class="w-12 h-12 rounded-full mr-3">
+                <div class="text-left">
+                    <span class="block text-lg font-medium">{{ essay.author.name }}</span>
+                    <div class="flex items-center text-brand-light">
+                        <span>{{ essay.publish_date.strftime('%B %d, %Y') }}</span>
+                        <span class="mx-2">•</span>
+                        <span>{{ essay.reading_time or '15' }} min read</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Essay Featured Image -->
+{% if essay.featured_image %}
+<div class="w-full">
+    <img src="{{ essay.featured_image }}" alt="{{ essay.title }}" class="w-full h-96 object-cover">
+</div>
+{% endif %}
+
+<!-- Essay Content -->
+<article class="py-12 bg-white">
+    <div class="container mx-auto px-4 md:px-6">
+        <div class="max-w-3xl mx-auto">
+            {% if essay.summary %}
+            <div class="text-xl text-gray-600 mb-10 font-serif italic border-l-4 border-brand-primary pl-6 py-2">
+                {{ essay.summary }}
+            </div>
+            {% endif %}
+            
+            <!-- Table of Contents -->
+            <div class="bg-gray-50 rounded-lg p-6 mb-10">
+                <h2 class="text-xl font-bold mb-4">Contents</h2>
+                <nav id="table-of-contents" class="space-y-2">
+                    <!-- This would be dynamically generated from essay content -->
+                    <div class="text-sm text-gray-500">
+                        Generating table of contents...
+                    </div>
+                </nav>
+            </div>
+            
+            <div class="prose prose-lg max-w-none">
+                {{ essay.content | safe }}
+            </div>
+            
+            <!-- Tags and Share -->
+            <div class="mt-12 pt-6 border-t border-gray-200 flex flex-wrap justify-between items-center">
+                <div class="flex flex-wrap gap-2 mb-4 md:mb-0">
+                    {% for tag in essay.tags %}
+                    <a href="/essays?tag={{ tag.slug }}" class="px-3 py-1 rounded-full text-sm font-medium bg-gray-200 text-brand-dark hover:bg-gray-300 transition">
+                        {{ tag.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button class="text-gray-500 hover:text-brand-accent transition" id="share-button" aria-label="Share">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                        </svg>
+                    </button>
+                    <button class="text-gray-500 hover:text-brand-accent transition" id="bookmark-button" aria-label="Bookmark">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Author Bio -->
+            <div class="mt-12 bg-gray-50 rounded-lg p-8">
+                <div class="flex flex-col md:flex-row items-center md:items-start">
+                    <img src="{{ essay.author.avatar or 'https://source.unsplash.com/random/200x200/?portrait' }}" alt="{{ essay.author.name }}" class="w-24 h-24 rounded-full mb-4 md:mb-0 md:mr-6">
+                    <div>
+                        <h3 class="text-xl font-bold mb-2">{{ essay.author.name }}</h3>
+                        <p class="text-gray-700 mb-4">{{ essay.author.bio or 'Writer and thinker exploring the intersections of philosophy, technology, and culture.' }}</p>
+                        <div class="flex space-x-4">
+                            <a href="#" class="text-brand-primary hover:text-brand-accent transition" aria-label="Twitter">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path>
+                                </svg>
+                            </a>
+                            <a href="#" class="text-brand-primary hover:text-brand-accent transition" aria-label="LinkedIn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                                </svg>
+                            </a>
+                            <a href="mailto:{{ essay.author.email }}" class="text-brand-primary hover:text-brand-accent transition" aria-label="Email">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- More Essays -->
+<section class="py-12 bg-gray-50">
+    <div class="container mx-auto px-4 md:px-6">
+        <h2 class="text-2xl font-serif font-bold mb-8 text-center">More Essays</h2>
+        
+        <div id="more-essays" class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <!-- This would be dynamically generated from related essays -->
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const slug = window.location.pathname.split('/').pop();
+        
+        // Fetch essay data if not already available
+        if (!window.essayData) {
+            fetchEssayData(slug);
+        }
+        
+        // Share button
+        document.getElementById('share-button').addEventListener('click', function() {
+            if (navigator.share) {
+                navigator.share({
+                    title: document.title,
+                    url: window.location.href
+                })
+                .catch(console.error);
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                prompt("Copy this link:", window.location.href);
+            }
+        });
+        
+        // Load more essays
+        loadMoreEssays(slug);
+        
+        // Generate table of contents
+        generateTableOfContents();
+    });
+    
+    async function fetchEssayData(slug) {
+        try {
+            const response = await fetch(`/api/essays/${slug}`);
+            
+            if (!response.ok) {
+                throw new Error('Essay not found');
+            }
+            
+            const data = await response.json();
+            window.essayData = data;
+            
+            return data;
+        } catch (error) {
+            console.error('Error fetching essay data:', error);
+            return null;
+        }
+    }
+    
+    function generateTableOfContents() {
+        // Get all headings in the content
+        const contentDiv = document.querySelector('.prose');
+        const headings = contentDiv?.querySelectorAll('h2, h3, h4') || [];
+        const tocContainer = document.getElementById('table-of-contents');
+        
+        if (headings.length === 0) {
+            tocContainer.innerHTML = '<p class="text-sm text-gray-500">No table of contents available for this essay.</p>';
+            return;
+        }
+        
+        // Clear existing content
+        tocContainer.innerHTML = '';
+        
+        // Add IDs to headings if they don't have them
+        headings.forEach((heading, index) => {
+            if (!heading.id) {
+                heading.id = `section-${index}`;
+            }
+            
+            // Create TOC entry
+            const link = document.createElement('a');
+            link.href = `#${heading.id}`;
+            link.textContent = heading.textContent;
+            
+            // Style based on heading level
+            if (heading.tagName === 'H2') {
+                link.className = 'block text-brand-primary hover:text-brand-accent transition';
+            } else if (heading.tagName === 'H3') {
+                link.className = 'block text-brand-primary hover:text-brand-accent transition ml-4 text-sm';
+            } else {
+                link.className = 'block text-brand-primary hover:text-brand-accent transition ml-8 text-xs';
+            }
+            
+            tocContainer.appendChild(link);
+        });
+        
+        // Add smooth scrolling for TOC links
+        document.querySelectorAll('#table-of-contents a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                
+                window.scrollTo({
+                    top: targetElement.getBoundingClientRect().top + window.pageYOffset - 100,
+                    behavior: 'smooth'
+                });
+                
+                // Update URL hash without jumping
+                history.pushState(null, null, `#${targetId}`);
+            });
+        });
+    }
+    
+    async function loadMoreEssays(currentSlug) {
+        const container = document.getElementById('more-essays');
+        
+        try {
+            // Fetch related essays
+            const response = await fetch(`/api/essays?page=1&page_size=3`);
+            const data = await response.json();
+            
+            // Filter out the current essay
+            const otherEssays = data.items.filter(essay => essay.slug !== currentSlug).slice(0, 2);
+            
+            if (otherEssays.length === 0) {
+                container.parentElement.style.display = 'none';
+                return;
+            }
+            
+            container.innerHTML = otherEssays.map(essay => `
+                <article class="bg-white rounded-lg overflow-hidden shadow-md transition duration-300 hover:shadow-xl">
+                    <div class="p-6">
+                        <h3 class="text-xl font-serif font-bold mb-3">
+                            <a href="/essays/${essay.slug}" class="text-brand-dark hover:text-brand-accent transition duration-200">
+                                ${essay.title}
+                            </a>
+                        </h3>
+                        <p class="text-gray-600 mb-4">
+                            ${essay.summary || essay.content.substring(0, 120) + '...'}
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">${new Date(essay.publish_date).toLocaleDateString()}</span>
+                            <a href="/essays/${essay.slug}" class="text-brand-primary hover:text-brand-accent transition duration-200 font-medium">
+                                Read Essay →
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            `).join('');
+        } catch (error) {
+            console.error('Error loading more essays:', error);
+            container.parentElement.style.display = 'none';
+        }
+    }
+</script>
+{% endblock %}
