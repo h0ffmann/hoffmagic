@@ -45,7 +45,7 @@ dev = [
 hoffmagic = "hoffmagic.cli:app" # Assuming Typer app object is named 'app'
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["src/tests"] # Corrected path to tests directory
 python_files = "test_*.py"
 
 [tool.black]
