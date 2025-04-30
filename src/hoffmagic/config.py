@@ -35,12 +35,7 @@ class Settings(BaseSettings):
     # Cache settings
     CACHE_TTL: int = 60 * 5  # 5 minutes
 
-    @validator("ALLOWED_HOSTS", pre=True)
-    def parse_allowed_hosts(cls, v):
-        """Parse ALLOWED_HOSTS from string to list."""
-        if isinstance(v, str):
-            return [host.strip() for host in v.split(",")]
-        return v
+    # Removed ALLOWED_HOSTS validator; default JSON parsing works now
     
     @validator("BLOG_DIR", "ESSAYS_DIR", "CONTENT_DIR")
     def create_dirs(cls, v):

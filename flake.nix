@@ -71,7 +71,7 @@
             export DATABASE_URL="postgresql+psycopg://hoffmagic:hoffmagic@localhost:5432/hoffmagic"
             export DEBUG=true
             export SECRET_KEY="dev_secret_key_change_in_production"
-            export ALLOWED_HOSTS="localhost,127.0.0.1"
+            export ALLOWED_HOSTS='["localhost", "127.0.0.1"]' # Use JSON array format
             
             echo "Development environment ready!"
             echo "Run 'just run' to start the server."
