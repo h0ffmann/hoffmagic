@@ -1,7 +1,8 @@
 {
-  description = "Development environment for the hoffmagic blog";
+  description = "A magical Python project called hoffmagic";
 
   inputs = {
+    # Use a specific nixpkgs revision for reproducibility, or a branch like nixos-unstable
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
@@ -9,42 +10,30 @@
   outputs = { self, nixpkgs, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
       let
+        # 1. Import nixpkgs for the current system
         pkgs = import nixpkgs { inherit system; };
-        python = pkgs.python312; # Match the version used in shell.nix
-        pythonEnv = python.withPackages (ps: with ps; [
-          # Runtime dependencies (from shell.nix & default.nix)
-          fastapi
-          uvicorn
-          jinja2
-          sqlalchemy
-          alembic
-          pydantic
-          psycopg
-          python-multipart
-          markdown
-          pygments
-          pillow
-          python-frontmatter
-          email-validator
-          typer
-          rich
-          pydantic-settings # Added from pyproject.toml
 
-          # Development dependencies (from shell.nix)
-          pytest
-          pytest-cov
-          black
-          isort
-          mypy
-          ruff
-          hatchling # Build dependency from pyproject.toml
-        ]);
+        # 2. Choose your Python version
+        #    Common choices: pkgs.python311, pkgs.python310, pkgs.python3
+        python = pkgs.python312; # Adjusted to match previous version
+
+        # 3. Define pythonPackages based on the chosen interpreter
+        #    This was the missing piece causing your error.
+        pythonPackages = python.pkgs;
+
       in
       {
-        # Development Shell
+        # --------------------------------------------------------------------
+        # Development Environment (for `nix develop` or `nix shell`)
+        # --------------------------------------------------------------------
         devShells.default = pkgs.mkShell {
+          # Tools available ONLY in the development shell
           buildInputs = [
-            pythonEnv
+            python              # The Python interpreter itself
+            pythonPackages.pip  # For managing packages during development (if needed)
+            pythonPackages.pytest # For running tests
+
+            # Add other development tools here:
             pkgs.uv # Use uv from nixpkgs
             pkgs.nodePackages.tailwindcss
             pkgs.nodePackages.postcss
@@ -55,10 +44,15 @@
             pkgs.kubectl
             pkgs.repomix
             pkgs.just # Add just command
+            pythonPackages.black
+            pythonPackages.isort
+            pythonPackages.mypy
+            pythonPackages.ruff
           ];
 
+          # Environment variables for the shell (optional)
           shellHook = ''
-            echo "Entering hoffmagic flake development environment"
+            echo "Entering hoffmagic dev shell!"
             
             # Check if venv exists, create if not
             if [ ! -d ".venv" ]; then
@@ -84,19 +78,20 @@
           '';
         };
 
-        # Default package (optional, builds the python package)
+        # --------------------------------------------------------------------
+        # Definining the Package(s) to Build (for `nix build`)
+        # --------------------------------------------------------------------
         packages.default = pythonPackages.buildPythonPackage rec {
           pname = "hoffmagic";
-          version = "0.1.0"; # Ensure this matches pyproject.toml
-          format = "pyproject";
+          # IMPORTANT: Keep this version in sync with your project's version (e.g., pyproject.toml)
+          version = "0.1.0";
 
+          # Source code location (usually the directory containing the flake.nix)
           src = ./.;
 
-          nativeBuildInputs = with pythonPackages; [
-            setuptools
-            hatchling
-          ];
-
+          # Dependencies needed to *run* the installed package
+          # These are listed in your setup.py, setup.cfg, or pyproject.toml
+          # and Nix needs to know about them too.
           propagatedBuildInputs = with pythonPackages; [
             fastapi
             uvicorn
@@ -116,15 +111,29 @@
             pydantic-settings
           ];
 
-          # No check phase in flake build by default, can be added if needed
-          doCheck = false; 
+          # Dependencies needed only to *build* or *test* the package
+          # Often includes testing frameworks
+          nativeCheckInputs = [
+            pythonPackages.pytestCheckHook # To run pytest tests during the build
+          ];
+
+          # Set to True if your package includes tests that Nix should run
+          doCheck = true;
+
+          # Required for pytestCheckHook to find tests if they aren't in the root
+          # pythonImportsCheck = [ "hoffmagic" ]; # Check if the main module can be imported
 
           meta = with pkgs.lib; {
-            description = "A Python-based blog application";
-            homepage = "https://github.com/yourusername/hoffmagic"; # Replace with actual URL
-            license = licenses.mit;
-            maintainers = with maintainers; [ ]; # Add maintainers if desired
+            description = "Hoffmann's magical Python library/application";
+            homepage = "https://github.com/your-username/hoffmagic"; # Optional: Replace with actual URL
+            license = licenses.mit; # Optional: Replace with your actual license (e.g., licenses.gpl3Only)
+            maintainers = with maintainers; [ /* your github username */ ]; # Optional
           };
         };
-      });
+
+        # You can define other packages here if needed
+        # packages.anotherPackage = ...;
+
+      }
+    );
 }
