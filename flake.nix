@@ -31,6 +31,7 @@
             python              # The Python interpreter itself
             pythonPackages.pip  # For managing packages during development (if needed)
             pythonPackages.pytest # For running tests
+            pythonPackages.psycopg # Ensure psycopg is available in shell env
 
             pkgs.libpq          # <-- Add PostgreSQL client C library
             # Tools from previous configuration:
@@ -112,7 +113,7 @@
             typer
             rich
             pydantic-settings
-          ];
+          ] ++ [ pkgs.postgresql ]; # Add system deps needed by Python packages at runtime
 
           # Dependencies needed only to *build* or *test* the package
           # Often includes testing frameworks
