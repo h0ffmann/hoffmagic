@@ -38,7 +38,7 @@
             pkgs.nodePackages.tailwindcss
             pkgs.nodePackages.postcss
             pkgs.nodePackages.autoprefixer
-            # pkgs.postgresql # Removed, DB server is in Docker, only need libpq client
+            pkgs.postgresql     # Re-added, maybe needed alongside libpq for path reasons
             pkgs.docker
             pkgs.docker-compose
             pkgs.kubectl
