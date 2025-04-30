@@ -29,7 +29,8 @@ services:
       - DATABASE_URL=postgresql+psycopg://hoffmagic:hoffmagic@db:5432/hoffmagic
       - DEBUG=true
       - SECRET_KEY=dev_secret_key_change_in_production
-      - ALLOWED_HOSTS='["localhost", "127.0.0.1"]' # Use JSON array format
+      # Provide as a JSON array string
+      - ALLOWED_HOSTS='["localhost", "127.0.0.1"]'
     ports:
       - "8000:8000"
     depends_on:

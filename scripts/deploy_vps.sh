@@ -36,7 +36,8 @@ ssh $SERVER_USER@$SERVER_IP << ENDSSH
   cat > $DEPLOY_DIR/.env << EOF
 DATABASE_URL=postgresql+psycopg://hoffmagic:hoffmagic@localhost:5432/hoffmagic
 SECRET_KEY=$(openssl rand -hex 32)
-ALLOWED_HOSTS=$SERVER_IP,localhost,127.0.0.1
+# Ensure JSON array format for allowed hosts
+ALLOWED_HOSTS='["'$SERVER_IP'", "localhost", "127.0.0.1"]'
 DEBUG=false
 EOF
   

@@ -2,8 +2,9 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: hoffmagic-config
+# Provide as a JSON array string if the application expects a list
 data:
-  allowed-hosts: "blog.example.com"
+  allowed-hosts: '["blog.example.com"]' # Example for single production host
   environment: "production"
 ---
 apiVersion: v1
