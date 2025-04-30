@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "hoffmagic"
+name = "hoffmagic" # Keep lowercase as per Python standards
 version = "0.1.0"
-description = "A beautiful Python-based blog application"
+description = "A python-based blog application"
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
@@ -42,7 +42,7 @@ dev = [
 ]
 
 [project.scripts]
-hoffmagic = "hoffmagic.cli:main"
+hoffmagic = "hoffmagic.cli:app" # Assuming Typer app object is named 'app'
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

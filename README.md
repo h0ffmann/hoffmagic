@@ -1,15 +1,15 @@
-# HoffMagic Blog
+# hoffmagic blog
 
-A beautiful Python-based blog application built with FastAPI, Jinja2, and TailwindCSS.
+a beautiful python-based blog application built with fastapi, jinja2, and tailwindcss.
 
 ## Features
 
 - Modern and clean blog interface
 - Separate sections for Blog Posts and Essays
 - About Me and Contact pages
-- Markdown support for content
+- Markdown support for content (manual sync/management recommended)
 - Fully deployable to Kubernetes or VPS
-- Built with Python, UV, Nix, and Redocly
+- Built with Python, UV, Nix
 - Mobile-responsive design
 
 ## Getting Started
@@ -31,7 +31,7 @@ A beautiful Python-based blog application built with FastAPI, Jinja2, and Tailwi
 
 2. Set up the development environment:
    ```
-   # Using Python venv
+   # Using Python venv & pip/uv
    python -m venv .venv
    source .venv/bin/activate
    pip install -e ".[dev]"
@@ -45,8 +45,8 @@ A beautiful Python-based blog application built with FastAPI, Jinja2, and Tailwi
    # Using Docker Compose (recommended)
    docker-compose up
    
-   # OR locally
-   uvicorn hoffmagic.main:app --reload
+   # OR locally using Justfile
+   just run
    ```
 
 4. Visit http://localhost:8000 in your browser

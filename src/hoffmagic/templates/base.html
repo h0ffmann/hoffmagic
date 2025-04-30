@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{{ title if title else "HoffMagic Blog" }}{% endblock %}</title>
+    <title>{% block title %}{{ title if title else "hoffmagic blog" }}{% endblock %}</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ url_for('static', path='images/favicon.png') }}">
@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="{{ url_for('static', path='css/main.css') }}">
     
     <!-- Meta tags -->
-    <meta name="description" content="{% block description %}A beautiful blog built with Python{% endblock %}">
+    <meta name="description" content="{% block description %}a beautiful blog built with python{% endblock %}">
     {% block meta %}{% endblock %}
 </head>
 <body class="min-h-screen flex flex-col bg-brand-light text-brand-dark">
@@ -26,8 +26,8 @@
         <div class="container mx-auto px-4 md:px-6">
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div class="mb-4 md:mb-0">
-                    <a href="/" class="text-3xl font-serif font-bold">HoffMagic</a>
-                    <p class="text-sm text-brand-secondary">Insights & Reflections</p>
+                    <a href="/" class="text-3xl font-serif font-bold">hoffmagic</a>
+                    <p class="text-sm text-brand-secondary">insights & reflections</p>
                 </div>
                 
                 <nav class="flex items-center space-x-6 text-sm md:text-base">
@@ -67,7 +67,7 @@
         <div class="container mx-auto px-4 md:px-6">
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div class="mb-4 md:mb-0">
-                    <a href="/" class="text-xl font-serif font-bold">HoffMagic</a>
+                    <a href="/" class="text-xl font-serif font-bold">hoffmagic</a>
                     <p class="text-sm text-brand-secondary mt-1">© {{ now.year }} All rights reserved.</p>
                 </div>
                 

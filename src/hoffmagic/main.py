@@ -16,8 +16,8 @@ logger = setup_logging()
 
 # Create FastAPI application
 app = FastAPI(
-    title="HoffMagic Blog",
-    description="A beautiful Python-based blog application",
+    title="hoffmagic blog",
+    description="a beautiful python-based blog application",
     version="0.1.0",
     docs_url="/api/docs" if settings.DEBUG else None,
     redoc_url="/api/redoc" if settings.DEBUG else None,
@@ -41,16 +41,16 @@ async def startup_event() -> None:
     """
     Initialize database connection and perform startup tasks.
     """
-    logger.info("Starting HoffMagic application")
+    logger.info("starting hoffmagic application")
     await init_db()
 
 
 @app.on_event("shutdown")
 async def shutdown_event() -> None:
     """
-    Close database connection and perform cleanup tasks.
+    Close database connection and perform cleanup tasks (if any needed besides what context managers handle).
     """
-    logger.info("Shutting down HoffMagic application")
+    logger.info("shutting down hoffmagic application")
 
 
 @app.get("/health")
@@ -68,7 +68,7 @@ async def home(request: Request):
     """
     return templates.TemplateResponse(
         "index.html", 
-        {"request": request, "title": "HoffMagic Blog"}
+        {"request": request, "title": "hoffmagic blog"}
     )
 
 
@@ -79,7 +79,7 @@ async def blog_page(request: Request):
     """
     return templates.TemplateResponse(
         "blog/list.html", 
-        {"request": request, "title": "Blog | HoffMagic"}
+        {"request": request, "title": "blog | hoffmagic"}
     )
 
 
@@ -90,7 +90,7 @@ async def blog_detail(request: Request, slug: str):
     """
     return templates.TemplateResponse(
         "blog/detail.html", 
-        {"request": request, "title": "Blog Post | HoffMagic", "slug": slug}
+        {"request": request, "slug": slug} # Title set in block title now
     )
 
 
@@ -101,7 +101,7 @@ async def essays_page(request: Request):
     """
     return templates.TemplateResponse(
         "essays/list.html", 
-        {"request": request, "title": "Essays | HoffMagic"}
+        {"request": request, "title": "essays | hoffmagic"}
     )
 
 
@@ -112,7 +112,7 @@ async def essay_detail(request: Request, slug: str):
     """
     return templates.TemplateResponse(
         "essays/detail.html", 
-        {"request": request, "title": "Essay | HoffMagic", "slug": slug}
+        {"request": request, "slug": slug} # Title set in block title now
     )
 
 
@@ -123,7 +123,7 @@ async def about_page(request: Request):
     """
     return templates.TemplateResponse(
         "about.html", 
-        {"request": request, "title": "About Me | HoffMagic"}
+        {"request": request, "title": "about me | hoffmagic"}
     )
 
 
@@ -134,5 +134,5 @@ async def contact_page(request: Request):
     """
     return templates.TemplateResponse(
         "contact.html", 
-        {"request": request, "title": "Contact | HoffMagic"}
+        {"request": request, "title": "contact | hoffmagic"}
     )

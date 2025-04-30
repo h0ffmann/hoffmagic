@@ -4,8 +4,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        serif: ['Merriweather', 'Georgia', 'serif'],
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'], // Example: Clean sans-serif (adjust as needed)
+        serif: ['Lora', 'ui-serif', 'Georgia', 'serif'], // Example: Elegant serif (adjust as needed)
         mono: ['JetBrains Mono', 'monospace'],
       },
       colors: {

@@ -9,7 +9,7 @@ SERVER_USER="username"
 SERVER_IP="your.server.ip"
 DEPLOY_DIR="/opt/hoffmagic"
 
-echo "Deploying HoffMagic to VPS..."
+echo "Deploying hoffmagic to VPS..."
 
 # Build the application
 echo "Building application..."

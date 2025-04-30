@@ -9,7 +9,7 @@ IMAGE_TAG=$(git rev-parse --short HEAD)
 DOCKER_REGISTRY="your-registry.ovh.com"
 NAMESPACE="hoffmagic"
 
-echo "Deploying HoffMagic to Kubernetes..."
+echo "Deploying hoffmagic to Kubernetes..."
 
 # Build and push Docker image
 echo "Building and pushing Docker image..."

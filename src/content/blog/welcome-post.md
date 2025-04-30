@@ -1,6 +1,6 @@
 ---
-title: Welcome to HoffMagic Blog
-slug: welcome-to-hoffmagic-blog
+title: welcome to hoffmagic blog
+slug: welcome-to-hoffmagic
 author: Admin
 summary: A warm welcome and introduction to the HoffMagic blog.
 published: true
@@ -10,9 +10,9 @@ tags:
 featured_image: https://source.unsplash.com/random/1200x630/?welcome
 ---
 
-# Welcome to HoffMagic Blog
+# welcome to hoffmagic
 
-Hello and welcome to HoffMagic, a blog dedicated to exploring ideas at the intersection of philosophy, technology, and human experience.
+Hello and welcome to hoffmagic, a blog dedicated to exploring ideas at the intersection of philosophy, technology, and human experience.
 
 ## What to Expect
 

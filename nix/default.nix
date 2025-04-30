@@ -40,7 +40,7 @@ pythonPackages.buildPythonPackage rec {
   ];
 
   meta = with lib; {
-    description = "A beautiful Python-based blog application";
+    description = "A Python-based blog application";
     homepage = "https://github.com/yourusername/hoffmagic";
     license = licenses.mit;
     maintainers = with maintainers; [ ];

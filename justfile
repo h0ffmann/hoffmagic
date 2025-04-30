@@ -1,0 +1,68 @@
+# Justfile for hoffmagic blog development
+
+# Default command
+default: run
+
+# --- Development ---
+
+# Run the FastAPI development server with reload
+run:
+    uvicorn hoffmagic.main:app --host 0.0.0.0 --port 8000 --reload
+
+# Build and run using Docker Compose
+compose-up:
+    docker-compose up --build -d
+
+# Stop and remove Docker Compose containers
+compose-down:
+    docker-compose down
+
+# Build Docker Compose services without starting
+compose-build:
+    docker-compose build
+
+# Watch Tailwind CSS for changes
+tailwind-watch:
+    npx tailwindcss -i ./src/hoffmagic/static/css/input.css -o ./src/hoffmagic/static/css/main.css --watch
+
+# --- Quality & Testing ---
+
+# Run all linters and formatters
+lint: check format mypy
+
+check:
+    ruff check . && black --check . && isort --check .
+
+format:
+    black . && isort .
+
+mypy:
+    mypy src
+
+# Run tests with coverage
+test:
+    pytest -v --cov=hoffmagic tests/
+
+# Generate test coverage report
+coverage: test
+    coverage report -m && coverage html
+
+# --- Database ---
+
+# Apply Alembic migrations
+db-upgrade:
+    alembic upgrade head
+
+# Generate a new Alembic migration script (requires message)
+db-migrate msg='':
+    alembic revision --autogenerate -m "{{msg}}"
+
+# --- Repomix ---
+
+# Generate the Repomix combined code file (Markdown)
+repomix-md:
+    repomix -o hoffmagic-output.md -s markdown --compress --remove-comments --remove-empty-lines -g --git-sort-changes --line-numbers
+
+# Generate the Repomix combined code file (XML)
+repomix-xml:
+    repomix -o hoffmagic-output.xml -s xml -g --git-sort-changes

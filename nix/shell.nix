@@ -38,10 +38,9 @@ pkgs.mkShell {
     pkgs.nodePackages.autoprefixer
     pkgs.postgresql
     pkgs.docker
-    pkgs.docker-compose
-    pkgs.kubectl
-    pkgs.openapi-generator
-    pkgs.nodePackages.redoc-cli
+    pkgs.docker-compose # Keep for local dev
+    pkgs.kubectl        # Keep for deployment tasks
+    pkgs.repomix        # Added Repomix
   ];
 
   shellHook = ''
