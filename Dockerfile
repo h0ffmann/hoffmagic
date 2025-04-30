@@ -22,13 +22,13 @@ RUN uv venv /app/.venv
 ENV PATH="/app/.venv/bin:$PATH"
 RUN uv pip install -e .
 
-# Install tailwindcss to generate CSS
-RUN npm install -g tailwindcss
+# REMOVE global install:
+# RUN npm install -g tailwindcss
 COPY tailwind.config.js ./
 COPY src/hoffmagic/static/css/input.css ./src/hoffmagic/static/css/
 
-# Generate production CSS
-RUN tailwindcss -i ./src/hoffmagic/static/css/input.css -o ./src/hoffmagic/static/css/main.css --minify
+# Generate production CSS using npx
+RUN npx tailwindcss -i ./src/hoffmagic/static/css/input.css -o ./src/hoffmagic/static/css/main.css --minify
 
 # Stage 3: Final Image
 FROM base AS final
