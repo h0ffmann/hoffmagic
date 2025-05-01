@@ -1,121 +1,106 @@
+/* minimalist.css - Base styles inspired by target website */
 :root {
-  --max-width: 1200px; /* Increase from previous value */
-  --font-size-base: 16px; /* Reduce font size */
-  --font-size-lg: 18px;
-  --font-size-xl: 20px;
-  --font-size-2xl: 24px;
-  --font-size-3xl: 30px;
-  --font-size-4xl: 36px;
+    /* Define CSS variables from Tailwind config for potential use */
+    --color-bg-primary: #121212;
+    --color-bg-secondary: #1e1e1e;
+    --color-text-primary: #e0e0e0;
+    --color-text-secondary: #a0a0a0;
+    --color-accent: #2ecc71;
+    --color-border: #333333;
+    --font-sans: ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
 }
 
 body {
-  font-size: var(--font-size-base);
-  line-height: 1.6;
-  font-family: 'Inter', sans-serif;
-  color: #293241; /* Dark text */
-  background-color: #f8f9fa; /* Light background */
-  margin: 0;
+    font-family: var(--font-sans);
+    color: var(--color-text-primary);
+    background-color: var(--color-bg-primary);
+    line-height: 1.7; /* Increase line height slightly for readability */
+    margin: 2em auto; /* Center content */
+    padding: 1em;
+    max-width: 800px; /* Set max width */
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .container {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 0 1rem;
+    /* Use body's max-width instead */
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Lora', serif;
-  font-weight: 700;
-  line-height: 1.2;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    line-height: 1.2;
+    font-weight: 600; /* slightly bolder */
 }
 
 a {
-  color: #3d5a80; /* Brand primary */
-  text-decoration: none;
-  transition: color 0.2s;
+    color: var(--color-accent);
+    text-decoration: none;
 }
 
 a:hover {
-  color: #ee6c4d; /* Brand accent */
+    text-decoration: underline;
 }
 
 nav {
-  display: flex;
-  justify-content: flex-start; /* Align nav items to the start (left) */
-  gap: 2rem; /* Space between nav items */
+    margin-bottom: 1em;
 }
 
 nav a {
-  color: #fff; /* White text for dark header */
-  text-decoration: none;
-  padding: 0.5rem 0; /* Vertical padding */
+    margin-right: 1.5em;
+    color: var(--color-text-secondary);
+    padding-bottom: 2px; /* Space for potential border */
+    border-bottom: 2px solid transparent; /* Placeholder for active state */
 }
 
-.prose {
-  font-size: var(--font-size-base);
-  line-height: 1.6;
+nav a:hover {
+    color: var(--color-text-primary);
+    text-decoration: none;
 }
 
+.nav-active { /* Class to add to the active navigation link */
+    color: var(--color-accent) !important; /* Use accent color */
+    font-weight: 500;
+    /* Optional: border-bottom: 2px solid var(--color-accent); */
+}
+
+/* Targeting prose generated from Markdown */
 .prose p {
-  margin-bottom: 1.25em;
+    margin-bottom: 1.25em;
+    color: var(--color-text-primary); /* Ensure prose paragraphs have primary text color */
 }
 
-.prose a {
-  color: #ee6c4d; /* Brand accent for links in prose */
-  text-decoration: underline;
+pre, code, .prose pre, .prose code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    border-radius: 4px;
 }
 
-footer {
-  background-color: #293241; /* Dark footer background */
-  color: #fff; /* White text */
-  padding: 2rem 0;
+.prose pre {
+    padding: 1em;
+    overflow-x: auto;
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
 }
 
-input, textarea {
-  font-size: var(--font-size-base);
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 0.25rem;
-  width: 100%;
+.prose code:not(pre code) { /* Inline code */
+    padding: 0.2em 0.4em;
+    background-color: var(--color-bg-secondary); /* Optional: slight background */
 }
 
-button {
-  background-color: #3d5a80; /* Brand primary */
-  color: #fff;
-  border: none;
-  border-radius: 0.25rem;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-button:hover {
-  background-color: #ee6c4d; /* Brand accent on hover */
-}
-
-/* Left-aligned header with logo on left, navigation on right */
-.site-header {
-  display: flex;
-  flex-direction: row; /* Ensure horizontal layout */
-  justify-content: space-between; /* Space between logo and nav */
-  align-items: center; /* Vertically align items */
-  padding: 1rem 0; /* Vertical padding */
-}
-
-.site-header .logo {
-  text-align: left; /* Ensure logo text is left-aligned */
-}
-
-.site-header nav {
-  display: flex;
-  justify-content: flex-end; /* Align nav items to the end (right) */
-  gap: 2rem; /* Space between nav items */
-}
-
-/* Email obfuscation */
-.obfuscated-email:before {
-  content: attr(data-name);
-}
-.obfuscated-email:after {
-  content: attr(data-domain);
+/* Basic footer style */
+.site-footer {
+    margin-top: 3em;
+    padding-top: 1em;
+    border-top: 1px solid var(--color-border);
+    font-size: 0.9em;
+    color: var(--color-text-secondary);
+    text-align: center;
 }

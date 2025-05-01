@@ -1,196 +1,161 @@
 {% extends "base.html" %}
-
 {% block title %}about me | hoffmagic{% endblock %}
 {% block description %}Learn more about the author behind hoffmagic - background, interests, and the story of this blog.{% endblock %}
 
 {% block content %}
-<!-- About Header -->
-<section class="bg-brand-dark text-white py-20">
-    <div class="container mx-auto px-4 md:px-6">
-        <div class="max-w-4xl mx-auto text-center">
-            <h1 class="text-3xl md:text-4xl lg:text-5xl font-serif font-bold mb-6">about me</h1>
-            <p class="text-xl text-brand-light">the story behind hoffmagic and its author</p>
-        </div>
-    </div>
-</section>
 
-<!-- About Content -->
-<section class="py-16 bg-white">
-    <div class="container mx-auto px-4 md:px-6">
-        <div class="flex flex-col lg:flex-row items-start gap-12 max-w-6xl mx-auto">
-            <!-- Left column - Author info and photo -->
-            <div class="lg:w-1/3 sticky top-8">
-                <div class="bg-gray-50 rounded-lg p-8 shadow-md">
-                    <img src="{{ author.avatar or 'https://source.unsplash.com/random/400x400/?portrait' }}" alt="{{ author.name }}" class="w-full h-auto rounded-lg mb-6">
-                    
-                    <h2 class="text-2xl font-bold mb-3">{{ author.name }}</h2>
-                    
-                    <div class="flex items-center text-gray-600 mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        <span>San Francisco, CA</span>
-                    </div>
-                    
-                    <div class="space-y-3 mb-6">
-                        <div class="flex">
-                            <span class="font-bold w-24">Email:</span>
-                            <a href="mailto:{{ author.email }}" class="text-brand-primary hover:text-brand-accent transition">{{ author.email }}</a>
-                        </div>
-                        <div class="flex">
-                            <span class="font-bold w-24">Twitter:</span>
-                            <a href="https://twitter.com/hoffmagic" class="text-brand-primary hover:text-brand-accent transition">@hoffmagic</a>
-                        </div>
-                        <div class="flex">
-                            <span class="font-bold w-24">LinkedIn:</span>
-                            <a href="https://linkedin.com/in/hoffmagic" class="text-brand-primary hover:text-brand-accent transition">hoffmagic</a>
-                        </div>
-                    </div>
-                    
-                    <div class="pt-4 border-t border-gray-200">
-                        <h3 class="text-lg font-bold mb-2">Blog Stats</h3>
-                        <div class="grid grid-cols-2 gap-4 text-center">
-                            <div class="bg-white rounded-lg p-3 shadow-sm">
-                                <span class="block text-2xl font-bold text-brand-primary">{{ stats.post_count }}</span>
-                                <span class="text-gray-600 text-sm">Posts</span>
-                            </div>
-                            <div class="bg-white rounded-lg p-3 shadow-sm">
-                                <span class="block text-2xl font-bold text-brand-primary">{{ stats.essay_count }}</span>
-                                <span class="text-gray-600 text-sm">Essays</span>
-                            </div>
-                            <div class="bg-white rounded-lg p-3 shadow-sm">
-                                <span class="block text-2xl font-bold text-brand-primary">{{ stats.tag_count }}</span>
-                                <span class="text-gray-600 text-sm">Topics</span>
-                            </div>
-                            <div class="bg-white rounded-lg p-3 shadow-sm">
-                                <span class="block text-2xl font-bold text-brand-primary">{{ stats.comment_count }}</span>
-                                <span class="text-gray-600 text-sm">Comments</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Right column - Bio and story -->
-            <div class="lg:w-2/3">
-                <div class="prose prose-lg max-w-none">
-                    <h2>My Story</h2>
-                    
-                    <p>
-                        Hello! I'm {{ author.name }}, a writer, philosopher, and technologist passionate about exploring the intersections between technology, philosophy, and human experience.
-                    </p>
-                    
-                    <p>
-                        i created hoffmagic in 2022 as a space to share my thoughts on topics ranging from artificial intelligence to ancient philosophy, from digital minimalism to creative expression. my goal is to offer insights that are both intellectually stimulating and practically useful.
-                    </p>
-                    
-                    <p>
-                        My background spans both technical and humanities disciplines. I studied Computer Science and Philosophy at Stanford University, which gave me a unique perspective on how technology shapes our lives and how philosophical inquiry can help us navigate our increasingly complex world.
-                    </p>
-                    
-                    <h2>Professional Background</h2>
-                    
-                    <p>
-                        After graduating, I spent several years working in the tech industry as a software engineer and product manager at companies including Google and Microsoft. During this time, I gained firsthand experience of how technology products are designed and the ethical considerations (or lack thereof) that go into their development.
-                    </p>
-                    
-                    <p>
-                        In 2019, I decided to step back from the corporate world to focus on writing and independent research. I've since contributed to publications including The Atlantic, Wired, and Aeon, exploring topics at the intersection of technology, culture, and philosophy.
-                    </p>
-                    
-                    <h2>About This Blog</h2>
-                    
-                    <p>
-                        hoffmagic represents my effort to share ideas that matter. the content here falls into two main categories:
-                    </p>
-                    
-                    <ul>
-                        <li><strong>Blog Posts</strong> - Shorter, more frequent writings on current events, interesting ideas, and practical wisdom</li>
-                        <li><strong>Essays</strong> - Longer, more deeply researched and considered pieces that explore topics in greater depth</li>
-                    </ul>
-                    
-                    <p>
-                        All of the writing here is guided by a few core principles:
-                    </p>
-                    
-                    <ul>
-                        <li><strong>Intellectual honesty</strong> - I try to present ideas as clearly and fairly as possible, acknowledging complexity and uncertainty</li>
-                        <li><strong>Practical wisdom</strong> - I believe good ideas should help us live better lives</li>
-                        <li><strong>Curiosity</strong> - I approach topics with genuine curiosity rather than certainty</li>
-                        <li><strong>Clarity</strong> - I aim to express ideas clearly without unnecessary jargon or complexity</li>
-                    </ul>
-                    
-                    <h2>Beyond the Blog</h2>
-                    
-                    <p>
-                        When I'm not writing, you can find me hiking in the mountains, practicing meditation, or lost in a good book. I'm an avid reader across many genres, with a particular fondness for philosophy, science fiction, and classic literature.
-                    </p>
-                    
-                    <p>
-                        I'm also working on my first book, which explores how ancient philosophical traditions can help us navigate the unique challenges of the digital age. It's scheduled for publication in early 2025.
-                    </p>
-                    
-                    <h2>Get in Touch</h2>
-                    
-                    <p>
-                        I love hearing from readers! If you have questions, comments, or just want to say hello, please don't hesitate to <a href="/contact">reach out through the contact page</a> or connect with me on social media.
-                    </p>
-                    
-                    <p>
-                        thank you for visiting hoffmagic. i hope you find something here that challenges your thinking, sparks your curiosity, or simply brings you a moment of reflection in our busy world.
-                    </p>
-                </div>
-                
-                <!-- Newsletter CTA -->
-                <div class="mt-12 bg-brand-primary text-white rounded-lg p-8">
-                    <h3 class="text-2xl font-bold mb-4">Join the Newsletter</h3>
-                    <p class="mb-6">Get notified about new posts and essays delivered directly to your inbox.</p>
-                    
-                    <form id="about-newsletter-form" class="flex flex-col sm:flex-row gap-2">
-                        <input type="email" name="email" placeholder="Your email address" required
-                               class="flex-grow px-4 py-2 rounded-md text-brand-dark focus:outline-none focus:ring-2 focus:ring-brand-accent">
-                        <button type="submit" class="bg-brand-accent hover:bg-opacity-90 text-white px-6 py-2 rounded-md transition duration-200">
-                            Subscribe
-                        </button>
-                    </form>
-                </div>
-            </div>
+<section class="about-page">
+    <h1>About Me</h1>
+    <p>The story behind hoffmagic and its author.</p>
+
+    <div class="about-content" style="margin-top: 3em;">
+
+        {# Basic author info section - remove complex layout/sticky/cards #}
+        <div class="author-info" style="margin-bottom: 3em;">
+            {% if author %}
+             {# Optional image #}
+             <img src="{{ author.avatar or 'https://source.unsplash.com/random/150x150/?portrait,minimal' }}" alt="{{ author.name }}" style="width: 120px; height: 120px; border-radius: 50%; margin-bottom: 1em; border: 2px solid var(--color-border);">
+             <h2 style="margin-top: 0; margin-bottom: 0.5em;">{{ author.name }}</h2>
+            <p style="font-size: 0.9em; color: var(--color-text-secondary);">
+                {# Simple inline contact info #}
+                 Email: <a href="mailto:{{ author.email }}">{{ author.email }}</a> | Location: San Francisco, CA
+                 {# Add other links (Twitter, LinkedIn) similarly if needed #}
+                 | <a href="https://twitter.com/hoffmagic">Twitter</a>
+            </p>
+             {% else %}
+             <p>Author information is currently unavailable.</p>
+             {% endif %}
         </div>
+
+        {# Main About text - Use prose or basic paragraph styles #}
+        <div class="about-text prose prose-invert max-w-none"> {# Adjust prose class as needed #}
+            <h2>My Story</h2>
+            <p>
+                Hello! I'm {{ author.name if author else "the author" }}, a writer, philosopher, and technologist passionate about exploring the intersections between technology, philosophy, and human experience.
+            </p>
+            <p>
+                i created hoffmagic in 2022 as a space to share my thoughts on topics ranging from artificial intelligence to ancient philosophy, from digital minimalism to creative expression. my goal is to offer insights that are both intellectually stimulating and practically useful.
+            </p>
+            <p>
+                My background spans both technical and humanities disciplines. I studied Computer Science and Philosophy at Stanford University, which gave me a unique perspective on how technology shapes our lives and how philosophical inquiry can help us navigate our increasingly complex world.
+            </p>
+            <h2>Professional Background</h2>
+            <p>
+                After graduating, I spent several years working in the tech industry as a software engineer and product manager at companies including Google and Microsoft. During this time, I gained firsthand experience of how technology products are designed and the ethical considerations (or lack thereof) that go into their development.
+            </p>
+            <p>
+                In 2019, I decided to step back from the corporate world to focus on writing and independent research. I've since contributed to publications including The Atlantic, Wired, and Aeon, exploring topics at the intersection of technology, culture, and philosophy.
+            </p>
+            <h2>About This Blog</h2>
+            <p>
+                hoffmagic represents my effort to share ideas that matter. the content here falls into two main categories:
+            </p>
+            <ul>
+                <li><strong>Blog Posts</strong> - Shorter, more frequent writings on current events, interesting ideas, and practical wisdom</li>
+                <li><strong>Essays</strong> - Longer, more deeply researched and considered pieces that explore topics in greater depth</li>
+            </ul>
+            <p>
+                All of the writing here is guided by a few core principles:
+            </p>
+            <ul>
+                <li><strong>Intellectual honesty</strong> - I try to present ideas as clearly and fairly as possible, acknowledging complexity and uncertainty</li>
+                <li><strong>Practical wisdom</strong> - I believe good ideas should help us live better lives</li>
+                <li><strong>Curiosity</strong> - I approach topics with genuine curiosity rather than certainty</li>
+                <li><strong>Clarity</strong> - I aim to express ideas clearly without unnecessary jargon or complexity</li>
+            </ul>
+            <h2>Beyond the Blog</h2>
+            <p>
+                When I'm not writing, you can find me hiking in the mountains, practicing meditation, or lost in a good book. I'm an avid reader across many genres, with a particular fondness for philosophy, science fiction, and classic literature.
+            </p>
+            <p>
+                I'm also working on my first book, which explores how ancient philosophical traditions can help us navigate the unique challenges of the digital age. It's scheduled for publication in early 2025.
+            </p>
+            <h2>Get in Touch</h2>
+            <p>
+                I love hearing from readers! If you have questions, comments, or just want to say hello, please don't hesitate to <a href="/contact">reach out through the contact page</a> or connect with me on social media.
+            </p>
+            <p>
+                thank you for visiting hoffmagic. i hope you find something here that challenges your thinking, sparks your curiosity, or simply brings you a moment of reflection in our busy world.
+            </p>
+        </div>
+
+        {# Blog Stats - Simple list or paragraphs #}
+        {% if stats %}
+        <div class="blog-stats" style="margin-top: 3em; padding-top: 1.5em; border-top: 1px dashed var(--color-border);">
+             <h3>Blog Stats</h3>
+             <ul style="list-style: none; padding-left: 0; font-size: 0.9em;">
+                 <li>Posts: {{ stats.post_count }}</li>
+                 <li>Essays: {{ stats.essay_count }}</li>
+                 <li>Topics: {{ stats.tag_count }}</li>
+                 <li>Comments: {{ stats.comment_count }}</li>
+             </ul>
+        </div>
+        {% endif %}
+
+        {# Newsletter - Plain styling #}
+         <div class="newsletter-section" style="margin-top: 3em; padding-top: 1.5em; border-top: 1px solid var(--color-border);">
+            <h3>Join the Newsletter</h3>
+            <p>Get notified about new posts and essays delivered directly to your inbox.</p>
+             <form id="about-newsletter-form" style="margin-top: 1em;">
+                 <label for="about-newsletter-email" style="display: block; margin-bottom: 0.5em; font-size: 0.9em;">Email Address:</label>
+                <div style="display: flex; gap: 0.5em;">
+                    <input type="email" id="about-newsletter-email" name="email" placeholder="you@example.com" required
+                           style="flex-grow: 1; padding: 0.5em; border: 1px solid var(--color-border); background-color: var(--color-bg-secondary); color: var(--color-text-primary); border-radius: 3px; font-size: 0.9em;">
+                    <button type="submit"
+                             style="padding: 0.5em 1em; border: 1px solid var(--color-accent); background-color: var(--color-accent); color: var(--color-bg-primary); border-radius: 3px; cursor: pointer; font-size: 0.9em;">
+                         Subscribe
+                    </button>
+                    </div>
+                 <p id="newsletter-feedback" style="font-size: 0.9em; margin-top: 0.5em;"></p>
+             </form>
+            </div>
     </div>
 </section>
 {% endblock %}
 
 {% block scripts %}
 <script>
+    // Handle newsletter form submission - simplified feedback
+    async function handleNewsletterSubmit(event) {
+        event.preventDefault();
+        const form = event.target;
+        const emailInput = form.querySelector('#about-newsletter-email');
+        const feedbackP = document.getElementById('newsletter-feedback');
+        feedbackP.textContent = 'Subscribing...';
+        feedbackP.style.color = 'var(--color-text-secondary)';
+
+        try {
+            const response = await fetch('/api/contact/subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: emailInput.value }),
+            });
+
+            if (response.ok) {
+                feedbackP.textContent = 'Success! Check your inbox.';
+                feedbackP.style.color = 'var(--color-accent)';
+                form.reset();
+            } else {
+                const error = await response.json();
+                feedbackP.textContent = `Error: ${error.detail || 'Subscription failed.'}`;
+                feedbackP.style.color = '#ff6b6b'; // Simple error color
+            }
+        } catch (error) {
+            console.error('Newsletter subscription error:', error);
+            feedbackP.textContent = 'Error: Could not reach server.';
+            feedbackP.style.color = '#ff6b6b';
+        } finally {
+             // Optionally clear feedback after a few seconds
+             setTimeout(() => { feedbackP.textContent = ''; }, 5000);
+        }
+    }
+
     // Handle newsletter form submission
     document.addEventListener('DOMContentLoaded', function() {
         const newsletterForm = document.getElementById('about-newsletter-form');
-        
-        newsletterForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const email = this.email.value;
-            
-            try {
-                const response = await fetch('/api/contact/subscribe', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ email }),
-                });
-                
-                if (response.ok) {
-                    alert('Thank you for subscribing!');
-                    this.reset();
-                } else {
-                    const error = await response.json();
-                    alert(`Error: ${error.detail || 'Something went wrong'}`);
-                }
-            } catch (error) {
-                alert('Error: Could not connect to the server');
-            }
-        });
+         if (newsletterForm) {
+            newsletterForm.addEventListener('submit', handleNewsletterSubmit);
+         }
     });
 </script>
 {% endblock %}
