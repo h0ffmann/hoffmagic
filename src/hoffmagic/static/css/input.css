@@ -5,7 +5,7 @@
 /* Custom base styles */
 @layer base {
   body {
-    @apply font-sans text-brand-dark;
+    @apply font-sans text-brand-text-primary bg-brand-primary-bg; /* Use new primary text and background colors */
     text-transform: lowercase; /* Make body text lowercase */
   }
 
@@ -27,7 +27,7 @@
     @apply bg-brand-primary text-white hover:bg-opacity-90;
   }
   .btn-secondary {
-    @apply bg-brand-secondary text-brand-dark hover:bg-opacity-90;
+    @apply bg-brand-secondary-bg text-brand-text-primary hover:bg-opacity-90; /* Use new secondary background and primary text */
   }
   .btn-accent {
     @apply bg-brand-accent text-white hover:bg-opacity-90;
