@@ -10,6 +10,12 @@ until pg_isready -h db -U hoffmagic -d hoffmagic; do
     sleep 2
 done
 
+# Add debug info
+echo "Available environment variables:"
+env | sort
+
+echo "DATABASE_URL is: ${DATABASE_URL:-not set}"
+
 echo >&2 "Postgres is up - executing command"
 echo "Running Alembic migrations..."
 # No need to cd if WORKDIR is /app in Dockerfile

@@ -32,6 +32,7 @@ services:
       - SECRET_KEY=${SECRET_KEY:-dev_secret_key_change_in_production}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-'["localhost", "127.0.0.1"]'}
       - DEBUG=${DEBUG:-true}
+      - COMPOSE_BAKE= # Unset COMPOSE_BAKE
       - ENV=${ENV:-development}
 
     ports:

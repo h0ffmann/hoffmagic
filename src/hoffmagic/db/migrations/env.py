@@ -64,15 +64,16 @@ def run_migrations_online() -> None:
     Here, we explicitly override the sqlalchemy.url from the environment
     variable, ensuring it's used regardless of ini file interpolation issues.
     """
-
-    # Get database URL from environment variable, raise error if not set
-    db_url = os.environ.get("DATABASE_URL")
+    # Get database URL directly from environment variable, provide a default for safety
+    db_url = os.environ.get("DATABASE_URL", "postgresql+psycopg://hoffmagic:hoffmagic@db:5432/hoffmagic")
     if not db_url:
         raise ValueError("DATABASE_URL environment variable is not set or is empty")
+
+    # Override sqlalchemy.url config with environment variable
     config.set_main_option("sqlalchemy.url", db_url)
 
     connectable = engine_from_config(
-        config.get_section(config.config_main_section, {}), # Use config_main_section
+        config.get_section(config.config_ini_section, {}), # Use config_ini_section as per diff
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
