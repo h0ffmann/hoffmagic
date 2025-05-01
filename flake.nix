@@ -183,43 +183,42 @@
         # --------------------------------------------------------
         # ---- Docker Image Definition ----
         # --------------------------------------------------------
-        # Create a better entrypoint script that handles the alembic.ini file
-        entrypointScript = pkgs.writeTextFile {
-          name = "docker-entrypoint.sh";
-          executable = true;
-          text = ''
+        # Create a proper entrypoint script using writeShellScriptBin
+        entrypointScript = pkgs.writeShellScriptBin "entrypoint" ''
             #!${pkgs.bash}/bin/bash
             set -e
 
             echo "Working directory: $(pwd)"
             echo "Setting up alembic.ini..."
-            cp ${hoffmagicApp}/share/hoffmagic/alembic.ini /app/alembic.ini
+            cp ${hoffmagicApp}/share/hoffmagic/alembic.ini /app/alembic.ini || echo "Warning: Could not copy alembic.ini"
 
             echo "Creating migrations directory..."
             mkdir -p /app/src/hoffmagic/db/migrations
 
             echo "Running Alembic migrations..."
             cd /app
-            ${python}/bin/python -m alembic upgrade head
+            ${python}/bin/python -m alembic upgrade head || echo "Warning: Alembic migration failed"
 
             echo "Starting Uvicorn..."
             HOST=''${HOST:-0.0.0.0}
             PORT=''${PORT:-8000}
             ${python}/bin/python -m uvicorn hoffmagic.main:app --host "$HOST" --port "$PORT"
-          '';
-        };
+        '';
 
         packages.dockerImage = pkgs.dockerTools.buildImage {
           name = "hoffmagic";
           tag = "latest";
 
-          # Copy the runtime environment to the root of the image
-          copyToRoot = appRuntimeEnv;
+          # Copy the runtime environment and the entrypoint script to the root of the image
+          copyToRoot = pkgs.buildEnv {
+            name = "image-root";
+            paths = [ appRuntimeEnv entrypointScript ];
+          };
 
           # Configure the image metadata and runtime behavior
           config = {
-            # Use our new entrypoint script
-            Entrypoint = [ "${entrypointScript}" ];
+            # Use the entrypoint script we created
+            Entrypoint = [ "/bin/entrypoint" ];
             Cmd = [ ]; # Arguments passed to entrypoint (none needed here)
             Env = [
               # Set defaults for the container environment
