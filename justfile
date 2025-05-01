@@ -24,11 +24,11 @@ build-docker: build-css # Ensure CSS is built first
     docker build -t hoffmagic:latest .
 
 # Run using Docker Compose (will build image if not present)
-compose-up:
-    docker-compose up -d
+dev-up:
+    COMPOSE_BAKE=true DATABASE_URL=postgresql+psycopg://hoffmagic:hoffmagic@db:5432/hoffmagic docker-compose up --build
 
 # Stop Docker Compose
-compose-down:
+dev-down:
     docker-compose down
 
 # Watch Tailwind CSS for changes (inside nix develop)
