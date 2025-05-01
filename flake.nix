@@ -68,6 +68,8 @@
             hoffmagicApp
             # Bash for the entrypoint
             pkgs.bash
+            # Core utilities for commands like 'env'
+            pkgs.coreutils # <<< Add coreutils
             # libpq should be pulled in by hoffmagicApp dependency
           ];
           # Link the essential directories from the paths into the final env
