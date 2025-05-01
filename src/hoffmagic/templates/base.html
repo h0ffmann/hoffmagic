@@ -37,19 +37,19 @@
         </div>
         <nav class="sidebar-nav">
             <!-- Check current path to apply 'active' class -->
-            <a href="/" class="{{ 'active' if request.url.path == url_for('home') else '' }}">
+            <a href="{{ url_for('home') }}" class="{{ 'active' if request.url.path == url_for('home').path else '' }}">
                 <i class="fas fa-home"></i> Home
             </a>
-            <a href="{{ url_for('blog_page') }}" class="{{ 'active' if request.url.path.startswith(url_for('blog_page')) else '' }}">
+            <a href="{{ url_for('blog_page') }}" class="{{ 'active' if request.url.path.startswith(url_for('blog_page').path) else '' }}">
                 <i class="fas fa-blog"></i> Blog
             </a>
-            <a href="{{ url_for('essays_page') }}" class="{{ 'active' if request.url.path.startswith(url_for('essays_page')) else '' }}">
+            <a href="{{ url_for('essays_page') }}" class="{{ 'active' if request.url.path.startswith(url_for('essays_page').path) else '' }}">
                 <i class="fas fa-book"></i> Essays
             </a>
-            <a href="{{ url_for('about_page') }}" class="{{ 'active' if request.url.path == url_for('about_page') else '' }}">
+            <a href="{{ url_for('about_page') }}" class="{{ 'active' if request.url.path == url_for('about_page').path else '' }}">
                 <i class="fas fa-user"></i> About Me
             </a>
-            <a href="{{ url_for('contact_page') }}" class="{{ 'active' if request.url.path == url_for('contact_page') else '' }}">
+            <a href="{{ url_for('contact_page') }}" class="{{ 'active' if request.url.path == url_for('contact_page').path else '' }}">
                 <i class="fas fa-envelope"></i> Contact
             </a>
         </nav>
