@@ -1,23 +1,13 @@
-#!/usr/bin/env bash
+#!/bin/sh
 set -e
 
-echo "Docker Entrypoint: Starting hoffmagic..."
+# PYTHONPATH is implicitly handled by the Nix environment wrapper
+# PATH is also handled by the wrapper, but we use absolute paths for clarity
 
-# Check if DATABASE_URL is set
-if [ -z "$DATABASE_URL" ]; then
-  echo "Error: DATABASE_URL environment variable is not set."
-  exit 1
-fi
-
-# Navigate to the directory containing alembic.ini if needed
-# cd /app # Set WorkingDir in flake.nix instead if possible
-
+# Apply database migrations using the python from the Nix build result
 echo "Running Alembic migrations..."
-# Use 'alembic' directly as it's in the path from appRuntimeEnv
-# Assuming alembic.ini is in the root copied by 'contents' or WorkingDir is set correctly
-alembic upgrade head
+/app/result/bin/python -m alembic upgrade head
 
+# Start the application using the python from the Nix build result
 echo "Starting Uvicorn..."
-# Use 'python' directly, it points to the correct interpreter from hoffmagicApp
-# Use environment variables for host/port passed into the container
-exec python -m uvicorn hoffmagic.main:app --host "$HOST" --port "$PORT"
+exec /app/result/bin/python -m uvicorn hoffmagic.main:app --host $HOST --port $PORT
