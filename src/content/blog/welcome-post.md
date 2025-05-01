@@ -1,16 +1,25 @@
 ---
-title: welcome to hoffmagic blog
-slug: welcome-to-hoffmagic
-author: Admin
-summary: A warm welcome and introduction to the HoffMagic blog.
+title: hello world!
+slug: hello-world
+author: h0ffmann
 published: true
+summary: How to take raw text and turn it into a Markdown file with YAML frontmatter.
 tags:
-  - Announcements
-  - Introduction
-featured_image: https://source.unsplash.com/random/1200x630/?welcome
+  - test
 ---
 
-# welcome to hoffmagic
+This post explains how to take raw text and turn it into a Markdown file that includes YAML frontmatter. It's useful for content management systems or static site generators that read metadata from files. We'll cover the basics.
+
+## First Steps
+
+You need a text editor. Then, you follow these steps:
+
+1.  Start the file with three dashes (`---`).
+2.  Add metadata using `key: value` pairs (like `title:` and `slug:`). Ensure lists (like `tags`) use the `-` prefix.
+3.  End the metadata section with three more dashes (`---`).
+4.  Write your normal **Markdown** content below the closing dashes!
+
+# Welcome to hoffmagic
 
 Hello and welcome to hoffmagic, a blog dedicated to exploring ideas at the intersection of philosophy, technology, and human experience.
 
