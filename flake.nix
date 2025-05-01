@@ -84,6 +84,7 @@
         appRuntimeEnv = pkgs.buildEnv {
           name = "hoffmagic-runtime";
           paths = [
+            python              # <<< Add the Python interpreter itself explicitly
             hoffmagicApp        # Our built Python package/app
             pkgs.alembic        # The alembic command-line tool
             pkgs.bash           # For the entrypoint script
