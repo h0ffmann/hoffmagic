@@ -78,10 +78,11 @@
         ]);
 
         # Create an entrypoint script with absolute paths to binaries
-        entrypointScript = pkgs.writeScriptBin "docker-entrypoint" ''
+        entrypointScript = pkgs.writeScriptBin "docker-entrypoint.sh" ''
           #!${pkgs.bash}/bin/bash
           set -e
           echo "Running Alembic migrations..."
+          cd /app
           ${python}/bin/python -m alembic upgrade head
           echo "Starting Uvicorn..."
           HOST=''${HOST:-0.0.0.0}
@@ -95,15 +96,13 @@
           name = "hoffmagic-runtime";
           paths = [
             pythonEnv  # Use the complete Python environment
-            # The main app package, bringing its Python deps (sqlalchemy, fastapi, etc.)
-            hoffmagicApp
             # Bash for the entrypoint
             pkgs.bash
             # Core utilities for commands like 'env'
             pkgs.coreutils # <<< Add coreutils
             # Add our new entrypoint script
             entrypointScript
-            # libpq is included via pythonEnv's psycopg dependency or hoffmagicApp
+            # libpq is included via pythonEnv's psycopg dependency
           ];
           # Link the essential directories from the paths into the final env
           pathsToLink = [ "/bin" "/${python.sitePackages}" ];
@@ -181,8 +180,8 @@
 
           # Configure the image metadata and runtime behavior
           config = {
-            # Use our new entrypoint script that has hard-coded Python paths
-            Entrypoint = [ "${entrypointScript}/bin/docker-entrypoint" ];
+            # Use our new entrypoint script
+            Entrypoint = [ "${entrypointScript}/bin/docker-entrypoint.sh" ];
             Cmd = [ ]; # Arguments passed to entrypoint (none needed here)
             Env = [
               # Set defaults for the container environment
@@ -197,8 +196,8 @@
               # Crucial: Tell Python where to find the installed packages from hoffmagicApp
               # appRuntimeEnv points to the merged env, which has sitePackages linked
               "PYTHONPATH=${appRuntimeEnv}/${python.sitePackages}"
-              # Explicitly set PATH to ensure proper binary discovery
-              "PATH=/bin:${appRuntimeEnv}/bin:${python}/bin"
+              # Explicitly set PATH
+              "PATH=/bin:${pythonEnv}/bin:${appRuntimeEnv}/bin"
             ];
             ExposedPorts = { "8000/tcp" = { }; };
             WorkingDir = "/app"; # Set working directory for the application
@@ -210,11 +209,8 @@
             mkdir -p /app
             # Create migrations directory needed by alembic
             mkdir -p /app/migrations
-            # Copy alembic.ini and migration scripts into the image's /app directory
-            # These are needed at runtime by the entrypoint script
-            cp ${./alembic.ini} /app/alembic.ini
-            # Use rsync to copy contents of the migrations directory
-            ${pkgs.rsync}/bin/rsync -av ${./src/hoffmagic/db/migrations}/ /app/migrations/
+            # Create an empty alembic.ini file that will be replaced at runtime by volume mount
+            touch /app/alembic.ini
           '';
         };
         # -------------------------------------------------------------
