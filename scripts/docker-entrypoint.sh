@@ -3,6 +3,8 @@
 set -e
 
 echo "Running Alembic migrations..."
+echo "Checking migrations directory structure:"
+ls -la /app/src/hoffmagic/db/migrations || echo "Migrations directory not found or empty."
 # Rely on PATH to find python and use -m
 python -m alembic upgrade head
 

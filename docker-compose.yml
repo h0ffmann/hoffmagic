@@ -27,7 +27,7 @@ services:
       - ./src/hoffmagic/templates:/app/templates   # Jinja templates
       - ./src/hoffmagic/static:/app/static         # Static files (CSS, etc.)
       - ./alembic.ini:/app/alembic.ini             # Alembic configuration
-      - ./src/hoffmagic/db/migrations:/app/migrations # Alembic migration scripts
+      - ./src/hoffmagic/db/migrations:/app/src/hoffmagic/db/migrations # Alembic migration scripts
     environment:
       - DATABASE_URL=postgresql+psycopg://hoffmagic:hoffmagic@db:5432/hoffmagic
       # !!! CHANGE IN PRODUCTION !!! Use secrets management.
