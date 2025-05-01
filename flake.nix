@@ -173,45 +173,30 @@
           # Copy the runtime environment (app + deps like alembic, bash, libpq) to the root
           copyToRoot = appRuntimeEnv;
 
-          # Copy necessary non-Python source files into the image's /app directory
-          contents = [
-             ./src/hoffmagic/static                 # Built CSS & other static files
-             ./src/hoffmagic/templates              # Jinja templates
-             ./alembic.ini                          # Alembic config
-             ./src/hoffmagic/db/migrations          # Alembic migration scripts
-             ./scripts/docker-entrypoint.sh         # Entrypoint script
-             # DO NOT copy ./content here - mount it as a volume in docker-compose.yml
-          ];
+          # *** REMOVED 'contents' block ***
 
           # Configure the image
           config = {
-            # Use bash from appRuntimeEnv to run the entrypoint script copied via 'contents'
-            # Note: The script will be copied to the root of the image by 'contents'
-            Cmd = [ ]; # Command is handled by entrypoint
+            # Use bash to run the entrypoint script
+            Cmd = [ ];
             Entrypoint = [ "${pkgs.bash}/bin/bash" "/docker-entrypoint.sh" ];
-
-            # Default environment variables inside the container
-            # These can be overridden by docker-compose.yml environment section
             Env = [
-              "ENV=production" # Example: Set environment type
-              "DEBUG=false"    # Default to production debug setting
-              "PORT=8000"      # Default port (can be overridden)
-              "HOST=0.0.0.0"   # Default host (can be overridden)
-              # Set DATABASE_URL for docker-compose (adjust if needed)
-              "DATABASE_URL=postgresql+psycopg://hoffmagic:hoffmagic@db:5432/hoffmagic"
-              "SECRET_KEY=" # Should be set via docker-compose secrets or env_file
-              "ALLOWED_HOSTS=[]" # Should be set via docker-compose env_file or similar
-              # PATH is automatically handled by copyToRoot of appRuntimeEnv
-              # PYTHONPATH is often set automatically by buildPythonPackage wrappers
+              "ENV=production" "DEBUG=false" "PORT=8000" "HOST=0.0.0.0"
+              "DATABASE_URL=postgresql+psycopg://hoffmagic:hoffmagic@db:5432/hoffmagic" # Default
+              "SECRET_KEY=" "ALLOWED_HOSTS=[]" # Passed at runtime
+              # Add the package's site-packages to PYTHONPATH so python can find hoffmagic module
+              "PYTHONPATH=${hoffmagicApp}/${python.sitePackages}"
+              # PATH is automatically handled by copyToRoot when using buildEnv
             ];
-
-            ExposedPorts = { "8000/tcp" = {}; }; # Expose the application port
-            WorkingDir = "/app"; # Set a working directory inside the container
+            ExposedPorts = { "8000/tcp" = {}; };
+            WorkingDir = "/app";
           };
 
-          # Create the /app directory and make the entrypoint executable after copying
+          # Create the /app directory in the image
+          # and copy the entrypoint script from host to image root
           runAsRoot = ''
             mkdir -p /app
+            cp ${./scripts/docker-entrypoint.sh} /docker-entrypoint.sh
             chmod +x /docker-entrypoint.sh
           '';
         };
