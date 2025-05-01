@@ -28,8 +28,8 @@ RUN nix build .#default -o /app/result
 FROM base AS final
 WORKDIR /app
 
-# Install GNU sed and bash
-RUN nix-env -iA nixpkgs.gnused nixpkgs.bash
+# Install runtime dependencies: Python interpreter, GNU sed, and bash
+RUN nix-env -iA nixpkgs.python312 nixpkgs.gnused nixpkgs.bash
 
 # Copy the built Python package from the builder stage
 COPY --from=builder /app/result /app/result
