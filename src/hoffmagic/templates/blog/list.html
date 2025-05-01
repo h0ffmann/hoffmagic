@@ -1,57 +1,294 @@
 {% extends "base.html" %}
-{% block title %}Writing | hoffmagic{% endblock %}
-{% block description %}Articles and essays on various topics.{% endblock %}
+
+{% block title %}blog | hoffmagic{% endblock %}
+{% block description %}Explore the latest articles on technology, creativity, philosophy, and personal growth.{% endblock %}
 
 {% block content %}
-    <h2>Writing</h2>
-    <p>Thoughts, insights, and explorations on various topics.</p>
-    <div id="posts-list">
-        <!-- Posts will be loaded here by JavaScript or rendered server-side -->
-        <p>Loading posts...</p>
+<!-- Blog Header -->
+<section class="bg-brand-primary text-white py-12 md:py-20">
+    <div class="container mx-auto px-4 md:px-6">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-3xl md:text-4xl lg:text-5xl font-serif font-bold mb-6">blog</h1>
+            <p class="text-lg md:text-xl text-brand-light mb-8">
+                Thoughts, insights, and explorations on various topics
+            </p>
+            
+            <!-- Search form -->
+            <form id="search-form" class="max-w-lg mx-auto">
+                <div class="relative">
+                    <input type="text" name="search" id="search" placeholder="Search articles..." 
+                           class="w-full px-4 py-3 rounded-md text-brand-dark focus:outline-none focus:ring-2 focus:ring-brand-accent">
+                    <button type="submit" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-brand-accent">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
+</section>
 
+<!-- Tags Filter -->
+<section class="bg-white border-b">
+    <div class="container mx-auto px-4 md:px-6 py-4">
+        <div class="flex flex-wrap gap-2 justify-center">
+            <a href="/blog" class="px-4 py-2 rounded-full text-sm font-medium bg-brand-primary text-white hover:bg-opacity-90 transition">
+                All
+            </a>
+            <a href="/blog?tag=technology" class="px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-brand-dark hover:bg-gray-300 transition">
+                Technology
+            </a>
+            <a href="/blog?tag=philosophy" class="px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-brand-dark hover:bg-gray-300 transition">
+                Philosophy
+            </a>
+            <a href="/blog?tag=creativity" class="px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-brand-dark hover:bg-gray-300 transition">
+                Creativity
+            </a>
+            <a href="/blog?tag=personal-growth" class="px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-brand-dark hover:bg-gray-300 transition">
+                Personal Growth
+            </a>
+            <a href="/blog?tag=books" class="px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-brand-dark hover:bg-gray-300 transition">
+                Books
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Blog Posts Grid -->
+<section class="py-12 bg-gray-50">
+    <div class="container mx-auto px-4 md:px-6">
+        <div id="blog-posts" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Blog posts loaded dynamically via JavaScript/API -->
+        </div>
+        
+        <!-- Pagination -->
+        <div class="mt-12 flex justify-center">
+            <nav class="inline-flex rounded-md shadow-sm" aria-label="Pagination">
+                <a href="#" class="relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    Previous
+                </a>
+                <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-brand-primary hover:bg-gray-50">
+                    1
+                </a>
+                <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    2
+                </a>
+                <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    3
+                </a>
+                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-gray-100 text-sm font-medium text-gray-700">
+                    ...
+                </span>
+                <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    10
+                </a>
+                <a href="#" class="relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    Next
+                </a>
+            </nav>
+        </div>
+    </div>
+</section>
 {% endblock %}
 
 {% block scripts %}
 <script>
-    // Simplified post loading (no pagination controls needed for this style)
+    // Handle blog post loading and pagination
     document.addEventListener('DOMContentLoaded', function() {
+        // Get query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const page = urlParams.get('page') || 1;
+        const tag = urlParams.get('tag');
+        const search = urlParams.get('search');
+        
         // Load posts via API
-        loadPosts();
+        loadPosts(page, tag, search);
+        
+        // Handle search form submission
+        const searchForm = document.getElementById('search-form');
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const searchInput = document.getElementById('search');
+            const searchTerm = searchInput.value.trim();
+            
+            if (searchTerm) {
+                window.location.href = `/blog?search=${encodeURIComponent(searchTerm)}`;
+            }
+        });
     });
-
+    
     // Function to load posts from API
-    async function loadPosts() {
-        const container = document.getElementById('posts-list');
+    async function loadPosts(page = 1, tag = null, search = null) {
         try {
-            // Fetch all posts (or a reasonable number) - adjust page_size if needed
-            let apiUrl = `/api/blog?page=1&page_size=100`; // Fetch more posts for a simple list
+            // Build API URL with parameters
+            let apiUrl = `/api/blog?page=${page}&page_size=9`;
+            
+            if (tag) {
+                apiUrl += `&tag=${encodeURIComponent(tag)}`;
+            }
+            
+            if (search) {
+                apiUrl += `&search=${encodeURIComponent(search)}`;
+            }
+            
+            // Fetch posts
             const response = await fetch(apiUrl);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const data = await response.json();
+            
             // Render posts
             renderPosts(data.items);
+            
+            // Update pagination
+            updatePagination(data.page, data.pages, tag, search);
         } catch (error) {
             console.error('Error loading posts:', error);
-            container.innerHTML = `<p>Failed to load posts. Please try again later.</p>`;
+            document.getElementById('blog-posts').innerHTML = `
+                <div class="col-span-3 text-center py-12">
+                    <p class="text-gray-500">Failed to load posts. Please try again later.</p>
+                </div>
+            `;
         }
     }
-
+    
     // Function to render posts to the DOM
     function renderPosts(posts) {
-        const container = document.getElementById('posts-list');
+        const container = document.getElementById('blog-posts');
+        
         if (posts.length === 0) {
-            container.innerHTML = `<p>No posts found.</p>`;
+            container.innerHTML = `
+                <div class="col-span-3 text-center py-12">
+                    <p class="text-gray-500">No posts found. Try a different search or tag.</p>
+                </div>
+            `;
             return;
         }
-        // Simple list format
+        
         container.innerHTML = posts.map(post => `
-            <article style="margin-bottom: 2em;">
-                 <h3><a href="/blog/${post.slug}">${post.title}</a></h3>
-                 <p style="font-size: 0.9em; color: #555;">${new Date(post.publish_date).toLocaleDateString()}</p>
-                ${post.summary ? `<p>${post.summary}</p>` : ''}
-             </article>
-         `).join('');
+            <article class="bg-white rounded-lg overflow-hidden shadow-md transition duration-300 hover:shadow-xl">
+                <div class="relative">
+                    <img src="${post.featured_image || 'https://source.unsplash.com/random/800x600/?blog'}" alt="${post.title}" class="w-full h-48 object-cover">
+                    ${post.tags.length > 0 ? `
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-brand-primary text-white px-3 py-1 rounded-full text-sm font-medium">
+                                ${post.tags[0].name}
+                            </span>
+                        </div>
+                    ` : ''}
+                </div>
+                <div class="p-6">
+                    <h2 class="text-xl font-serif font-bold mb-3">
+                        <a href="/blog/${post.slug}" class="text-brand-dark hover:text-brand-accent transition duration-200">
+                            ${post.title}
+                        </a>
+                    </h2>
+                    <p class="text-gray-600 mb-4">
+                        ${post.summary || post.content.substring(0, 120) + '...'}
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <img src="${post.author.avatar || 'https://source.unsplash.com/random/100x100/?portrait'}" alt="${post.author.name}" class="w-8 h-8 rounded-full mr-2">
+                            <span class="text-sm text-gray-600">${post.author.name}</span>
+                        </div>
+                        <span class="text-sm text-gray-500">${new Date(post.publish_date).toLocaleDateString()}</span>
+                    </div>
+                </div>
+            </article>
+        `).join('');
+    }
+    
+    // Function to update pagination links
+    function updatePagination(currentPage, totalPages, tag, search) {
+        const nav = document.querySelector('nav[aria-label="Pagination"]');
+        
+        if (totalPages <= 1) {
+            nav.style.display = 'none';
+            return;
+        }
+        
+        nav.style.display = 'inline-flex';
+        
+        // Build base URL
+        let baseUrl = '/blog?';
+        if (tag) baseUrl += `tag=${encodeURIComponent(tag)}&`;
+        if (search) baseUrl += `search=${encodeURIComponent(search)}&`;
+        
+        // Previous button
+        const prevBtn = nav.querySelector('a:first-child');
+        if (currentPage > 1) {
+            prevBtn.href = `${baseUrl}page=${currentPage - 1}`;
+            prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        } else {
+            prevBtn.href = '#';
+            prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+        
+        // Next button
+        const nextBtn = nav.querySelector('a:last-child');
+        if (currentPage < totalPages) {
+            nextBtn.href = `${baseUrl}page=${currentPage + 1}`;
+            nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        } else {
+            nextBtn.href = '#';
+            nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+        
+        // Remove all page links except first, prev, next, and last
+        const pageLinks = Array.from(nav.querySelectorAll('a:not(:first-child):not(:last-child)'));
+        pageLinks.forEach(link => link.remove());
+        
+        // Add new page links
+        const pageLinks2 = [];
+        
+        // Always show first page
+        pageLinks2.push({
+            page: 1,
+            current: currentPage === 1
+        });
+        
+        // Add ellipsis if needed
+        if (currentPage > 3) {
+            pageLinks2.push({ ellipsis: true });
+        }
+        
+        // Show pages around current
+        for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+            if (i !== 1 && i !== totalPages) {
+                pageLinks2.push({
+                    page: i,
+                    current: i === currentPage
+                });
+            }
+        }
+        
+        // Add ellipsis if needed
+        if (currentPage < totalPages - 2) {
+            pageLinks2.push({ ellipsis: true });
+        }
+        
+        // Always show last page if more than 1 page
+        if (totalPages > 1) {
+            pageLinks2.push({
+                page: totalPages,
+                current: currentPage === totalPages
+            });
+        }
+        
+        // Insert page links before the Next button
+        pageLinks2.reverse().forEach(link => {
+            if (link.ellipsis) {
+                const ellipsis = document.createElement('span');
+                ellipsis.className = 'relative inline-flex items-center px-4 py-2 border border-gray-300 bg-gray-100 text-sm font-medium text-gray-700';
+                ellipsis.textContent = '...';
+                nav.insertBefore(ellipsis, nextBtn);
+            } else {
+                const a = document.createElement('a');
+                a.href = link.current ? '#' : `${baseUrl}page=${link.page}`;
+                a.className = `relative inline-flex items-center px-4 py-2 border border-gray-300 ${link.current ? 'bg-brand-primary text-white' : 'bg-white text-gray-500 hover:bg-gray-50'} text-sm font-medium`;
+                a.textContent = link.page;
+                nav.insertBefore(a, nextBtn);
+            }
+        });
     }
 </script>
 {% endblock %}

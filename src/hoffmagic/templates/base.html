@@ -8,39 +8,227 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ url_for('static', path='images/favicon.png') }}">
     
-    <!-- Removed CSS links -->
-    <style>
-        /* Minimal inline styles for basic readability */
-        body { font-family: sans-serif; line-height: 1.6; max-width: 800px; margin: 2em auto; padding: 0 1em; }
-        h1, h2, h3 { line-height: 1.2; }
-        a { color: #0077cc; }
-        pre { background-color: #f4f4f4; padding: 1em; overflow-x: auto; }
-        code { font-family: monospace; }
-        blockquote { border-left: 4px solid #ccc; padding-left: 1em; margin-left: 0; font-style: italic; color: #555; }
-        .nav-menu a { margin-right: 1em; text-decoration: none; }
-        footer { margin-top: 3em; padding-top: 1em; border-top: 1px solid #eee; font-size: 0.9em; color: #777; }
-    </style>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Using Palatino via CSS font-family, ensure it's available or use a web font alternative if needed -->
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Palatino:wght@300;400;500;600;700&display=swap" rel="stylesheet"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" /> <!-- Font Awesome -->
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', path='css/main.css') }}"> <!-- Tailwind output -->
+    <link rel="stylesheet" href="{{ url_for('static', path='css/minimalist.css') }}"> <!-- Minimalist overrides -->
+    <link rel="stylesheet" href="{{ url_for('static', path='css/custom.css') }}"> <!-- Custom sidebar/theme overrides -->
+    
+    <!-- Meta tags -->
     <meta name="description" content="{% block description %}a beautiful blog built with python{% endblock %}">
     {% block meta %}{% endblock %}
 </head>
-<body>
-    <header>
-        <h1><a href="{{ url_for('home') }}" style="text-decoration: none; color: inherit;">hoffmagic</a></h1>
-        <nav class="nav-menu">
-             <a href="{{ url_for('home') }}">Home</a>
-             <a href="{{ url_for('blog_page') }}">Writing</a> <!-- Simplified -->
-             <a href="{{ url_for('about_page') }}">About</a>
-             <a href="{{ url_for('contact_page') }}">Misc</a> <!-- Renamed Contact to Misc -->
+<body> <!-- Body tag now has flex direction row from custom.css -->
+    <!-- Sidebar Toggle Button -->
+    <button id="sidebar-toggle" class="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <a href="/" class="sidebar-logo">hoffmagic</a>
+        </div>
+        <nav class="sidebar-nav">
+            <!-- Check current path to apply 'active' class -->
+            <a href="{{ url_for('home') }}" class="{{ 'active' if request.url.path == url_for('home').path else '' }}">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="{{ url_for('blog_page') }}" class="{{ 'active' if request.url.path.startswith(url_for('blog_page').path) else '' }}">
+                <i class="fas fa-blog"></i> Blog
+            </a>
+            <a href="{{ url_for('essays_page') }}" class="{{ 'active' if request.url.path.startswith(url_for('essays_page').path) else '' }}">
+                <i class="fas fa-book"></i> Essays
+            </a>
+            <a href="{{ url_for('about_page') }}" class="{{ 'active' if request.url.path == url_for('about_page').path else '' }}">
+                <i class="fas fa-user"></i> About Me
+            </a>
+            <a href="{{ url_for('contact_page') }}" class="{{ 'active' if request.url.path == url_for('contact_page').path else '' }}">
+                <i class="fas fa-envelope"></i> Contact
+            </a>
         </nav>
-        <hr>
-    </header>
-    <main>
+        <!-- Search Form in Sidebar -->
+        <form id="sidebar-search" class="sidebar-search">
+            <input type="text" name="q" placeholder="Search..." class="sidebar-search-input">
+            <button type="submit" class="sidebar-search-button">
+                <i class="fas fa-search"></i> Search
+            </button>
+        </form>
+    </aside>
+
+    <!-- Main Content -->
+    <main id="main-content" class="main-content">
         {% block content %}{% endblock %}
-        <footer>
-             <p>© {{ now.year if now else "" }} h0ffmann. All rights reserved.</p>
+        
+        <!-- Newsletter Section -->
+        <section class="newsletter-section"> <!-- Use class from custom.css -->
+            <div class="container mx-auto px-4 md:px-6 text-center">
+                <h2 class="text-2xl md:text-3xl font-serif mb-4">Join the Newsletter</h2>
+                <p class="max-w-2xl mx-auto mb-6">Stay updated with the latest posts and essays. No spam, unsubscribe anytime.</p>
+                <form id="newsletter-form" class="max-w-md mx-auto flex flex-col sm:flex-row gap-2">
+                    <input type="email" name="email" placeholder="Your email address" required
+                           class="flex-grow px-4 py-2 rounded-md text-brand-dark focus:outline-none focus:ring-2 focus:ring-brand-accent">
+                    <button type="submit" class="bg-brand-accent hover:bg-opacity-90 text-white px-6 py-2 rounded-md transition duration-200">
+                        Subscribe
+                    </button>
+                </form>
+            </div>
+        </section>
+        
+        <!-- Footer -->
+        <footer class="footer-section"> <!-- Use class from custom.css -->
+            <div class="container mx-auto px-4 md:px-6">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="mb-4 md:mb-0">
+                        <!-- Use sidebar-logo style for consistency -->
+                        <a href="/" class="sidebar-logo text-xl">hoffmagic</a> 
+                        <p class="text-sm text-gray-400 mt-1">© {{ now.year if now else "" }} All rights reserved.</p>
+                    </div>
+                    <div class="flex space-x-4">
+                        <!-- Using Font Awesome icons directly -->
+                        <a href="https://www.linkedin.com/in/yourprofile" class="text-white hover:text-brand-accent transition duration-200" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin fa-lg"></i> <!-- fa-lg for larger icon -->
+                        </a>
+                        <a href="https://github.com/yourusername" class="text-white hover:text-brand-accent transition duration-200" aria-label="GitHub">
+                            <i class="fab fa-github fa-lg"></i>
+                        </a>
+                        <a href="#" class="text-white hover:text-brand-accent transition duration-200 obfuscated-email-link" aria-label="Email"
+                          data-name="hoffmann" data-at="@" data-domain="poli.ufrj.br">
+                            <i class="fas fa-envelope fa-lg"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="mt-6 pt-6 border-t border-gray-700 text-center text-sm text-gray-400">
+                    <p>Built with ❤️ using Python, FastAPI, and Tailwind CSS</p>
+                </div>
+            </div>
         </footer>
     </main>
-    <!-- Removed complex JavaScript -->
+
+    <script>
+        // Sidebar toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            
+            function isMobile() {
+                return window.innerWidth <= 768;
+            }
+            
+            function setInitialSidebarState() {
+                if (isMobile()) {
+                    sidebar.classList.remove('expanded'); // Ensure it starts closed if mobile
+                    sidebar.classList.add('collapsed'); // Use collapsed state for transform
+                    mainContent.classList.add('sidebar-collapsed'); // Ensure main content takes full width
+                    sidebarToggle.classList.add('collapsed'); // Ensure toggle is positioned correctly
+                } else {
+                    // On desktop, start expanded (or based on preference/localStorage)
+                    sidebar.classList.remove('collapsed', 'expanded');
+                    mainContent.classList.remove('sidebar-collapsed');
+                    sidebarToggle.classList.remove('collapsed');
+                }
+            }
+            
+            // Initial setup
+            setInitialSidebarState();
+            
+            // Toggle sidebar
+            sidebarToggle.addEventListener('click', function() {
+                if (isMobile()) {
+                    // On mobile, toggle 'expanded' which controls the overlay display
+                    sidebar.classList.toggle('expanded'); 
+                    // We don't toggle 'collapsed' or main content margin on mobile
+                } else {
+                    // On desktop, toggle 'collapsed' state for sidebar and main content margin
+                    sidebar.classList.toggle('collapsed');
+                    mainContent.classList.toggle('sidebar-collapsed');
+                    sidebarToggle.classList.toggle('collapsed');
+                }
+            });
+            
+            // Adjust sidebar state on resize
+            window.addEventListener('resize', setInitialSidebarState);
+            
+            // Email obfuscation
+            const emailLinks = document.querySelectorAll('.obfuscated-email-link');
+            emailLinks.forEach(link => {
+                const name = link.getAttribute('data-name');
+                const at = link.getAttribute('data-at');
+                const domain = link.getAttribute('data-domain');
+                if (name && at && domain) {
+                    const email = name + at + domain;
+                    link.setAttribute('href', 'mailto:' + email);
+                }
+            });
+            
+            // Simple form handling for the newsletter
+            const newsletterForm = document.getElementById('newsletter-form');
+            if (newsletterForm) {
+                newsletterForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    const emailInput = this.querySelector('input[name="email"]');
+                    const email = emailInput ? emailInput.value : 'hoffmann@poli.ufrj.br'; // Fallback just in case
+
+                    // Basic email validation
+                    if (!email || !email.includes('@')) {
+                         alert('Please enter a valid email address.');
+                         return;
+                    }
+
+                    try {
+                        const response = await fetch('/api/contact/subscribe', { // Ensure this endpoint exists
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json', // Explicitly accept JSON
+                            },
+                            body: JSON.stringify({ email: email }), // Send the actual email from input
+                        });
+
+                        if (response.ok) {
+                            alert('Thank you for subscribing!');
+                            if(emailInput) emailInput.value = ''; // Clear the input field
+                        } else {
+                            let errorMsg = 'Something went wrong.';
+                            try {
+                                const error = await response.json();
+                                errorMsg = error.detail || JSON.stringify(error);
+                            } catch (jsonError) {
+                                // If response is not JSON
+                                errorMsg = await response.text();
+                            }
+                             alert(`Error: ${errorMsg}`);
+                        }
+                    } catch (error) {
+                        alert('Error: Could not connect to the server.');
+                        console.error('Newsletter Error:', error);
+                    }
+                });
+            }
+
+            // Handle sidebar search form submission (example)
+            const searchForm = document.getElementById('sidebar-search');
+            if (searchForm) {
+                searchForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const query = this.querySelector('input[name="q"]').value;
+                    if (query) {
+                        // Redirect to a search results page (e.g., /search?q=...)
+                        // You'll need to implement the search endpoint and template
+                        window.location.href = `/search?q=${encodeURIComponent(query)}`; 
+                        // alert(`Searching for: ${query}`); // Placeholder action
+                    }
+                });
+            }
+        });
+    </script>
     {% block scripts %}{% endblock %}
 </body>
 </html>
