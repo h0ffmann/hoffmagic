@@ -1,0 +1,290 @@
+/* Custom styles with Palatino font and fluorescent green accent */
+:root {
+  --flourescent-green: #39ff14;
+  --dark-bg: #111827; /* Using Tailwind's gray-900 for consistency */
+  --light-bg: #f3f4f6; /* Using Tailwind's gray-100 for consistency */
+}
+
+body {
+  font-family: 'Palatino', 'Palatino Linotype', 'Book Antiqua', serif;
+  display: flex;
+  flex-direction: row; /* Changed from column to row for sidebar layout */
+  min-height: 100vh;
+  margin: 0; /* Ensure no default body margin */
+  background-color: var(--light-bg); /* Use light background for main area */
+}
+
+/* Sidebar styles */
+.sidebar {
+  width: 250px; /* Fixed width for the sidebar */
+  background-color: var(--dark-bg); /* Dark background for sidebar */
+  color: white;
+  position: fixed; /* Fixed position */
+  height: 100vh; /* Full height */
+  padding: 2rem 1rem;
+  transition: transform 0.3s ease;
+  z-index: 40; /* Ensure sidebar is above some content but below modals if any */
+  display: flex; /* Use flexbox for internal layout */
+  flex-direction: column; /* Stack items vertically */
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.sidebar-logo {
+  font-size: 1.5rem; /* Tailwind text-2xl */
+  font-weight: bold; /* Tailwind font-bold */
+  color: var(--flourescent-green);
+  text-decoration: none; /* Remove underline from logo link */
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* Space between nav items */
+  flex-grow: 1; /* Allow nav to take available space */
+}
+
+.sidebar-nav a {
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 0;
+  transition: color 0.2s;
+  display: flex; /* Align icon and text */
+  align-items: center; /* Center icon and text vertically */
+}
+
+.sidebar-nav a:hover,
+.sidebar-nav a.active { /* Style for active link */
+  color: var(--flourescent-green);
+}
+
+.sidebar-nav a i { /* Margin for icons */
+    margin-right: 0.5rem; /* Tailwind mr-2 */
+}
+
+/* Sidebar Search */
+.sidebar-search {
+    margin-top: auto; /* Push search to the bottom */
+    padding-top: 1rem; /* Space above search */
+    border-top: 1px solid #4b5563; /* Tailwind border-gray-600 */
+}
+
+.sidebar-search input {
+    width: 100%;
+    padding: 0.5rem 0.75rem; /* Tailwind px-3 py-2 */
+    background-color: #1f2937; /* Tailwind bg-gray-800 */
+    color: white;
+    border: 1px solid #4b5563; /* Tailwind border-gray-600 */
+    border-radius: 0.375rem; /* Tailwind rounded-md */
+    margin-bottom: 0.5rem; /* Space below input */
+}
+
+.sidebar-search button {
+    width: 100%;
+    padding: 0.5rem; /* Tailwind py-2 */
+    background-color: var(--flourescent-green);
+    color: var(--dark-bg); /* Dark text on green button */
+    border: none;
+    border-radius: 0.375rem; /* Tailwind rounded-md */
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-search button:hover {
+    opacity: 0.9;
+}
+
+.sidebar-search button i {
+    margin-right: 0.25rem; /* Tailwind mr-1 */
+}
+
+
+/* Sidebar Toggle Button */
+.sidebar-toggle {
+  position: fixed;
+  left: 250px; /* Position relative to the sidebar width */
+  top: 1rem;
+  background-color: var(--dark-bg);
+  color: white;
+  border: none;
+  padding: 0.5rem 0.75rem; /* Adjust padding */
+  cursor: pointer;
+  z-index: 41; /* Above sidebar */
+  transition: left 0.3s ease, transform 0.3s ease;
+  border-top-right-radius: 0.375rem; /* Tailwind rounded-tr-md */
+  border-bottom-right-radius: 0.375rem; /* Tailwind rounded-br-md */
+}
+
+.sidebar-toggle:hover {
+  color: var(--flourescent-green);
+}
+
+/* Main content area */
+.main-content {
+  flex: 1; /* Take remaining space */
+  margin-left: 250px; /* Space for the sidebar */
+  padding: 2rem;
+  transition: margin-left 0.3s ease;
+  background-color: var(--light-bg); /* Ensure light background */
+  color: #1f2937; /* Tailwind text-gray-800 */
+}
+
+/* When sidebar is collapsed */
+.sidebar.collapsed {
+  transform: translateX(-250px);
+}
+
+.sidebar-toggle.collapsed {
+  left: 0;
+  transform: translateX(0); /* Reset transform when collapsed */
+  border-top-left-radius: 0; /* Reset border radius */
+  border-bottom-left-radius: 0;
+}
+
+.main-content.sidebar-collapsed {
+  margin-left: 0;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-250px); /* Start collapsed on mobile */
+    box-shadow: 0 0 15px rgba(0,0,0,0.5); /* Add shadow when overlaying */
+  }
+
+  .sidebar.expanded { /* State when mobile sidebar is open */
+      transform: translateX(0);
+  }
+
+  .sidebar-toggle {
+    left: 0; /* Toggle always starts at the edge */
+  }
+
+  .main-content {
+    margin-left: 0; /* No margin when sidebar is an overlay */
+  }
+
+  /* No collapsed state needed for toggle/main on mobile as sidebar overlays */
+  .sidebar-toggle.collapsed {
+      left: 0;
+  }
+  .main-content.sidebar-collapsed {
+      margin-left: 0;
+  }
+}
+
+/* General Accent color updates */
+a {
+  color: var(--flourescent-green); /* Make links green by default */
+  text-decoration: none; /* Remove underline */
+}
+a:hover {
+    text-decoration: underline; /* Add underline on hover */
+}
+
+/* Specific overrides for Tailwind classes if needed, otherwise rely on cascade */
+.text-brand-primary { /* If you use this class */
+  color: var(--flourescent-green) !important;
+}
+
+.bg-brand-primary { /* Used for Newsletter/Footer */
+  background-color: var(--dark-bg) !important;
+}
+
+.bg-brand-accent { /* Used for buttons */
+  background-color: var(--flourescent-green) !important;
+  color: var(--dark-bg) !important; /* Ensure contrast */
+}
+.bg-brand-accent:hover {
+    opacity: 0.9;
+}
+
+.hover\:text-brand-accent:hover {
+  color: var(--flourescent-green) !important;
+}
+
+.hover\:bg-brand-accent:hover {
+  background-color: var(--flourescent-green) !important;
+  opacity: 0.9;
+}
+
+.border-brand-primary { /* If used */
+  border-color: var(--flourescent-green) !important;
+}
+
+/* Ensure footer and newsletter have correct text color */
+.bg-brand-primary, .bg-brand-dark {
+    color: white;
+}
+.bg-brand-primary a, .bg-brand-dark a {
+    color: var(--flourescent-green); /* Links within dark sections */
+}
+.bg-brand-primary a:hover, .bg-brand-dark a:hover {
+    color: white;
+}
+
+/* Footer social icons */
+footer .flex svg {
+    fill: white;
+    transition: fill 0.2s;
+}
+footer .flex a:hover svg {
+    fill: var(--flourescent-green);
+}
+
+/* Fix Font Awesome icon usage in HTML */
+.fab, .fas {
+    display: inline-block; /* Ensure icons behave correctly */
+}
+
+/* Ensure Palatino font is applied where needed */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Palatino', 'Palatino Linotype', 'Book Antiqua', serif;
+}
+
+/* Adjustments for content within main-content */
+.main-content h1, .main-content h2, .main-content h3 {
+    color: #111827; /* Darker headings */
+}
+
+.main-content p {
+    line-height: 1.6; /* Improve readability */
+    margin-bottom: 1rem;
+}
+
+/* Style the newsletter and footer sections */
+.newsletter-section, .footer-section {
+    background-color: var(--dark-bg);
+    color: white;
+    padding: 3rem 1rem; /* Tailwind py-12 px-4 */
+    margin-top: 3rem; /* Tailwind mt-12 */
+    border-radius: 0.5rem; /* Tailwind rounded-lg */
+}
+
+.newsletter-section h2, .footer-section h2 {
+    font-family: 'Palatino', 'Palatino Linotype', 'Book Antiqua', serif;
+    color: white;
+}
+
+.newsletter-section p, .footer-section p {
+    color: #d1d5db; /* Tailwind text-gray-300 */
+}
+
+.newsletter-section input[type="email"] {
+    color: var(--dark-bg); /* Ensure text is visible */
+}
+
+.footer-section .border-t {
+    border-color: #4b5563; /* Tailwind border-gray-700 */
+}
+
+.footer-section .text-gray-400 {
+    color: #9ca3af; /* Tailwind text-gray-400 */
+}

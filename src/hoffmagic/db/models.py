@@ -99,11 +99,12 @@ class Comment(Base):
     post_id = Column(Integer, ForeignKey("posts.id"), nullable=False)
     post = relationship("Post", back_populates="comments")
     parent_id = Column(Integer, ForeignKey("comments.id"), nullable=True)
+    # Add single_parent=True and use backref correctly
     replies = relationship(
-        "Comment", 
-        backref=ForeignKey("parent_id"),
-        remote_side=[id],
-        cascade="all, delete-orphan"
+        "Comment",
+        backref=backref("parent", remote_side=[id]), # Use backref function
+        cascade="all, delete-orphan",
+        single_parent=True  # Add this line to fix the error
     )
 
 
