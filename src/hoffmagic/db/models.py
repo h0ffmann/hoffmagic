@@ -5,10 +5,10 @@ import datetime
 from typing import List, Optional
 
 from sqlalchemy import (
-    Boolean, Column, ForeignKey, Integer, String, 
+    Boolean, Column, ForeignKey, Integer, String,
     Text, DateTime, Table, UniqueConstraint
 )
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref # Import backref here
 from sqlalchemy.sql import func
 
 from hoffmagic.db.engine import Base
