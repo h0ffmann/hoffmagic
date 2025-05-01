@@ -56,11 +56,25 @@
           };
         };
 
+        # Create an entrypoint script with absolute paths to binaries
+        entrypointScript = pkgs.writeScriptBin "docker-entrypoint" ''
+          #!${pkgs.bash}/bin/bash
+          set -e
+          echo "Running Alembic migrations..."
+          ${python}/bin/python -m alembic upgrade head
+          echo "Starting Uvicorn..."
+          HOST=''${HOST:-0.0.0.0}
+          PORT=''${PORT:-8000}
+          ${python}/bin/python -m uvicorn hoffmagic.main:app --host "$HOST" --port "$PORT"
+        '';
+
         # ---- Define the Runtime Environment for Docker ----
         # Re-add explicit packages for commands, along with the main app
         appRuntimeEnv = pkgs.buildEnv {
           name = "hoffmagic-runtime";
           paths = [
+            # Add the Python interpreter itself
+            python
             # Explicitly add Python packages whose commands are needed directly
             pythonPackages.alembic
             pythonPackages.uvicorn
@@ -70,6 +84,8 @@
             pkgs.bash
             # Core utilities for commands like 'env'
             pkgs.coreutils # <<< Add coreutils
+            # Add our new entrypoint script
+            entrypointScript
             # libpq should be pulled in by hoffmagicApp dependency
           ];
           # Link the essential directories from the paths into the final env
@@ -148,8 +164,8 @@
 
           # Configure the image metadata and runtime behavior
           config = {
-            # Use the bash interpreter copied from appRuntimeEnv
-            Entrypoint = [ "${pkgs.bash}/bin/bash" "/docker-entrypoint.sh" ];
+            # Use our new entrypoint script that has hard-coded Python paths
+            Entrypoint = [ "${entrypointScript}/bin/docker-entrypoint" ];
             Cmd = [ ]; # Arguments passed to entrypoint (none needed here)
             Env = [
               # Set defaults for the container environment
@@ -164,8 +180,8 @@
               # Crucial: Tell Python where to find the installed packages from hoffmagicApp
               # appRuntimeEnv points to the merged env, which has sitePackages linked
               "PYTHONPATH=${appRuntimeEnv}/${python.sitePackages}"
-              # PATH is automatically constructed by dockerTools based on copyToRoot/appRuntimeEnv
-              # It should contain the /bin directory from appRuntimeEnv
+              # Explicitly set PATH to ensure proper binary discovery
+              "PATH=/bin:${appRuntimeEnv}/bin:${python}/bin"
             ];
             ExposedPorts = { "8000/tcp" = { }; };
             WorkingDir = "/app"; # Set working directory for the application
@@ -175,10 +191,6 @@
           runAsRoot = ''
             # Create the application directory
             mkdir -p /app
-            # Copy the entrypoint script from the host into the image
-            cp ${./scripts/docker-entrypoint.sh} /docker-entrypoint.sh
-            # Make it executable
-            chmod +x /docker-entrypoint.sh
           '';
         };
         # -------------------------------------------------------------
