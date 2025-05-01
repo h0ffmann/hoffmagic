@@ -42,7 +42,8 @@ dev = [
 ]
 
 [project.scripts]
-hoffmagic = "hoffmagic.cli:app" # Assuming Typer app object is named 'app'
+hoffmagic = "hoffmagic.cli:app" 
+seed_content = "src.hoffmagic.cli_tools.seed_content:app" 
 
 [tool.pytest.ini_options]
 testpaths = ["src/tests"] # Corrected path to tests directory

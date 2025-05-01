@@ -98,6 +98,6 @@ If you have `just` installed, you can use these commands for common tasks:
 
 MIT
 
-## Author
-
-Your Name - [your.email@example.com](mailto:your.email@example.com)
+## TODO
+- infer tags
+- time spent in each post automation (x minutes, y words)

@@ -108,7 +108,7 @@
         appRuntimeEnv = pkgs.buildEnv {
           name = "hoffmagic-runtime";
           paths = [
-            pythonEnv  # Use the complete Python environment
+            pythonEnv # Use the complete Python environment
             # Bash for the entrypoint
             pkgs.bash
             # Core utilities for commands like 'env'
@@ -150,6 +150,11 @@
             pythonPackages.mypy
             pythonPackages.ruff
             pythonPackages.alembic # Keep alembic in dev shell for local commands
+            # --- Added dependencies for seed script ---
+            pythonPackages.python-frontmatter
+            pythonPackages.python-slugify
+            pythonPackages.typer # Core Typer library
+            pythonPackages.rich # For enhanced Typer output ([all])
           ];
 
           shellHook = ''
@@ -185,24 +190,24 @@
         # --------------------------------------------------------
         # Create a proper entrypoint script using writeShellScriptBin
         entrypointScript = pkgs.writeShellScriptBin "entrypoint" ''
-            #!${pkgs.bash}/bin/bash
-            set -e
+          #!${pkgs.bash}/bin/bash
+          set -e
 
-            echo "Working directory: $(pwd)"
-            echo "Setting up alembic.ini..."
-            cp ${hoffmagicApp}/share/hoffmagic/alembic.ini /app/alembic.ini || echo "Warning: Could not copy alembic.ini"
+          echo "Working directory: $(pwd)"
+          echo "Setting up alembic.ini..."
+          cp ${hoffmagicApp}/share/hoffmagic/alembic.ini /app/alembic.ini || echo "Warning: Could not copy alembic.ini"
 
-            echo "Creating migrations directory..."
-            mkdir -p /app/src/hoffmagic/db/migrations
+          echo "Creating migrations directory..."
+          mkdir -p /app/src/hoffmagic/db/migrations
 
-            echo "Running Alembic migrations..."
-            cd /app
-            ${python}/bin/python -m alembic upgrade head || echo "Warning: Alembic migration failed"
+          echo "Running Alembic migrations..."
+          cd /app
+          ${python}/bin/python -m alembic upgrade head || echo "Warning: Alembic migration failed"
 
-            echo "Starting Uvicorn..."
-            HOST=''${HOST:-0.0.0.0}
-            PORT=''${PORT:-8000}
-            ${python}/bin/python -m uvicorn hoffmagic.main:app --host "$HOST" --port "$PORT"
+          echo "Starting Uvicorn..."
+          HOST=''${HOST:-0.0.0.0}
+          PORT=''${PORT:-8000}
+          ${python}/bin/python -m uvicorn hoffmagic.main:app --host "$HOST" --port "$PORT"
         '';
 
         packages.dockerImage = pkgs.dockerTools.buildImage {

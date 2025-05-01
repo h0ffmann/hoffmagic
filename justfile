@@ -27,7 +27,7 @@ build-docker: build-css # Ensure CSS is built first
     docker build -t hoffmagic:latest .
 
 # Run using Docker Compose (will build image if not present)
-dev-up:
+dev-up: build-css
     DATABASE_URL=postgresql+psycopg://hoffmagic:hoffmagic@db:5432/hoffmagic docker-compose up --build
 
 # Stop Docker Compose
@@ -70,9 +70,28 @@ db-upgrade:
 db-migrate msg='':
     alembic revision --autogenerate -m "{{msg}}"
 
+db-migrate-man msg='':
+    sudo chown -R h0ffmann:users src/hoffmagic/db/migrations/
+    alembic revision -m "{{msg}}"
+
 # Build *just* the application package (no docker image) (inside nix develop)
 build-app:
     nix build .#default -o ./result-app
+
+pip:
+    pip install -e .
+
+# Blog management
+# Define a variable for the base module path if desired
+_seed_module := "src.hoffmagic.cli_tools.seed_content"
+
+# Recipe to add blog posts
+add-post:
+    # Any other steps needed first, like ensuring venv/deps are good
+    # ...
+    # Explicitly run as a module with uv run
+    uv run python -m {{_seed_module}} src/content/blog --overwrite
+
 
 # --- Utility ---
 dump-nix:

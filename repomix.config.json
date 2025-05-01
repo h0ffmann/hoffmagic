@@ -31,10 +31,19 @@
       "*.sqlite3",
       ".DS_Store",
       "Thumbs.db",
-      "src/hoffmagic/static/css/*.css"
+      "**/main.css",
+      "**/*.min.css",
+      "**/migrations/versions/**",
+      "**/__pycache__/**",
+      ".pytest_cache/**",
+      "htmlcov/**",
+      "flake.lock"
     ]
   },
   "security": {
     "checkSensitiveInfo": true
-  }
+  },
+  "excludeFiles": [
+    "src/hoffmagic/static/css/main.css"
+  ]
 }
