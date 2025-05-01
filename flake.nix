@@ -74,6 +74,8 @@
           typer
           rich
           pydantic-settings
+          # Include hoffmagicApp itself
+          hoffmagicApp
           # Add any other direct Python dependencies needed at runtime here
         ]);
 
