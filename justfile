@@ -17,7 +17,7 @@ run:
 
 # Build Tailwind CSS (inside nix develop)
 build-css:
-    npx tailwindcss -i ./src/hoffmagic/static/css/input.css -o ./src/hoffmagic/static/css/main.css --minify
+    tailwindcss -i ./src/hoffmagic/static/css/input.css -o ./src/hoffmagic/static/css/main.css --minify
 
 # Build the Docker image using Nix Flakes (inside nix develop)
 build-docker: build-css # Ensure CSS is built first
