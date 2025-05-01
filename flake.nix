@@ -85,8 +85,7 @@
           name = "hoffmagic-runtime";
           paths = [
             python              # <<< Add the Python interpreter itself explicitly
-            hoffmagicApp        # Our built Python package/app
-            pkgs.alembic        # The alembic command-line tool
+            hoffmagicApp        # Our built Python package/app (should include deps)
             pkgs.bash           # For the entrypoint script
             # python/libpq etc are pulled in via hoffmagicApp dependency
           ];
