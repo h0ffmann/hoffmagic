@@ -57,17 +57,20 @@
         };
 
         # ---- Define the Runtime Environment for Docker ----
-        # Simplify: Only include the app (which brings deps) and bash.
+        # Re-add explicit packages for commands, along with the main app
         appRuntimeEnv = pkgs.buildEnv {
           name = "hoffmagic-runtime";
           paths = [
-            # hoffmagicApp now brings python, alembic, uvicorn, sqlalchemy, etc.
-            # via its propagatedBuildInputs closure.
+            # Explicitly add Python packages whose commands are needed directly
+            pythonPackages.alembic
+            pythonPackages.uvicorn
+            # The main app package, bringing its Python deps (sqlalchemy, fastapi, etc.)
             hoffmagicApp
-            pkgs.bash # For running the entrypoint script
+            # Bash for the entrypoint
+            pkgs.bash
+            # libpq should be pulled in by hoffmagicApp dependency
           ];
           # Link the essential directories from the paths into the final env
-          # This makes scripts available on PATH and modules importable via site-packages
           pathsToLink = [ "/bin" "/${python.sitePackages}" ];
         };
 
