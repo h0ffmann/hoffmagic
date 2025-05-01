@@ -9,14 +9,18 @@ from typing import Any, Dict, List, AsyncGenerator
 from datetime import datetime
 
 import time # Add time import
+import time # Add time import
 from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.middleware.cors import CORSMiddleware # Add CORS Middleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 # Assuming engine and logger are setup elsewhere and imported if needed
+# Assuming engine and logger are setup elsewhere and imported if needed
 from .db.engine import SessionLocal, init_db, get_session # Add get_session
 from .logger import setup_logging
+from .api.routes import blog, essays, contact # Import API route modules
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -30,8 +34,23 @@ CONTAINER_APP_DIR = Path("/app")
 app = FastAPI(
     title="Hoffmagic Blog",
     description="Hoffmann's magical blog.",
-    version="0.1.0"
+    version="0.1.0",
+    docs_url="/docs" if settings.DEBUG else None, # Use settings from config
+    redoc_url="/redoc" if settings.DEBUG else None, # Use settings from config
 )
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], # Allow all origins for simplicity, adjust in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# API routes
+app.include_router(blog.router, prefix="/api/blog", tags=["blog"])
+app.include_router(essays.router, prefix="/api/essays", tags=["essays"])
+app.include_router(contact.router, prefix="/api/contact", tags=["contact"])
 
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
@@ -147,8 +166,4 @@ async def contact_page(request: Request):
     context = await common_context(request)
     return templates.TemplateResponse("contact.html", context)
 
-# --- Uncomment and configure your API routers when ready ---
-# app.include_router(about.router, prefix="/api/about", tags=["about"])
-# app.include_router(blog.router, prefix="/api/blog", tags=["blog"])
-# app.include_router(contact.router, prefix="/api/contact", tags=["contact"])
-# app.include_router(essays.router, prefix="/api/essays", tags=["essays"])
+# API routers are now included above

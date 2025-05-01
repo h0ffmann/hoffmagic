@@ -180,43 +180,52 @@
 
 {% block scripts %}
 <script>
-    // Handle contact form submission
+    // Handle contact form submission with email redirect
     document.addEventListener('DOMContentLoaded', function() {
         const contactForm = document.getElementById('contact-form');
         const formSuccess = document.getElementById('form-success');
         const formError = document.getElementById('form-error');
-        
+
         contactForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            
-            // Hide previous alerts
+
             formSuccess.classList.add('hidden');
             formError.classList.add('hidden');
-            
+
             const formData = {
                 name: document.getElementById('name').value,
                 email: document.getElementById('email').value,
                 subject: document.getElementById('subject').value,
                 message: document.getElementById('message').value,
             };
-            
+
             try {
-                const response = await fetch('/api/contact/message', {
-                    method: 'POST',
-                    headers: {
+                // Instead of making an API call, redirect to email client
+                const obfuscatedEmail = 'hoffmann' + '@' + 'poli.ufrj.br';
+                const emailLink = document.createElement('a');
+                emailLink.href = 'mailto:' + obfuscatedEmail +
+                            '?subject=' + encodeURIComponent(formData.subject) +
+                            '&body=' + encodeURIComponent('Name: ' + formData.name +
+                            '\nEmail: ' + formData.email +
+                            '\n\n' + formData.message);
+                emailLink.style.display = 'none';
+                document.body.appendChild(emailLink);
+                emailLink.click();
+                document.body.removeChild(emailLink);
+
+                // Show success message and reset form
+                formSuccess.classList.remove('hidden');
+                contactForm.reset();
+
+                // Also try API if it exists (fallback)
+                fetch('/api/contact/message', {
+                   method: 'POST',
+                   headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(formData),
-                });
-                
-                if (response.ok) {
-                    formSuccess.classList.remove('hidden');
-                    contactForm.reset();
-                } else {
-                    const error = await response.json();
-                    console.error('Error:', error);
-                    formError.classList.remove('hidden');
-                }
+                }).catch(err => console.log('API error, but email was sent:', err));
+
             } catch (error) {
                 console.error('Error:', error);
                 formError.classList.remove('hidden');

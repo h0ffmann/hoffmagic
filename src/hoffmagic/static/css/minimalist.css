@@ -1,91 +1,121 @@
-/* minimalist styling inspired by mitchellh.com */
 :root {
-  --bg-color: #0e121a;
-  --text-color: #ffffff;
-  --accent-color: #3d5a80;
-  --secondary-color: #ee6c4d;
-  --subtle-color: #293241;
-  --border-color: #1a1f2e;
+  --max-width: 1200px; /* Increase from previous value */
+  --font-size-base: 16px; /* Reduce font size */
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 30px;
+  --font-size-4xl: 36px;
 }
 
 body {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  font-family: 'Inter', sans-serif;
+  font-size: var(--font-size-base);
   line-height: 1.6;
+  font-family: 'Inter', sans-serif;
+  color: #293241; /* Dark text */
+  background-color: #f8f9fa; /* Light background */
+  margin: 0;
 }
 
 .container {
-  max-width: 42rem;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 1rem;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-weight: bold;
-  font-family: 'Nimbus Sans', 'Inter', sans-serif; /* Changed font */
+  font-family: 'Lora', serif;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 a {
-  color: var(--secondary-color);
+  color: #3d5a80; /* Brand primary */
   text-decoration: none;
-  transition: opacity 0.2s;
+  transition: color 0.2s;
 }
 
 a:hover {
-  opacity: 0.8;
+  color: #ee6c4d; /* Brand accent */
 }
 
-/* minimalist navigation */
 nav {
-  padding: 1.5rem 0;
+  display: flex;
+  justify-content: flex-start; /* Align nav items to the start (left) */
+  gap: 2rem; /* Space between nav items */
 }
 
 nav a {
-  color: var(--text-color);
-  margin-right: 1.5rem;
+  color: #fff; /* White text for dark header */
+  text-decoration: none;
+  padding: 0.5rem 0; /* Vertical padding */
 }
 
-/* content styling */
 .prose {
-  font-family: 'PT Serif', serif; /* Keep prose serif for readability */
+  font-size: var(--font-size-base);
+  line-height: 1.6;
 }
 
 .prose p {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25em;
 }
 
 .prose a {
+  color: #ee6c4d; /* Brand accent for links in prose */
   text-decoration: underline;
-  text-underline-offset: 2px;
 }
 
-/* footer */
 footer {
-  margin-top: 8rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--border-color);
-  color: #6b7280;
+  background-color: #293241; /* Dark footer background */
+  color: #fff; /* White text */
+  padding: 2rem 0;
 }
 
-/* minimalist forms */
 input, textarea {
-  background-color: var(--subtle-color);
-  border: 1px solid var(--border-color);
-  color: var(--text-color);
-  padding: 0.5rem 0.75rem;
+  font-size: var(--font-size-base);
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
   width: 100%;
 }
 
 button {
-  background-color: var(--accent-color);
-  color: var(--text-color);
-  padding: 0.5rem 1rem;
+  background-color: #3d5a80; /* Brand primary */
+  color: #fff;
   border: none;
+  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: background-color 0.2s;
 }
 
 button:hover {
-  opacity: 0.9;
+  background-color: #ee6c4d; /* Brand accent on hover */
+}
+
+/* Left-aligned header with logo on left, navigation on right */
+.site-header {
+  display: flex;
+  flex-direction: row; /* Ensure horizontal layout */
+  justify-content: space-between; /* Space between logo and nav */
+  align-items: center; /* Vertically align items */
+  padding: 1rem 0; /* Vertical padding */
+}
+
+.site-header .logo {
+  text-align: left; /* Ensure logo text is left-aligned */
+}
+
+.site-header nav {
+  display: flex;
+  justify-content: flex-end; /* Align nav items to the end (right) */
+  gap: 2rem; /* Space between nav items */
+}
+
+/* Email obfuscation */
+.obfuscated-email:before {
+  content: attr(data-name);
+}
+.obfuscated-email:after {
+  content: attr(data-domain);
 }

@@ -9,12 +9,12 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 import frontmatter
 import markdown
 from fastapi import HTTPException, status
-from sqlalchemy import select, func, or_, and_
+from sqlalchemy import select, func, or_, and_, desc # Add desc
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload # Add selectinload
 
 from hoffmagic.config import settings
-from hoffmagic.db.models import Post, Author, Tag
+from hoffmagic.db.models import Post, Author, Tag, post_tags # Add post_tags
 from hoffmagic.api.schemas import (
     PostCreate, PostUpdate, EssaysResponse
 )
@@ -36,80 +36,67 @@ class EssaysService:
             db: SQLAlchemy async session
         """
         self.db = db
-    
-    async def list_essays(
-        self, 
-        page: int = 1, 
+
+    async def get_essays(
+        self,
+        page: int = 1,
         page_size: int = 10,
-        tag: Optional[str] = None,
-        search: Optional[str] = None,
-    ) -> EssaysResponse:
+        tag_slug: Optional[str] = None,
+        search: Optional[str] = None
+    ) -> Dict[str, Any]:
         """
-        List essays with pagination, filtering, and search.
-        
-        Args:
-            page: Page number
-            page_size: Items per page
-            tag: Filter by tag slug
-            search: Search in title and content
-            
-        Returns:
-            Paginated response with essays
+        Get essays with pagination, filtering, and search.
         """
-        # Base query for published essays
-        query = (
-            select(Post)
-            .where(and_(Post.is_published == True, Post.is_essay == True))
-            .order_by(Post.publish_date.desc())
-            .options(
-                joinedload(Post.author),
-                joinedload(Post.tags)
-            )
-        )
-        
-        # Apply tag filter if provided
-        if tag:
+        try:
             query = (
-                query
-                .join(Post.tags)
-                .where(Tag.slug == tag)
+                select(Post)
+                .where(Post.is_published == True)
+                .where(Post.is_essay == True)
+                .options(
+                    selectinload(Post.author),
+                    selectinload(Post.tags)
+                )
+                .order_by(desc(Post.publish_date))
             )
-        
-        # Apply search filter if provided
-        if search:
-            search_term = f"%{search}%"
-            query = (
-                query
-                .where(
+
+            # Apply tag filter
+            if tag_slug:
+                tag_subquery = select(Tag.id).where(Tag.slug == tag_slug).scalar_subquery()
+                query = query.join(post_tags).where(post_tags.c.tag_id == tag_subquery)
+
+            # Apply search filter
+            if search:
+                search_term = f"%{search}%"
+                query = query.where(
                     or_(
                         Post.title.ilike(search_term),
                         Post.content.ilike(search_term),
-                        Post.summary.ilike(search_term),
+                        Post.summary.ilike(search_term)
                     )
                 )
-            )
-        
-        # Count total items
-        count_query = select(func.count()).select_from(query.subquery())
-        total = await self.db.scalar(count_query) or 0
-        
-        # Apply pagination
-        query = query.offset((page - 1) * page_size).limit(page_size)
-        
-        # Execute query
-        essays = (await self.db.execute(query)).scalars().all()
-        
-        # Calculate total pages
-        pages = (total + page_size - 1) // page_size
-        
-        return {
-            "items": essays,
-            "total": total,
-            "page": page,
-            "page_size": page_size,
-            "pages": pages,
-        }
-    
+
+            # Get total count for pagination
+            count_query = select(func.count()).select_from(query.subquery())
+            total = await self.db.scalar(count_query) or 0
+
+            # Apply pagination
+            query = query.offset((page - 1) * page_size).limit(page_size)
+            essays = (await self.db.execute(query)).scalars().all()
+
+            # Calculate pages
+            pages = (total + page_size - 1) // page_size if total > 0 else 1
+
+            return {
+                "items": essays,
+                "total": total,
+                "page": page,
+                "page_size": page_size,
+                "pages": pages
+            }
+        except Exception as e:
+            logger.error(f"Error getting essays: {str(e)}")
+            raise
+
     async def get_essay_by_slug(self, slug: str) -> Optional[Post]:
         """
         Get an essay by its slug.
