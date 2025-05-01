@@ -73,7 +73,7 @@ def run_migrations_online() -> None:
     config.set_main_option("sqlalchemy.url", db_url)
 
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}), # Use config_ini_section as per diff
+        config.get_section(config.config_ini_section, {}), # Corrected section name
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )

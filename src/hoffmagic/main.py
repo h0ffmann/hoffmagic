@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, List, AsyncGenerator
 from datetime import datetime
 
+import time # Add time import
 from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -31,6 +32,14 @@ app = FastAPI(
     description="Hoffmann's magical blog.",
     version="0.1.0"
 )
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    logger.info(f"path: {request.url.path} | method: {request.method} | status: {response.status_code} | time: {process_time:.4f}s")
+    return response
 
 # --- Configure Template and Static paths using CONTAINER_APP_DIR ---
 templates = Jinja2Templates(directory=CONTAINER_APP_DIR / "templates")
