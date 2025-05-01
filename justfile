@@ -63,12 +63,6 @@ db-upgrade:
 db-migrate msg='':
     alembic revision --autogenerate -m "{{msg}}"
 
-# --- Repomix ---
+dump-nix:
+    cp flake.nix flake.nix.txt
 
-# Generate the Repomix combined code file (Markdown)
-repomix-md:
-    repomix -o hoffmagic-output.md -s markdown --compress --remove-comments --remove-empty-lines -g --git-sort-changes --line-numbers
-
-# Generate the Repomix combined code file (XML)
-repomix-xml:
-    repomix -o hoffmagic-output.xml -s xml -g --git-sort-changes
