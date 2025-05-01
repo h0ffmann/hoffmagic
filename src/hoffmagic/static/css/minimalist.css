@@ -1,9 +1,10 @@
 /* minimalist.css - Base styles inspired by target website */
+/* minimalist.css - Base styles inspired by target website */
 :root {
     /* Define CSS variables from Tailwind config for potential use */
-    --color-bg-primary: #121212;
-    --color-bg-secondary: #1e1e1e;
-    --color-text-primary: #e0e0e0;
+    --color-bg-primary: #1a1a1a; /* Match Tailwind */
+    --color-bg-secondary: #2c2c2c; /* Match Tailwind */
+    --color-text-primary: #e0e0e0; /* Match Tailwind */
     --color-text-secondary: #a0a0a0;
     --color-accent: #2ecc71;
     --color-border: #333333;
@@ -14,7 +15,7 @@
 body {
     font-family: var(--font-sans);
     color: var(--color-text-primary);
-    background-color: var(--color-bg-primary);
+    background-color: var(--color-bg-primary); /* Use this as the *only* background */
     line-height: 1.7; /* Increase line height slightly for readability */
     margin: 2em auto; /* Center content */
     padding: 1em;
@@ -24,14 +25,8 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-.container {
-    /* Use body's max-width instead */
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-}
-
 h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans); /* Use sans-serif for headings too */
     margin-top: 1.5em;
     margin-bottom: 0.5em;
     line-height: 1.2;
@@ -48,6 +43,8 @@ a:hover {
 }
 
 nav {
+    display: flex; /* Arrange nav items horizontally */
+    gap: 1.5em; /* Spacing between nav items */
     margin-bottom: 1em;
 }
 
@@ -81,11 +78,11 @@ pre, code, .prose pre, .prose code {
     background-color: var(--color-bg-secondary);
     color: var(--color-text-primary);
     border-radius: 4px;
+    border: 1px solid var(--color-border); /* Subtle border */
 }
 
 .prose pre {
     padding: 1em;
-    overflow-x: auto;
     margin-top: 1.5em;
     margin-bottom: 1.5em;
 }
@@ -93,6 +90,14 @@ pre, code, .prose pre, .prose code {
 .prose code:not(pre code) { /* Inline code */
     padding: 0.2em 0.4em;
     background-color: var(--color-bg-secondary); /* Optional: slight background */
+    border: none;
+}
+
+/* Minimal separator style */
+hr, .minimal-separator {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: 3em 0;
 }
 
 /* Basic footer style */
@@ -103,4 +108,37 @@ pre, code, .prose pre, .prose code {
     font-size: 0.9em;
     color: var(--color-text-secondary);
     text-align: center;
+}
+
+/* Input/Button Styles (remove card styles) */
+input[type="email"], input[type="text"], input[type="search"], textarea {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+    padding: 0.6em;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+input::placeholder, textarea::placeholder {
+    color: var(--color-text-secondary);
+    opacity: 0.7;
+}
+
+button, input[type="submit"] {
+    background-color: var(--color-accent);
+    color: var(--color-bg-primary); /* Contrast text */
+    border: 1px solid var(--color-accent);
+    padding: 0.6em 1.2em;
+    border-radius: 3px;
+    font-size: 0.9em;
+    cursor: pointer;
+    font-weight: 500;
+}
+button:hover, input[type="submit"]:hover {
+    opacity: 0.9;
+}
+
+/* Remove old sidebar/complex styles if they existed */
+.sidebar, .sidebar-header, .sidebar-logo, .sidebar-nav, .sidebar-search, .main-content {
+    /* display: none; or remove definitions */
 }

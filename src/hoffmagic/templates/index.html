@@ -20,7 +20,7 @@
         </div>
 
          {# Optional: Separator or more space before newsletter #}
-         <hr style="margin: 3em 0; border-color: var(--color-border);">
+         <hr> {# Use the globally styled hr #}
 
         {# Plain newsletter signup #}
         <div class="newsletter-section">
@@ -30,11 +30,8 @@
                 <label for="newsletter-email" style="display: block; margin-bottom: 0.5em; font-size: 0.9em;">Email Address:</label>
                 <div style="display: flex; gap: 0.5em;">
                      <input type="email" id="newsletter-email" name="email" placeholder="you@example.com" required
-                            style="flex-grow: 1; padding: 0.5em; border: 1px solid var(--color-border); background-color: var(--color-bg-secondary); color: var(--color-text-primary); border-radius: 3px; font-size: 0.9em;">
-                     <button type="submit"
-                             style="padding: 0.5em 1em; border: 1px solid var(--color-accent); background-color: var(--color-accent); color: var(--color-bg-primary); border-radius: 3px; cursor: pointer; font-size: 0.9em;">
-                         Subscribe
-                     </button>
+                            style="flex-grow: 1;"> {# Input inherits base styles #}
+                     <button type="submit">Subscribe</button> {# Button inherits base styles #}
                 </div>
              <p id="newsletter-feedback" style="font-size: 0.9em; margin-top: 0.5em;"></p>
             </form>
@@ -107,7 +104,7 @@
                 form.reset();
             } else {
                 const error = await response.json();
-                feedbackP.textContent = `Error: ${error.detail || 'Subscription failed.'}`;
+                feedbackP.textContent = `Error: ${(error && error.detail) || 'Subscription failed.'}`;
                 feedbackP.style.color = '#ff6b6b'; // Simple error color
             }
         } catch (error) {

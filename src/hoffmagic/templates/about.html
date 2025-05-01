@@ -26,6 +26,7 @@
              <p>Author information is currently unavailable.</p>
              {% endif %}
         </div>
+        <hr>
 
         {# Main About text - Use prose or basic paragraph styles #}
         <div class="about-text prose prose-invert max-w-none"> {# Adjust prose class as needed #}
@@ -81,7 +82,8 @@
 
         {# Blog Stats - Simple list or paragraphs #}
         {% if stats %}
-        <div class="blog-stats" style="margin-top: 3em; padding-top: 1.5em; border-top: 1px dashed var(--color-border);">
+        <hr>
+        <div class="blog-stats" style="margin-top: 2em;">
              <h3>Blog Stats</h3>
              <ul style="list-style: none; padding-left: 0; font-size: 0.9em;">
                  <li>Posts: {{ stats.post_count }}</li>
@@ -93,18 +95,16 @@
         {% endif %}
 
         {# Newsletter - Plain styling #}
-         <div class="newsletter-section" style="margin-top: 3em; padding-top: 1.5em; border-top: 1px solid var(--color-border);">
+         <hr>
+         <div class="newsletter-section" style="margin-top: 2em;">
             <h3>Join the Newsletter</h3>
             <p>Get notified about new posts and essays delivered directly to your inbox.</p>
              <form id="about-newsletter-form" style="margin-top: 1em;">
                  <label for="about-newsletter-email" style="display: block; margin-bottom: 0.5em; font-size: 0.9em;">Email Address:</label>
                 <div style="display: flex; gap: 0.5em;">
                     <input type="email" id="about-newsletter-email" name="email" placeholder="you@example.com" required
-                           style="flex-grow: 1; padding: 0.5em; border: 1px solid var(--color-border); background-color: var(--color-bg-secondary); color: var(--color-text-primary); border-radius: 3px; font-size: 0.9em;">
-                    <button type="submit"
-                             style="padding: 0.5em 1em; border: 1px solid var(--color-accent); background-color: var(--color-accent); color: var(--color-bg-primary); border-radius: 3px; cursor: pointer; font-size: 0.9em;">
-                         Subscribe
-                    </button>
+                           style="flex-grow: 1;"> {# Inherits styles #}
+                    <button type="submit">Subscribe</button> {# Inherits styles #}
                     </div>
                  <p id="newsletter-feedback" style="font-size: 0.9em; margin-top: 0.5em;"></p>
              </form>
