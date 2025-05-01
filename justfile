@@ -25,7 +25,7 @@ build-docker: build-css # Ensure CSS is built first
 
 # Run using Docker Compose (will build image if not present)
 dev-up:
-    COMPOSE_BAKE=true DATABASE_URL=postgresql+psycopg://hoffmagic:hoffmagic@db:5432/hoffmagic docker-compose up --build
+    DATABASE_URL=postgresql+psycopg://hoffmagic:hoffmagic@db:5432/hoffmagic docker-compose up --build
 
 # Stop Docker Compose
 dev-down:
