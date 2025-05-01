@@ -11,27 +11,31 @@ nix-shell:
 
 # --- Development ---
 
-# Run the FastAPI development server with reload
+# Run the FastAPI development server with reload (inside nix develop)
 run:
     uvicorn hoffmagic.main:app --host 0.0.0.0 --port 8000 --reload
 
-# Build and run using Docker Compose
-compose-up:
-    docker-compose up --build -d
+# Build Tailwind CSS (inside nix develop)
+build-css:
+    npx tailwindcss -i ./src/hoffmagic/static/css/input.css -o ./src/hoffmagic/static/css/main.css --minify
 
-# Stop and remove Docker Compose containers
+# Build the Docker image using Nix Flakes (inside nix develop)
+build-docker: build-css # Ensure CSS is built first
+    nix build .#dockerImage -o ./result-docker-image && docker load < ./result-docker-image && rm ./result-docker-image
+
+# Run using Docker Compose (assumes image is pre-built with build-docker)
+compose-up:
+    docker-compose up -d
+
+# Stop Docker Compose
 compose-down:
     docker-compose down
 
-# Build Docker Compose services without starting
-compose-build:
-    docker-compose build
-
-# Watch Tailwind CSS for changes
+# Watch Tailwind CSS for changes (inside nix develop)
 tailwind-watch:
     npx tailwindcss -i ./src/hoffmagic/static/css/input.css -o ./src/hoffmagic/static/css/main.css --watch
 
-# --- Quality & Testing ---
+# --- Quality & Testing (inside nix develop) ---
 
 # Run all linters and formatters
 lint: check format mypy
@@ -59,10 +63,15 @@ coverage: test
 db-upgrade:
     alembic upgrade head
 
-# Generate a new Alembic migration script (requires message)
+# Generate a new Alembic migration script (requires message) (inside nix develop)
 db-migrate msg='':
     alembic revision --autogenerate -m "{{msg}}"
 
+# Build *just* the application package (no docker image) (inside nix develop)
+build-app:
+    nix build .#default -o ./result-app
+
+# --- Utility ---
 dump-nix:
     cp flake.nix flake.nix.txt
 

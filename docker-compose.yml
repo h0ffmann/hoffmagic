@@ -18,25 +18,35 @@ services:
       retries: 5
 
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: final
+    # Use the image built by 'nix build .#dockerImage'
+    image: hoffmagic:latest # <<< CHANGE THIS
+    # build: # <<< REMOVE THIS section
+    #   context: .
+    #   dockerfile: Dockerfile
+    #   target: final
+
     volumes:
-      - ./src:/app/src
-      - ./content:/app/content
+      # Mount content directory - Recommended over copying into image
+      # Allows content changes without rebuilding the image
+      # Adjust the source path if your content lives elsewhere (e.g., ./content)
+      - ./src/content:/app/content
+
     environment:
+      # Pass sensitive or environment-specific config here
       - DATABASE_URL=postgresql+psycopg://hoffmagic:hoffmagic@db:5432/hoffmagic
-      - DEBUG=true
-      - SECRET_KEY=dev_secret_key_change_in_production
-      # Provide as a JSON array string
-      - ALLOWED_HOSTS='["localhost", "127.0.0.1"]'
+      # !!! CHANGE IN PRODUCTION !!! Use secrets management.
+      - SECRET_KEY=${SECRET_KEY:-dev_secret_key_change_in_production}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-'["localhost", "127.0.0.1"]'}
+      - DEBUG=${DEBUG:-true} # Default to true for compose, override for prod
+      - ENV=${ENV:-development}
+
     ports:
       - "8000:8000"
+
     depends_on:
       db:
         condition: service_healthy
-    command: ["uvicorn", "hoffmagic.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    # command: ["/docker-entrypoint.sh"] # Not needed if ENTRYPOINT is set correctly in flake.nix
 
 volumes:
   postgres_data:
