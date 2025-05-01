@@ -18,21 +18,16 @@ services:
       retries: 5
 
   web:
-    # Use the image built by 'nix build .#dockerImage'
-    image: hoffmagic:latest # <<< CHANGE THIS
-    # build: # <<< REMOVE THIS section
-    #   context: .
-    #   dockerfile: Dockerfile
-    #   target: final
-
+    # Image built by 'just build-docker'
+    image: hoffmagic:latest
     volumes:
-      # Mount content directory - Recommended over copying into image
-      # Allows content changes without rebuilding the image
-      # Adjust the source path if your content lives elsewhere (e.g., ./content)
-      - ./src/content:/app/content
-
+      # Mount source files needed at runtime into the container's working dir
+      - ./src/content:/app/content                 # Blog content
+      - ./src/hoffmagic/templates:/app/templates   # Jinja templates
+      - ./src/hoffmagic/static:/app/static         # Static files (CSS, etc.)
+      - ./alembic.ini:/app/alembic.ini             # Alembic configuration
+      - ./src/hoffmagic/db/migrations:/app/migrations # Alembic migration scripts
     environment:
-      # Pass sensitive or environment-specific config here
       - DATABASE_URL=postgresql+psycopg://hoffmagic:hoffmagic@db:5432/hoffmagic
       # !!! CHANGE IN PRODUCTION !!! Use secrets management.
       - SECRET_KEY=${SECRET_KEY:-dev_secret_key_change_in_production}
@@ -46,7 +41,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    # command: ["/docker-entrypoint.sh"] # Not needed if ENTRYPOINT is set correctly in flake.nix
+    # No command needed - uses ENTRYPOINT defined in the Nix-built image
 
 volumes:
   postgres_data:

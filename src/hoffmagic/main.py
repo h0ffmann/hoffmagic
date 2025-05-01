@@ -1,40 +1,60 @@
-"""
-Main application entry point for HoffMagic Blog.
-"""
-from fastapi import FastAPI, Request
+# -*- coding: utf-8 -*-
+# type: ignore[name-defined] # ignore missing type hints for FastAPI
+
+import os
+import logging
+from contextlib import asynccontextmanager
+from pathlib import Path
+from typing import Any, Dict, List, AsyncGenerator
+from datetime import datetime
+
+from fastapi import Depends, FastAPI, HTTPException, Request, status
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import RedirectResponse, JSONResponse
 
-from hoffmagic.config import settings
-from hoffmagic.logger import setup_logging
-from hoffmagic.db.engine import init_db
-from hoffmagic.api.routes import blog, essays, about, contact
+# Assuming engine and logger are setup elsewhere and imported if needed
+from .db.engine import SessionLocal, init_db, get_session # Add get_session
+from .logger import setup_logging
+
+from sqlalchemy.ext.asyncio import AsyncSession
 
 # Set up logging
+# logger = logging.getLogger("hoffmagic") # Original - assumes setup elsewhere
 logger = setup_logging()
 
-# Create FastAPI application
+# Define base directory *inside* the container based on WorkingDir
+CONTAINER_APP_DIR = Path("/app")
+
 app = FastAPI(
-    title="hoffmagic blog",
-    description="a beautiful python-based blog application",
-    version="0.1.0",
-    docs_url="/api/docs" if settings.DEBUG else None,
-    redoc_url="/api/redoc" if settings.DEBUG else None,
+    title="Hoffmagic Blog",
+    description="Hoffmann's magical blog.",
+    version="0.1.0"
 )
 
-# Mount static files
-app.mount("/static", StaticFiles(directory="src/hoffmagic/static"), name="static")
+# --- Configure Template and Static paths using CONTAINER_APP_DIR ---
+templates = Jinja2Templates(directory=CONTAINER_APP_DIR / "templates")
+app.mount(
+    "/static",
+    StaticFiles(directory=CONTAINER_APP_DIR / "static"),
+    name="static"
+)
+# -------------------------------------------------------------------
 
-# Set up templates
-templates = Jinja2Templates(directory="src/hoffmagic/templates")
+# Placeholder for your API routers - uncomment and implement later
+# from .api.routes import about, blog, contact, essays
 
-# Include all API routes
-app.include_router(blog.router, prefix="/api/blog", tags=["blog"])
-app.include_router(essays.router, prefix="/api/essays", tags=["essays"])
-app.include_router(about.router, prefix="/api/about", tags=["about"])
-app.include_router(contact.router, prefix="/api/contact", tags=["contact"])
-
+# @asynccontextmanager
+# async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+#     """
+#     Initialize database connection and perform startup tasks.
+#     """
+#     logger.info("Starting hoffmagic application")
+#     await init_db()
+#     yield
+#     logger.info("Shutting down hoffmagic application")
+#
+# app = FastAPI(lifespan=lifespan) # Use lifespan if preferred over on_event
 
 @app.on_event("startup")
 async def startup_event() -> None:
@@ -58,81 +78,68 @@ async def health_check() -> JSONResponse:
     """
     Health check endpoint for kubernetes/monitoring.
     """
-    return JSONResponse({"status": "ok"})
+    return JSONResponse(content={"status": "ok"})
 
+# Define context processor for common template variables
+async def common_context(request: Request):
+    return {"request": request, "now": datetime.utcnow()}
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    """
-    Render the home page.
-    """
-    return templates.TemplateResponse(
-        "index.html", 
-        {"request": request, "title": "hoffmagic blog"}
-    )
+    context = await common_context(request)
+    return templates.TemplateResponse("index.html", context)
 
-
-@app.get("/blog")
+@app.get("/blog", response_class=HTMLResponse)
 async def blog_page(request: Request):
-    """
-    Render the blog listing page.
-    """
-    return templates.TemplateResponse(
-        "blog/list.html", 
-        {"request": request, "title": "blog | hoffmagic"}
-    )
+    context = await common_context(request)
+    # Fetch paginated posts in real implementation
+    context["posts"] = [] # Placeholder
+    return templates.TemplateResponse("blog/list.html", context)
 
-
-@app.get("/blog/{slug}")
+@app.get("/blog/{slug}", response_class=HTMLResponse)
 async def blog_detail(request: Request, slug: str):
-    """
-    Render a specific blog post.
-    """
-    return templates.TemplateResponse(
-        "blog/detail.html", 
-        {"request": request, "slug": slug} # Title set in block title now
-    )
+    # Fetch actual post data using slug later
+    context = await common_context(request)
+    context["post"] = {"title": "Sample Post", "slug": slug, "summary": "Summary here", "publish_date": datetime.utcnow(), "updated_at": datetime.utcnow(), "tags": [], "author": {"name": "Author"}} # Dummy data
+    return templates.TemplateResponse("blog/detail.html", context)
 
-
-@app.get("/essays")
+@app.get("/essays", response_class=HTMLResponse)
 async def essays_page(request: Request):
-    """
-    Render the essays listing page.
-    """
-    return templates.TemplateResponse(
-        "essays/list.html", 
-        {"request": request, "title": "essays | hoffmagic"}
-    )
+    context = await common_context(request)
+    # Fetch paginated essays in real implementation
+    context["essays"] = [] # Placeholder
+    return templates.TemplateResponse("essays/list.html", context)
 
-
-@app.get("/essays/{slug}")
+@app.get("/essays/{slug}", response_class=HTMLResponse)
 async def essay_detail(request: Request, slug: str):
-    """
-    Render a specific essay.
-    """
-    return templates.TemplateResponse(
-        "essays/detail.html", 
-        {"request": request, "slug": slug} # Title set in block title now
-    )
+     # Fetch actual essay data using slug later
+    context = await common_context(request)
+     # Placeholder data structure matching the template usage
+     context["essay"] = {
+         "title": "Sample Essay", "slug": slug, "summary": "Essay summary.",
+         "publish_date": datetime.utcnow(), "updated_at": datetime.utcnow(),
+         "reading_time": 10, "featured_image": None, "content": "<p>Content here</p>",
+         "tags": [{"name": "Tag1", "slug": "tag1"}],
+         "author": {"name": "Author", "avatar": None, "bio": "Author bio", "email": "a@b.com"}
+         }
+    return templates.TemplateResponse("essays/detail.html", context)
 
-
-@app.get("/about")
+@app.get("/about", response_class=HTMLResponse)
 async def about_page(request: Request):
-    """
-    Render the about page.
-    """
-    return templates.TemplateResponse(
-        "about.html", 
-        {"request": request, "title": "about me | hoffmagic"}
-    )
+     # Fetch author/stats data later
+    context = await common_context(request)
+    # Dummy data matching template usage
+    context["author"] = {"name": "Default Author", "avatar": None, "email": "a@b.com"}
+    context["stats"] = {"post_count": 10, "essay_count": 2, "tag_count": 5, "comment_count": 20}
+    return templates.TemplateResponse("about.html", context)
 
-
-@app.get("/contact")
+@app.get("/contact", response_class=HTMLResponse)
 async def contact_page(request: Request):
-    """
-    Render the contact page.
-    """
-    return templates.TemplateResponse(
-        "contact.html", 
-        {"request": request, "title": "contact | hoffmagic"}
-    )
+    context = await common_context(request)
+    return templates.TemplateResponse("contact.html", context)
+
+# --- Uncomment and configure your API routers when ready ---
+# app.include_router(about.router, prefix="/api/about", tags=["about"])
+# app.include_router(blog.router, prefix="/api/blog", tags=["blog"])
+# app.include_router(contact.router, prefix="/api/contact", tags=["contact"])
+# app.include_router(essays.router, prefix="/api/essays", tags=["essays"])

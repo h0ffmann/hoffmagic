@@ -69,27 +69,26 @@
           # Disable tests during Nix build (they can be run separately via `just test`)
           doCheck = false;
 
+          # Needs libpq C library at runtime for psycopg
+          # Adding to buildInputs makes it available to the build environment and included in the result path
+          buildInputs = [ pkgs.libpq ];
+
           meta = with pkgs.lib; {
             description = "Hoffmann's magical Python library/application";
-            homepage = "https://github.com/your-username/hoffmagic"; # Optional: Replace with actual URL
-            license = licenses.mit; # Optional: Replace with your actual license (e.g., licenses.gpl3Only)
-            maintainers = with maintainers; [ /* your github username */ ]; # Optional
+            homepage = "https://github.com/your-username/hoffmagic";
+            license = licenses.mit;
           };
         };
 
         # ---- Define the Runtime Environment for Docker ----
-        # This bundles the app with runtime dependencies like alembic command and bash
         appRuntimeEnv = pkgs.buildEnv {
           name = "hoffmagic-runtime";
           paths = [
             hoffmagicApp        # Our built Python package/app
-            pkgs.alembic        # The alembic command-line tool (needed by entrypoint)
-            pkgs.bash           # For running the entrypoint script
-            # pkgs.coreutils      # Basic utils like 'echo' if needed by entrypoint
-            pkgs.libpq          # Ensure runtime libpq is present again for psycopg
+            pkgs.alembic        # The alembic command-line tool
+            pkgs.bash           # For the entrypoint script
+            # python/libpq etc are pulled in via hoffmagicApp dependency
           ];
-          # Ensure binaries like python, alembic, bash are linked into /bin
-          pathsToLink = [ "/bin" ];
         };
 
       in
