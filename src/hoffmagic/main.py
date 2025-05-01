@@ -18,6 +18,7 @@ from fastapi.templating import Jinja2Templates
 
 # Assuming engine and logger are setup elsewhere and imported if needed
 # Assuming engine and logger are setup elsewhere and imported if needed
+from .config import settings # Import settings
 from .db.engine import SessionLocal, init_db, get_session # Add get_session
 from .logger import setup_logging
 from .api.routes import blog, essays, contact # Import API route modules
