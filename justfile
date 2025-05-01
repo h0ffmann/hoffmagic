@@ -1,5 +1,8 @@
 # Justfile for hoffmagic blog development
 
+set unstable
+set dotenv-load
+
 # Default command
 default: run
 
@@ -75,3 +78,47 @@ build-app:
 dump-nix:
     cp flake.nix flake.nix.txt
 
+# Find the time since the last file modification in the project (excluding common build/VCS dirs)
+[script("bash")]
+last:
+    echo "Calculating time since last file modification (non-ignored files only)..."
+    NOW_TS=$(date +%s)
+    git_tracked=$(git ls-files)
+    git_untracked=$(git ls-files --others --exclude-standard)
+    all_non_ignored_files=$(echo "$git_tracked"; echo "$git_untracked")
+    
+    LATEST_TS=0
+    LATEST_FILE=""
+    
+    for file in $all_non_ignored_files; do
+        if [ -f "$file" ]; then
+            # Get file modification timestamp (works on both Linux and macOS)
+            file_ts=$(stat -c %Y "$file" 2>/dev/null || stat -f %m "$file" 2>/dev/null)
+            
+            if [ -n "$file_ts" ] && [ "$file_ts" -gt "$LATEST_TS" ]; then
+                LATEST_TS=$file_ts
+                LATEST_FILE="$file"
+            fi
+        fi
+    done
+    
+    # Check if any files were found
+    if [ "$LATEST_TS" = "0" ]; then
+        echo "No relevant files found."
+    else
+        # Calculate time difference in seconds
+        DIFF_SECONDS=$((NOW_TS - LATEST_TS))
+        
+        # Format the difference using awk (days, hours, minutes, seconds)
+        FORMATTED_TIME=$(echo $DIFF_SECONDS | awk '{
+            s=$1;
+            if (s < 0) s=0; # Handle potential clock skew issues if latest > now
+            d=int(s/86400); s=s%86400;
+            h=int(s/3600); s=s%3600;
+            m=int(s/60); s=s%60;
+            printf "%dd %02dh %02dm %02ds", d, h, m, s
+        }')
+        
+        echo "Last modification was: $FORMATTED_TIME ago"
+        echo "          Latest file: $LATEST_FILE"
+    fi

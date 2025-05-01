@@ -112,16 +112,16 @@ async def essays_page(request: Request):
 
 @app.get("/essays/{slug}", response_class=HTMLResponse)
 async def essay_detail(request: Request, slug: str):
-     # Fetch actual essay data using slug later
+    # Fetch actual essay data using slug later
     context = await common_context(request)
-     # Placeholder data structure matching the template usage
-     context["essay"] = {
-         "title": "Sample Essay", "slug": slug, "summary": "Essay summary.",
-         "publish_date": datetime.utcnow(), "updated_at": datetime.utcnow(),
-         "reading_time": 10, "featured_image": None, "content": "<p>Content here</p>",
-         "tags": [{"name": "Tag1", "slug": "tag1"}],
-         "author": {"name": "Author", "avatar": None, "bio": "Author bio", "email": "a@b.com"}
-         }
+    # Placeholder data structure matching the template usage
+    context["essay"] = {
+        "title": "Sample Essay", "slug": slug, "summary": "Essay summary.",
+        "publish_date": datetime.utcnow(), "updated_at": datetime.utcnow(),
+        "reading_time": 10, "featured_image": None, "content": "<p>Content here</p>",
+        "tags": [{"name": "Tag1", "slug": "tag1"}],
+        "author": {"name": "Author", "avatar": None, "bio": "Author bio", "email": "a@b.com"}
+    }
     return templates.TemplateResponse("essays/detail.html", context)
 
 @app.get("/about", response_class=HTMLResponse)

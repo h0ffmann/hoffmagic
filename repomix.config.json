@@ -1,6 +1,6 @@
 {
   "output": {
-    "filePath": "hoffmagic-output.md",
+    "filePath": "hoffmagic.md",
     "style": "markdown",
     "compress": true,
     "headerText": "This repository contains the source code for the hoffmagic blog application.\nhoffmagic is a Python-based blog application built with FastAPI, Jinja2, and TailwindCSS.\n\nKey Features:\n- Modern and clean blog interface\n- Separate sections for Blog Posts and Essays\n- About Me and Contact pages\n- Markdown support for content\n- Fully deployable to Kubernetes or VPS\n\nPlease refer to the README.md file for more detailed information on usage and configuration.\n",
@@ -30,7 +30,8 @@
       "build/**",
       "*.sqlite3",
       ".DS_Store",
-      "Thumbs.db"
+      "Thumbs.db",
+      "src/hoffmagic/static/css/*.css"
     ]
   },
   "security": {
