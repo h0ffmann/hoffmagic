@@ -56,6 +56,27 @@
           };
         };
 
+        # Create a complete Python environment with all dependencies
+        pythonEnv = python.withPackages (ps: with ps; [
+          sqlalchemy
+          alembic
+          uvicorn
+          fastapi
+          jinja2
+          pydantic
+          psycopg
+          python-multipart
+          markdown
+          pygments
+          pillow
+          python-frontmatter
+          email-validator
+          typer
+          rich
+          pydantic-settings
+          # Add any other direct Python dependencies needed at runtime here
+        ]);
+
         # Create an entrypoint script with absolute paths to binaries
         entrypointScript = pkgs.writeScriptBin "docker-entrypoint" ''
           #!${pkgs.bash}/bin/bash
@@ -73,11 +94,7 @@
         appRuntimeEnv = pkgs.buildEnv {
           name = "hoffmagic-runtime";
           paths = [
-            # Add the Python interpreter itself
-            python
-            # Explicitly add Python packages whose commands are needed directly
-            pythonPackages.alembic
-            pythonPackages.uvicorn
+            pythonEnv  # Use the complete Python environment
             # The main app package, bringing its Python deps (sqlalchemy, fastapi, etc.)
             hoffmagicApp
             # Bash for the entrypoint
@@ -86,7 +103,7 @@
             pkgs.coreutils # <<< Add coreutils
             # Add our new entrypoint script
             entrypointScript
-            # libpq should be pulled in by hoffmagicApp dependency
+            # libpq is included via pythonEnv's psycopg dependency or hoffmagicApp
           ];
           # Link the essential directories from the paths into the final env
           pathsToLink = [ "/bin" "/${python.sitePackages}" ];
@@ -191,6 +208,13 @@
           runAsRoot = ''
             # Create the application directory
             mkdir -p /app
+            # Create migrations directory needed by alembic
+            mkdir -p /app/migrations
+            # Copy alembic.ini and migration scripts into the image's /app directory
+            # These are needed at runtime by the entrypoint script
+            cp ${./alembic.ini} /app/alembic.ini
+            # Use rsync to copy contents of the migrations directory
+            ${pkgs.rsync}/bin/rsync -av ${./src/hoffmagic/db/migrations}/ /app/migrations/
           '';
         };
         # -------------------------------------------------------------
