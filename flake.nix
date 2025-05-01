@@ -46,6 +46,17 @@
           nativeBuildInputs = with pythonPackages; [ hatchling ];
           buildInputs = [ pkgs.libpq ]; # Build-time C dependency for psycopg
 
+          # Create a proper alembic.ini file in the package
+          postInstall = ''
+            mkdir -p $out/share/hoffmagic
+            cp ${./alembic.ini} $out/share/hoffmagic/alembic.ini
+            # If you need to modify it for Docker use, you can do that here:
+            substituteInPlace $out/share/hoffmagic/alembic.ini \
+              --replace "script_location = /app/migrations" \
+              "script_location = /app/src/hoffmagic/db/migrations"
+          '';
+
+
           format = "pyproject";
           doCheck = false; # Speed up builds, run tests separately
 
