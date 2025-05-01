@@ -24,22 +24,20 @@
 </head>
 <body class="min-h-screen flex flex-col bg-brand-light text-brand-dark">
     <!-- Header -->
-    <header class="bg-brand-dark text-white py-6">
-        <div class="container mx-auto px-4 md:px-6">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="mb-4 md:mb-0">
-                    <a href="/" class="text-3xl font-serif font-bold">hoffmagic</a>
-                    <p class="text-sm text-brand-secondary">insights & reflections</p>
-                </div>
-                
-                <nav class="flex items-center space-x-6 text-sm md:text-base">
-                    <a href="/" class="text-white hover:text-brand-accent transition duration-200">Home</a>
-                    <a href="/blog" class="text-white hover:text-brand-accent transition duration-200">Blog</a>
-                    <a href="/essays" class="text-white hover:text-brand-accent transition duration-200">Essays</a>
-                    <a href="/about" class="text-white hover:text-brand-accent transition duration-200">About Me</a>
-                    <a href="/contact" class="text-white hover:text-brand-accent transition duration-200">Contact</a>
-                </nav>
+    <header class="bg-brand-dark text-white py-4"> <!-- Reduced padding -->
+        <div class="container mx-auto px-4 md:px-6 site-header"> <!-- Added site-header class -->
+            <div class="logo"> <!-- Added logo div -->
+                <a href="/" class="text-3xl font-serif font-bold">hoffmagic</a>
+                <p class="text-sm text-brand-secondary">insights & reflections</p>
             </div>
+            
+            <nav class="flex items-center space-x-8 text-sm md:text-base"> <!-- Increased spacing -->
+                <a href="/" class="text-white hover:text-brand-accent transition duration-200"><i class="fas fa-home mr-1"></i> Home</a>
+                <a href="/blog" class="text-white hover:text-brand-accent transition duration-200"><i class="fas fa-blog mr-1"></i> Blog</a>
+                <a href="/essays" class="text-white hover:text-brand-accent transition duration-200"><i class="fas fa-book mr-1"></i> Essays</a>
+                <a href="/about" class="text-white hover:text-brand-accent transition duration-200"><i class="fas fa-user mr-1"></i> About Me</a>
+                <a href="/contact" class="text-white hover:text-brand-accent transition duration-200"><i class="fas fa-envelope mr-1"></i> Contact</a> <!-- Added icon -->
+            </nav>
         </div>
     </header>
     
