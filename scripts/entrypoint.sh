@@ -3,16 +3,12 @@ set -e
 
 # Ensure the Nix package binaries are in the PATH
 export PATH="/app/result/bin:$PATH"
+# PYTHONPATH is set in Dockerfile
 
-# Debug: List files in the expected bin directory
-echo "Listing /app/result/bin:"
-ls -l /app/result/bin || echo "/app/result/bin not found or empty"
-
-# Apply database migrations using absolute path
+# Apply database migrations using python -m
 echo "Running Alembic migrations..."
-/app/result/bin/alembic upgrade head
+python -m alembic upgrade head
 
-# Start the application using absolute path
+# Start the application using python -m
 echo "Starting Uvicorn..."
-exec /app/result/bin/uvicorn hoffmagic.main:app --host $HOST --port $PORT
-exec uvicorn hoffmagic.main:app --host $HOST --port $PORT
+exec python -m uvicorn hoffmagic.main:app --host $HOST --port $PORT
