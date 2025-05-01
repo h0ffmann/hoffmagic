@@ -19,11 +19,11 @@ run:
 build-css:
     tailwindcss -i ./src/hoffmagic/static/css/input.css -o ./src/hoffmagic/static/css/main.css --minify
 
-# Build the Docker image using Nix Flakes (inside nix develop)
+# Build the Docker image using the Dockerfile (inside nix develop)
 build-docker: build-css # Ensure CSS is built first
-    nix build .#dockerImage -o ./result-docker-image && docker load < ./result-docker-image && rm ./result-docker-image
+    docker build -t hoffmagic:latest .
 
-# Run using Docker Compose (assumes image is pre-built with build-docker)
+# Run using Docker Compose (will build image if not present)
 compose-up:
     docker-compose up -d
 
