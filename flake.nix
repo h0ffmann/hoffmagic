@@ -20,8 +20,81 @@
         # 3. Define pythonPackages based on the chosen interpreter
         pythonPackages = python.pkgs;
 
+        # ---- Define the Hoffmagic Python Package ----
+        hoffmagicApp = pythonPackages.buildPythonPackage rec {
+          pname = "hoffmagic";
+          # IMPORTANT: Keep this version in sync with your project's version (e.g., pyproject.toml)
+          version = "0.1.0"; # Assuming 0.1.0 based on pyproject.toml
+
+          # Source code location (usually the directory containing the flake.nix)
+          src = ./.;
+
+          # Dependencies needed to *run* the installed package
+          # From pyproject.toml dependencies section
+          propagatedBuildInputs = with pythonPackages; [
+            fastapi
+            uvicorn
+            jinja2
+            sqlalchemy
+            alembic
+            pydantic
+            psycopg # Depends on libpq C library
+            python-multipart
+            markdown
+            pygments
+            pillow
+            python-frontmatter
+            email-validator
+            typer
+            rich
+            pydantic-settings
+          ] ++ [
+            pkgs.libpq # Add PostgreSQL client C library for psycopg runtime
+            # pkgs.postgresql # Keep if needed for CLI tools, but libpq is essential for psycopg
+          ];
+
+          # Dependencies needed only to *build* or *test* the package
+          nativeCheckInputs = [
+            pythonPackages.pytestCheckHook # To run pytest tests during the build
+          ];
+
+          # Build dependencies
+          nativeBuildInputs = with pythonPackages; [
+            hatchling # From pyproject.toml build-system
+          ];
+
+          # Specify the build format (PEP 517/pyproject.toml)
+          format = "pyproject";
+
+          # Disable tests during Nix build (they can be run separately via `just test`)
+          doCheck = false;
+
+          meta = with pkgs.lib; {
+            description = "Hoffmann's magical Python library/application";
+            homepage = "https://github.com/your-username/hoffmagic"; # Optional: Replace with actual URL
+            license = licenses.mit; # Optional: Replace with your actual license (e.g., licenses.gpl3Only)
+            maintainers = with maintainers; [ /* your github username */ ]; # Optional
+          };
+        };
+
+        # ---- Define the Runtime Environment for Docker ----
+        # This bundles the app with runtime dependencies like alembic command and bash
+        appRuntimeEnv = pkgs.buildEnv {
+          name = "hoffmagic-runtime";
+          paths = [
+            hoffmagicApp        # Our built Python package/app
+            pkgs.alembic        # The alembic command-line tool (needed by entrypoint)
+            pkgs.bash           # For running the entrypoint script
+            # pkgs.coreutils      # Basic utils like 'echo' if needed by entrypoint
+            pkgs.libpq          # Ensure runtime libpq is present again for psycopg
+          ];
+          # Ensure binaries like python, alembic, bash are linked into /bin
+          pathsToLink = [ "/bin" ];
+        };
+
       in
-      {
+      { # <-- Start of outputs for the system
+
         # --------------------------------------------------------------------
         # Development Environment (for `nix develop` or `nix shell`)
         # --------------------------------------------------------------------
@@ -86,66 +159,67 @@
         # --------------------------------------------------------------------
         # Definining the Package(s) to Build (for `nix build`)
         # --------------------------------------------------------------------
-        packages.default = pythonPackages.buildPythonPackage rec {
-          pname = "hoffmagic";
-          # IMPORTANT: Keep this version in sync with your project's version (e.g., pyproject.toml)
-          version = "0.1.0";
-
-          # Source code location (usually the directory containing the flake.nix)
-          src = ./.;
-
-          # Dependencies needed to *run* the installed package
-          # From previous configuration & pyproject.toml
-          propagatedBuildInputs = with pythonPackages; [
-            fastapi
-            uvicorn
-            jinja2
-            sqlalchemy
-            alembic
-            pydantic
-            psycopg
-            python-multipart
-            markdown
-            pygments
-            pillow
-            python-frontmatter
-            email-validator
-            typer
-            rich
-            pydantic-settings
-          ] ++ [ pkgs.postgresql ]; # Add system deps needed by Python packages at runtime
-
-          # Dependencies needed only to *build* or *test* the package
-          # Often includes testing frameworks
-          nativeCheckInputs = [
-            pythonPackages.pytestCheckHook # To run pytest tests during the build
-          ];
-          
-          # Build dependencies
-          nativeBuildInputs = with pythonPackages; [
-            hatchling # From pyproject.toml
-          ];
-
-          # Specify the build format (PEP 517/pyproject.toml)
-          format = "pyproject";
-
-          # Disable tests during Nix build (they can be run separately)
-          doCheck = false;
-
-          # Required for pytestCheckHook to find tests if they aren't in the root
-          # pythonImportsCheck = [ "hoffmagic" ]; # Check if the main module can be imported
-
-          meta = with pkgs.lib; {
-            description = "Hoffmann's magical Python library/application";
-            homepage = "https://github.com/your-username/hoffmagic"; # Optional: Replace with actual URL
-            license = licenses.mit; # Optional: Replace with your actual license (e.g., licenses.gpl3Only)
-            maintainers = with maintainers; [ /* your github username */ ]; # Optional
-          };
-        };
+        packages.default = hoffmagicApp; # Standard package output, uses the definition from 'let' block
 
         # You can define other packages here if needed
         # packages.anotherPackage = ...;
 
-      }
+        # --------------------------------------------------------
+        # ---- Docker Image Definition ----
+        # --------------------------------------------------------
+        packages.dockerImage = pkgs.dockerTools.buildImage {
+          name = "hoffmagic"; # Docker image name (matches docker-compose.yml)
+          tag = "latest";     # Docker image tag (matches docker-compose.yml)
+
+          # Copy the runtime environment (app + deps like alembic, bash, libpq) to the root
+          copyToRoot = appRuntimeEnv;
+
+          # Copy necessary non-Python source files into the image's /app directory
+          contents = [
+             ./src/hoffmagic/static                 # Built CSS & other static files
+             ./src/hoffmagic/templates              # Jinja templates
+             ./alembic.ini                          # Alembic config
+             ./src/hoffmagic/db/migrations          # Alembic migration scripts
+             ./scripts/docker-entrypoint.sh         # Entrypoint script
+             # DO NOT copy ./content here - mount it as a volume in docker-compose.yml
+          ];
+
+          # Configure the image
+          config = {
+            # Use bash from appRuntimeEnv to run the entrypoint script copied via 'contents'
+            # Note: The script will be copied to the root of the image by 'contents'
+            Cmd = [ ]; # Command is handled by entrypoint
+            Entrypoint = [ "${pkgs.bash}/bin/bash" "/docker-entrypoint.sh" ];
+
+            # Default environment variables inside the container
+            # These can be overridden by docker-compose.yml environment section
+            Env = [
+              "ENV=production" # Example: Set environment type
+              "DEBUG=false"    # Default to production debug setting
+              "PORT=8000"      # Default port (can be overridden)
+              "HOST=0.0.0.0"   # Default host (can be overridden)
+              # Set DATABASE_URL for docker-compose (adjust if needed)
+              "DATABASE_URL=postgresql+psycopg://hoffmagic:hoffmagic@db:5432/hoffmagic"
+              "SECRET_KEY=" # Should be set via docker-compose secrets or env_file
+              "ALLOWED_HOSTS=[]" # Should be set via docker-compose env_file or similar
+              # PATH is automatically handled by copyToRoot of appRuntimeEnv
+              # PYTHONPATH is often set automatically by buildPythonPackage wrappers
+            ];
+
+            ExposedPorts = { "8000/tcp" = {}; }; # Expose the application port
+            WorkingDir = "/app"; # Set a working directory inside the container
+          };
+
+          # Create the /app directory and make the entrypoint executable after copying
+          runAsRoot = ''
+            mkdir -p /app
+            chmod +x /docker-entrypoint.sh
+          '';
+        };
+        # -------------------------------------------------------------
+        # ---- End of Docker Image Section ----------------------------
+        # -------------------------------------------------------------
+
+      } # <-- End of outputs for the system
     );
 }
