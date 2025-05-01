@@ -106,8 +106,8 @@
             entrypointScript
             # libpq is included via pythonEnv's psycopg dependency
           ];
-          # Link the essential directories from the paths into the final env
-          pathsToLink = [ "/bin" "/${python.sitePackages}" ];
+          # Link the essential directories plus our share directory
+          pathsToLink = [ "/bin" "/${python.sitePackages}" "/share" ];
         };
 
       in
@@ -172,18 +172,43 @@
         # --------------------------------------------------------
         # ---- Docker Image Definition ----
         # --------------------------------------------------------
+        # Create a better entrypoint script that handles the alembic.ini file
+        entrypointScript = pkgs.writeTextFile {
+          name = "docker-entrypoint.sh";
+          executable = true;
+          text = ''
+            #!${pkgs.bash}/bin/bash
+            set -e
+
+            echo "Working directory: $(pwd)"
+            echo "Setting up alembic.ini..."
+            cp ${hoffmagicApp}/share/hoffmagic/alembic.ini /app/alembic.ini
+
+            echo "Creating migrations directory..."
+            mkdir -p /app/src/hoffmagic/db/migrations
+
+            echo "Running Alembic migrations..."
+            cd /app
+            ${python}/bin/python -m alembic upgrade head
+
+            echo "Starting Uvicorn..."
+            HOST=''${HOST:-0.0.0.0}
+            PORT=''${PORT:-8000}
+            ${python}/bin/python -m uvicorn hoffmagic.main:app --host "$HOST" --port "$PORT"
+          '';
+        };
+
         packages.dockerImage = pkgs.dockerTools.buildImage {
           name = "hoffmagic";
           tag = "latest";
 
-          # Copy the simplified runtime environment to the root of the image.
-          # This includes python, bash, and hoffmagicApp + all its Python deps.
+          # Copy the runtime environment to the root of the image
           copyToRoot = appRuntimeEnv;
 
           # Configure the image metadata and runtime behavior
           config = {
             # Use our new entrypoint script
-            Entrypoint = [ "${entrypointScript}/bin/docker-entrypoint.sh" ];
+            Entrypoint = [ "${entrypointScript}" ];
             Cmd = [ ]; # Arguments passed to entrypoint (none needed here)
             Env = [
               # Set defaults for the container environment
@@ -210,9 +235,9 @@
             # Create the application directory
             mkdir -p /app
             # Create migrations directory needed by alembic
+            mkdir -p /app/src/hoffmagic/db
             mkdir -p /app/migrations
-            # Create an empty alembic.ini file that will be replaced at runtime by volume mount
-            touch /app/alembic.ini
+            touch /app/alembic.ini.placeholder
           '';
         };
         # -------------------------------------------------------------
