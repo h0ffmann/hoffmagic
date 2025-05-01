@@ -12,7 +12,7 @@ services:
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U hoffmagic"]
+      test: [ "CMD-SHELL", "pg_isready -U hoffmagic" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -22,18 +22,16 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      # Mount source files needed at runtime into the container's working dir
-      - ./src/content:/app/content                 # Blog content
-      - ./src/hoffmagic/templates:/app/templates   # Jinja templates
-      - ./src/hoffmagic/static:/app/static         # Static files (CSS, etc.)
-      - ./alembic.ini:/app/alembic.ini             # Alembic configuration
+      - ./src/content:/app/content # Blog content
+      - ./src/hoffmagic/templates:/app/templates # Jinja templates
+      - ./src/hoffmagic/static:/app/static # Static files (CSS, etc.)
+      - ./alembic.ini:/app/alembic.ini # Alembic configuration
       - ./src/hoffmagic/db/migrations:/app/src/hoffmagic/db/migrations # Alembic migration scripts
     environment:
       - DATABASE_URL=postgresql+psycopg://hoffmagic:hoffmagic@db:5432/hoffmagic
-      # !!! CHANGE IN PRODUCTION !!! Use secrets management.
       - SECRET_KEY=${SECRET_KEY:-dev_secret_key_change_in_production}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-'["localhost", "127.0.0.1"]'}
-      - DEBUG=${DEBUG:-true} # Default to true for compose, override for prod
+      - DEBUG=${DEBUG:-true}
       - ENV=${ENV:-development}
 
     ports:
