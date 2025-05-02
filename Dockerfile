@@ -13,9 +13,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY pyproject.toml README.md ./
 
+COPY src /app/src
 RUN pip install --no-cache-dir --prefix="/install" .
-
-COPY . /app/
 
 
 FROM python:3.12-slim AS final
