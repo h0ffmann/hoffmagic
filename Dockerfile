@@ -4,8 +4,7 @@ FROM python:3.12-slim AS builder
 # Set environment variables for build stage
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    # Necessary for pip install with some build backends
-    PIP_NO_CACHE_DIR=off \
+    # PIP_NO_CACHE_DIR is set via flag in RUN command
     PIP_DISABLE_PIP_VERSION_CHECK=on
 
 WORKDIR /app
