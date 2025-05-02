@@ -14,9 +14,11 @@ from fastapi import Depends, FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from jinja2 import pass_context # Import pass_context
 import markdown as md
-from markdown import markdown
+# Remove redundant markdown import if md is used consistently
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import Depends, FastAPI, Request, HTTPException # Ensure HTTPException is imported
 
 from .api.routes import api_router
 from .config import settings
@@ -153,12 +155,19 @@ async def blog_detail(
     from .services.blog import BlogService
     
     context = await common_context(request)
+    lang = context.get('lang', DEFAULT_LANGUAGE) # Get language from common context
+    logger.debug(f"Rendering blog detail for slug: {slug}, lang: {lang}")
+
     blog_service = BlogService(db)
-    
-    # Get the post by slug
-    post_data = await blog_service.get_post_by_slug(slug, is_essay=False)
-    context["post"] = post_data
-    
+    # Pass lang to the service call
+    post_data = await blog_service.get_post_by_slug(slug, is_essay=False, lang=lang)
+
+    if not post_data or not post_data.is_published:
+        logger.warning(f"Blog post not found or not published for slug: {slug}")
+        # Use the standard 404 handler by raising HTTPException
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    context.update({"post": post_data}) # Use update to add to existing context
     return templates.TemplateResponse("blog/detail.html", context)
 
 @app.get("/essays", response_class=HTMLResponse, name="essays_page")
@@ -180,12 +189,19 @@ async def essay_detail(
     from .services.essays import EssaysService
     
     context = await common_context(request)
+    lang = context.get('lang', DEFAULT_LANGUAGE) # Get language from common context
+    logger.debug(f"Rendering essay detail for slug: {slug}, lang: {lang}")
+
     essays_service = EssaysService(db)
-    
-    # Get the essay by slug
-    essay = await essays_service.get_essay_by_slug(slug)
-    context["essay"] = essay
-    
+    # Pass lang to the service call
+    essay = await essays_service.get_essay_by_slug(slug, lang=lang)
+
+    if not essay or not essay.is_published:
+        logger.warning(f"Essay not found or not published for slug: {slug}")
+        # Use the standard 404 handler by raising HTTPException
+        raise HTTPException(status_code=404, detail="Essay not found")
+
+    context.update({"essay": essay}) # Use update to add to existing context
     return templates.TemplateResponse("essays/detail.html", context)
 
 @app.get("/about", response_class=HTMLResponse, name="about_page")

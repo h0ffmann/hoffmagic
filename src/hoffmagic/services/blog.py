@@ -14,7 +14,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload, selectinload # Add selectinload
 
 from hoffmagic.config import settings
-from hoffmagic.db.models import Post, Author, Tag, Comment, post_tags # Add post_tags
+from sqlalchemy import select, func, or_, and_, desc # Add desc
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload, selectinload # Add selectinload
+from sqlalchemy.future import select # Keep this if used elsewhere, or consolidate imports
+
+from hoffmagic.config import settings
+from hoffmagic.db.models import Post, Author, Tag, Comment, post_tags # Ensure Comment is imported
 from hoffmagic.api.schemas import (
     PostCreate, PostUpdate, CommentCreate,
     BlogPostsResponse

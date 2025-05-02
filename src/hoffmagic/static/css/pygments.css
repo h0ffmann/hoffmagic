@@ -1,174 +1,56 @@
 /* src/hoffmagic/static/css/pygments.css - Example Dracula Theme */
+/* Ensure this file contains the CSS for your chosen Pygments theme */
+/* This example uses Dracula */
+
 .highlight pre {
-    background-color: #282a36;
-    /* Dracula background */
-    color: #f8f8f2;
-    /* Default text */
-    padding: 1em;
-    overflow: auto;
-    border-radius: 4px;
-    /* Ensure line breaks are handled */
-    white-space: pre;
-    word-wrap: normal;
-    /* Prevent unintended wrapping */
+ background-color: #282a36; /* Dracula background */
+ color: #f8f8f2; /* Default text */
+ padding: 1em;
+ overflow: auto; /* Enable horizontal scroll */
+ border-radius: 4px;
+ /* Ensure line breaks are handled correctly by pre */
+ white-space: pre;
+ word-wrap: normal; /* Prevent unintended wrapping */
+ font-family: var(--font-mono); /* Use consistent mono font */
+ font-size: 0.9em; /* Match other code styles */
 }
 
 /* Target Pygments generated classes directly */
-.highlight .hll {
-    background-color: #44475a;
-}
+.highlight .hll { background-color: #44475a; } /* Highlighted line */
+.highlight .c, .highlight .c1, .highlight .cs { color: #6272a4; font-style: italic; } /* Comment */
+.highlight .err { color: #f8f8f2; background-color: #ff5555; } /* Error */
+.highlight .k, .highlight .kc, .highlight .kd, .highlight .kn, .highlight .kp, .highlight .kr, .highlight .kt { color: #ff79c6; } /* Keyword */
+.highlight .n, .highlight .nb, .highlight .nc, .highlight .no, .highlight .nd, .highlight .ni, .highlight .ne, .highlight .nf, .highlight .nl, .highlight .nn, .highlight .nt, .highlight .nv, .highlight .nx { color: #f8f8f2; } /* Name */
+.highlight .o, .highlight .ow { color: #ff79c6; } /* Operator */
+.highlight .p { color: #f8f8f2; } /* Punctuation */
+.highlight .s, .highlight .s1, .highlight .s2, .highlight .sb, .highlight .sc, .highlight .sd, .highlight .se, .highlight .sh, .highlight .si, .highlight .sx, .highlight .sr, .highlight .ss { color: #f1fa8c; } /* String */
+.highlight .m, .highlight .mf, .highlight .mh, .highlight .mi, .highlight .mo, .highlight .il { color: #bd93f9; } /* Number */
+.highlight .na { color: #50fa7b; } /* Name.Attribute */
+.highlight .nb { color: #8be9fd; font-style: italic;} /* Name.Builtin */
+.highlight .nc { color: #50fa7b; font-weight: bold; } /* Name.Class */
+.highlight .no { color: #bd93f9; } /* Name.Constant */
+.highlight .nd { color: #ff79c6; } /* Name.Decorator */
+.highlight .ni { color: #f8f8f2; } /* Name.Entity */
+.highlight .ne { color: #ff5555; font-weight: bold;} /* Name.Exception */
+.highlight .nf { color: #50fa7b; } /* Name.Function */
+.highlight .fm { color: #50fa7b; } /* Name.Function.Magic */
+.highlight .py { color: #ffb86c; } /* Name.Namespace (Python specific?) */
+.highlight .nt { color: #ff79c6; } /* Name.Tag */
+.highlight .nv { color: #8be9fd; font-style: italic; } /* Name.Variable */
 
-/* Highlighted line */
-.highlight .c,
-.highlight .c1,
-.highlight .cs {
-    color: #6272a4;
-    font-style: italic;
-}
-
-/* Comment */
-.highlight .err {
-    color: #f8f8f2;
-    background-color: #ff5555;
-}
-
-/* Error */
-.highlight .k,
-.highlight .kc,
-.highlight .kd,
-.highlight .kn,
-.highlight .kp,
-.highlight .kr,
-.highlight .kt {
-    color: #ff79c6;
-}
-
-/* Keyword */
-.highlight .n,
-.highlight .nb,
-.highlight .nc,
-.highlight .no,
-.highlight .nd,
-.highlight .ni,
-.highlight .ne,
-.highlight .nf,
-.highlight .nl,
-.highlight .nn,
-.highlight .nt,
-.highlight .nv,
-.highlight .nx {
-    color: #f8f8f2;
-}
-
-/* Name */
-.highlight .o,
-.highlight .ow {
-    color: #ff79c6;
-}
-
-/* Operator */
-.highlight .p {
-    color: #f8f8f2;
-}
-
-/* Punctuation */
-.highlight .s,
-.highlight .s1,
-.highlight .s2,
-.highlight .sb,
-.highlight .sc,
-.highlight .sd,
-.highlight .se,
-.highlight .sh,
-.highlight .si,
-.highlight .sx,
-.highlight .sr,
-.highlight .ss {
-    color: #f1fa8c;
-}
-
-/* String */
-.highlight .m,
-.highlight .mf,
-.highlight .mh,
-.highlight .mi,
-.highlight .mo,
-.highlight .il {
-    color: #bd93f9;
-}
-
-/* Number */
-.highlight .na {
-    color: #50fa7b;
-}
-
-/* Name.Attribute */
-.highlight .nb {
-    color: #8be9fd;
-    font-style: italic;
-}
-
-/* Name.Builtin */
-.highlight .nc {
-    color: #50fa7b;
-    font-weight: bold;
-}
-
-/* Name.Class */
-.highlight .no {
-    color: #bd93f9;
-}
-
-/* Name.Constant */
-.highlight .nd {
-    color: #ff79c6;
-}
-
-/* Name.Decorator */
-.highlight .ni {
-    color: #f8f8f2;
-}
-
-/* Name.Entity */
-.highlight .ne {
-    color: #ff5555;
-    font-weight: bold;
-}
-
-/* Name.Exception */
-.highlight .nf {
-    color: #50fa7b;
-}
-
-/* Name.Function */
-.highlight .fm {
-    color: #50fa7b;
-}
-
-/* Name.Function.Magic */
-.highlight .py {
-    color: #ffb86c;
-}
-
-/* Name.Namespace */
-.highlight .nt {
-    color: #ff79c6;
-}
-
-/* Name.Tag */
-.highlight .nv {
-    color: #8be9fd;
-    font-style: italic;
-}
-
-/* Name.Variable */
-
-/* Ensure code tags inside pre inherit the pre background color */
+/* Ensure code tags inside pre inherit the pre background color and font */
+/* Also reset padding/margin that might be added by other rules */
 .highlight pre code {
-    background-color: transparent;
-    color: inherit;
-    padding: 0;
-    margin: 0;
-    display: block;
-    /* Helps with layout consistency */
+ background-color: transparent !important; /* Override potential conflicts */
+ color: inherit;
+ padding: 0;
+ margin: 0;
+ display: block; /* Helps with layout consistency */
+ font-family: inherit; /* Inherit from pre */
+ font-size: inherit; /* Inherit from pre */
+ line-height: inherit; /* Inherit from pre */
+ white-space: inherit; /* Inherit from pre */
 }
+
+/* Optional: Style inline code differently if needed, but ensure it doesn't conflict */
+/* code:not(pre code) { ... } */

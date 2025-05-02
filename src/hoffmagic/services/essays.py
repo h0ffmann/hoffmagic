@@ -9,12 +9,13 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 import frontmatter
 import markdown
 from fastapi import HTTPException, status
-from sqlalchemy import select, func, or_, and_, desc # Add desc
+from sqlalchemy import select, func, or_, and_, desc
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload, selectinload # Add selectinload
+from sqlalchemy.orm import joinedload, selectinload
+from sqlalchemy.future import select # Keep if used elsewhere or consolidate
 
 from hoffmagic.config import settings
-from hoffmagic.db.models import Post, Author, Tag, post_tags # Add post_tags
+from hoffmagic.db.models import Post, Author, Tag, Comment, post_tags # Ensure Comment is imported if needed
 from hoffmagic.api.schemas import (
     PostCreate, PostUpdate, EssaysResponse
 )
@@ -36,6 +37,15 @@ class EssaysService:
             db: SQLAlchemy async session
         """
         self.db = db
+
+    # --- Helper function (optional, remove if not used elsewhere) ---
+    # def _get_localized_field(self, obj, field_name: str, lang: str) -> Any:
+    #     if lang == "pt":
+    #         pt_field_name = f"{field_name}_pt"
+    #         localized_value = getattr(obj, pt_field_name, None)
+    #         if localized_value:
+    #             return localized_value
+    #     return getattr(obj, field_name, None)
 
     async def get_essays(
         self,
