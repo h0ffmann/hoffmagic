@@ -91,3 +91,6 @@ if __name__ == "__main__":
     print("--------------------------")
     print(f"Actual π: {math.pi:.10f}")
 ```
+
+<div class="embed-gist" data-gist-url="https://gist.github.com/louismullie/3769218.js">Loading Gist...</div>
+
