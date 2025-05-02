@@ -22,6 +22,7 @@ from .config import settings # Import settings
 from .db.engine import SessionLocal, init_db, get_session # Add get_session
 from .logger import setup_logging
 from .api.routes import blog, essays, contact # Import API route modules
+from .i18n import get_translations # Assuming i18n.py exists here
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -111,7 +112,15 @@ async def health_check() -> JSONResponse:
 
 # Define context processor for common template variables
 async def common_context(request: Request):
-    return {"request": request, "now": datetime.utcnow()}
+    # Determine language (e.g., from query param, header, cookie)
+    lang = request.query_params.get("lang", "en") # Default to 'en'
+    i18n = get_translations(lang) # Get translations for the determined language
+    return {
+        "request": request,
+        "now": datetime.utcnow(),
+        "lang": lang,
+        "i18n": i18n # Add i18n object to context
+    }
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
