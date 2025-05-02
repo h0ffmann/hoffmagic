@@ -61,8 +61,8 @@
                 {% if post.summary %}
                     <p>{{ post.summary }}</p>
                 {% elif post.content %}
-                    {# Basic truncation - consider a filter or server-side truncation for safety #}
-                    <div class="content-preview">{{ post.content[:250] ~ '...' if post.content|length > 250 else post.content }}</div>
+                    {# Safer truncation: strip tags, then truncate plain text #}
+                    <div class="content-preview">{{ post.content | striptags | truncate(250, True, '...') }}</div>
                 {% endif %}
                 {# Read more link #}
                 {% if post.slug %}
