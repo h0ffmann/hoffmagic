@@ -220,29 +220,44 @@ button:hover, input[type="submit"]:hover {
 }
 
 .lang-slider-container {
-    position: relative;
-    width: 36px; /* Adjust width */
-    height: 20px; /* Adjust height */
-    background-color: var(--color-bg-secondary); /* Darker background */
-    border-radius: 10px; /* Rounded corners */
+    /* Make the container behave like a button but maintain its style */
+    appearance: none;
+    border: none;
+    background: none;
     cursor: pointer;
-    border: 1px solid var(--color-border);
+    padding: 0;
+    position: relative;
+    width: 40px;
+    height: 20px;
+    background-color: #333;
+    border-radius: 10px;
+    border: 1px solid #444;
 }
 
 .lang-slider-button {
     position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 16px; /* Button size */
-    height: 16px; /* Button size */
-    background-color: var(--color-text-secondary); /* Slider button color */
+    width: 18px;
+    height: 18px;
+    /* Keep the button green */
+    background-color: #10b981;  /* Tailwind's emerald-500 color */
     border-radius: 50%;
-    transition: transform 0.3s ease-in-out;
+    top: 1px;
+    left: 1px;
+    transition: transform 0.3s ease;
 }
 
-.lang-slider-button.on-en {
-    transform: translateX(16px); /* Move button to the right for EN */
-    background-color: var(--color-accent); /* Active color */
+.lang-slider-button.on-pt {
+    transform: translateX(20px);
+}
+
+/* Focus state for better accessibility */
+.lang-slider-container:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.4);  /* Green glow for focus */
+}
+
+.lang-slider-container:hover .lang-slider-button {
+    background-color: #059669;  /* Slightly darker green on hover */
 }
 
 /* Hide the default slider appearance if using input checkbox internally */

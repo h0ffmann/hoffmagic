@@ -45,17 +45,19 @@
             <!-- Header Right: Language Toggle + Search -->
             <div class="header-right" style="display: flex; align-items: center; gap: 1.5em;">
                 <div class="language-toggle">
-                    <a href="?lang=en" class="lang-option {{ 'active' if lang == 'en' }}"
-                        aria-label="English" data-lang="en">
+                    <a href="?lang=en" class="lang-option {{ 'active' if lang == 'en' }}" 
+                       aria-label="English" data-lang="en">
                         {{ i18n.get('lang_en_short', 'EN') }}
                     </a>
-                    <div class="lang-slider-container"
-                         title="{{ i18n.get('toggle_language', 'Toggle Language') }}"
-                         id="lang-slider">
-                        <div class="lang-slider-button {{ 'on-pt' if lang == 'pt' }}"
+                    <button class="lang-slider-container" 
+                           title="{{ i18n.get('toggle_language', 'Toggle Language') }}" 
+                           id="lang-slider" 
+                           type="button" 
+                           aria-label="Switch language">
+                        <div class="lang-slider-button {{ 'on-pt' if lang == 'pt' }}" 
                              id="lang-slider-button"></div>
-                    </div>
-                    <a href="?lang=pt" class="lang-option {{ 'active' if lang == 'pt' }}"
+                    </button>
+                    <a href="?lang=pt" class="lang-option {{ 'active' if lang == 'pt' }}" 
                        aria-label="Português" data-lang="pt">
                         {{ i18n.get('lang_pt_short', 'PT') }}
                     </a>
@@ -103,31 +105,43 @@
                 sliderButton.classList.remove('on-pt');
             }
 
-            // Add click listener to both container and button elements
-            function switchLanguage() {
+            // Function to toggle language
+            function toggleLanguage(e) {
+                // Prevent default action if coming from a link or button
+                if (e) e.preventDefault();
+                
                 // Get the desired language based on current
                 const newLang = (currentLang === 'en') ? 'pt' : 'en';
-
+                
                 // Visual feedback before navigation
                 if (newLang === 'pt') {
                     sliderButton.classList.add('on-pt');
                 } else {
                     sliderButton.classList.remove('on-pt');
                 }
-
+                
                 // Preserve current URL path and other parameters
                 const currentUrl = new URL(window.location.href);
                 currentUrl.searchParams.set('lang', newLang);
-
-                // Navigate to the new URL after a brief delay for the animation
+                
+                // Navigate to the new URL after a brief delay for animation
                 setTimeout(() => {
                     window.location.href = currentUrl.toString();
-                }, 300);
+                }, 200);
             }
-
-            // Add click listeners to both container and button
-            if (sliderContainer) sliderContainer.addEventListener('click', switchLanguage);
-            if (sliderButton) sliderButton.addEventListener('click', switchLanguage);
+            
+            // Add click handlers to both the container and button
+            if (sliderContainer) {
+                sliderContainer.addEventListener('click', toggleLanguage);
+            }
+            
+            // Stop propagation on the button to avoid double-triggering
+            if (sliderButton) {
+                sliderButton.addEventListener('click', function(e) {
+                    e.stopPropagation();  // Prevent event from bubbling to container
+                    toggleLanguage(e);
+                });
+            }
 
             // Also add click handlers to the language option links for consistency
             langOptions.forEach(option => {
