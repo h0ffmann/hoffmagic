@@ -18,10 +18,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Copy only the files needed for dependency installation first
 # Ensure pyproject.toml exists and defines the package correctly
-COPY pyproject.toml ./
+# Include README.md needed by hatchling during build
+COPY pyproject.toml README.md ./
 
 # Install dependencies into a specific prefix directory
-# This layer is cached as long as pyproject.toml doesn't change
+# This layer is cached as long as pyproject.toml or README.md doesn't change
 # Using '.' installs the package defined in pyproject.toml in editable mode (if -e is used)
 # or standard mode. For prefix install, standard mode is better.
 RUN pip install --no-cache-dir --prefix="/install" .
