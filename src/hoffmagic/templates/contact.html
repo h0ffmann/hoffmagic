@@ -1,150 +1,180 @@
 {% extends "base.html" %}
-{# The nav links this to 'Misc', adjust title if needed #}
-{% block title %}Misc / Contact | hoffmagic{% endblock %}
-{% block description %}Contact information, frequently asked questions, and ways to connect.{% endblock %}
+{# Update title to use i18n #}
+{% block title %}{{ i18n.contact_title }} | hoffmagic{% endblock %}
+{% block description %}{{ i18n.contact_description | default('Get in touch with hoffmagic.') }}{% endblock %} {# Add description translation #}
 
 {% block content %}
-
 <section class="contact-page">
 
-    {# Renaming h1 to Misc to match nav link expectation #}
-    <h1>Misc / Contact</h1>
-            <p>
-                Have a question, comment, or just want to say hello? I'd love to hear from you.
-            </p>
+    {# Use i18n for heading #}
+    <h1>{{ i18n.contact_title }}</h1>
+    <p>
+        {{ i18n.contact_intro | default("Have a question, comment, or just want to say hello? I'd love to hear from you.") }} {# Add intro translation #}
+    </p>
 
-        {# Remove complex layout, present linearly #}
-            <div class="contact-form-section" style="margin-top: 3em;">
-                <h2 class="text-2xl font-bold mb-6">Send a Message</h2>
-                <form id="contact-form" class="space-y-6">
-                     {# Inputs inherit styles from minimalist.css #}
-                     <div style="margin-bottom: 1em;">
-                         <label for="name" style="display: block; margin-bottom: 0.3em; font-size: 0.9em; color: var(--color-text-secondary);">Name</label>
-                            <input type="text" id="name" name="name" required style="width: 100%;">
-                     </div>
-                    <div style="margin-bottom: 1em;">
-                         <label for="email" style="display: block; margin-bottom: 0.3em; font-size: 0.9em; color: var(--color-text-secondary);">Email</label>
-                            <input type="email" id="email" name="email" required style="width: 100%;">
-                    </div>
-                    <div style="margin-bottom: 1em;">
-                         <label for="subject" style="display: block; margin-bottom: 0.3em; font-size: 0.9em; color: var(--color-text-secondary);">Subject</label>
-                        <input type="text" id="subject" name="subject" required style="width: 100%;">
-                    </div>
-                    <div style="margin-bottom: 1em;">
-                         <label for="message" style="display: block; margin-bottom: 0.3em; font-size: 0.9em; color: var(--color-text-secondary);">Message</label>
-                        <textarea id="message" name="message" rows="6" required style="width: 100%; line-height: 1.6;"></textarea>
-                    </div>
-                    <div style="margin-top: 1.5em;">
-                        <button type="submit"> {# Button inherits styles #}
-                            Send Message
-                        </button>
-                    </div>
-                </form>
-                {# Simplified feedback message area - remove card styling #}
-                <p id="form-feedback" style="margin-top: 1em; font-size: 0.9em;"></p>
+    {# Contact Form Section #}
+    <div class="contact-form-section" style="margin-top: 3em;">
+        {# Use i18n for sub-heading #}
+        <h2 style="margin-bottom: 1.5em;">{{ i18n.send_message }}</h2>
+        <form id="contact-form">
+            {# Inputs inherit styles from minimalist.css #}
+            <div style="margin-bottom: 1em;">
+                {# Use i18n for label #}
+                <label for="name" style="display: block; margin-bottom: 0.3em; font-size: 0.9em;">{{ i18n.name }}</label>
+                <input type="text" id="name" name="name" required style="width: 100%; box-sizing: border-box;">
             </div>
+            <div style="margin-bottom: 1em;">
+                {# Use i18n for label #}
+                <label for="email" style="display: block; margin-bottom: 0.3em; font-size: 0.9em;">{{ i18n.email }}</label>
+                <input type="email" id="email" name="email" required style="width: 100%; box-sizing: border-box;">
+            </div>
+            <div style="margin-bottom: 1em;">
+                {# Use i18n for label #}
+                <label for="subject" style="display: block; margin-bottom: 0.3em; font-size: 0.9em;">{{ i18n.subject }}</label>
+                <input type="text" id="subject" name="subject" required style="width: 100%; box-sizing: border-box;">
+            </div>
+            <div style="margin-bottom: 1.5em;"> {# Increased bottom margin #}
+                {# Use i18n for label #}
+                <label for="message" style="display: block; margin-bottom: 0.3em; font-size: 0.9em;">{{ i18n.message }}</label>
+                <textarea id="message" name="message" rows="6" required style="width: 100%; box-sizing: border-box; line-height: 1.6;"></textarea>
+            </div>
+            <div>
+                {# Use i18n for button text #}
+                <button type="submit">{{ i18n.send_button }}</button> {# Button inherits styles #}
+            </div>
+        </form>
+        {# Feedback message area #}
+        <p id="form-feedback" style="margin-top: 1em; font-size: 0.9em;"></p>
+    </div>
 
-            <div class="contact-info-section" style="margin-top: 3em; padding-top: 2em; border-top: 1px solid var(--color-border);">
-                    <h2 class="text-2xl font-bold mb-6">Contact Information</h2>
-                    <div style="font-size: 1em; line-height: 1.7;">
-                        <p><strong>Email:</strong> <a href="mailto:hello@hoffmagic.com">hello@hoffmagic.com</a></p>
-                        <p><strong>Location:</strong> San Francisco, California</p>
-                         {# Add Social Links directly if desired #}
-                        <p><strong>Connect:</strong>
-                             <a href="#" style="margin-right: 0.75em;">Twitter</a> |
-                             <a href="#" style="margin: 0 0.75em;">LinkedIn</a> |
-                             <a href="#" style="margin-left: 0.75em;">GitHub</a>
-                         </p>
-                            </div>
+    {# Contact Info Section (Simplified) #}
+    <div class="contact-info-section" style="margin-top: 3em; padding-top: 2em; border-top: 1px solid var(--color-border);">
+        <h2 style="margin-bottom: 1em;">{{ i18n.contact_info_heading | default('Contact Information') }}</h2> {# Add translation #}
+        <div style="font-size: 1em; line-height: 1.7;">
+            <p><strong>{{ i18n.email }}:</strong> <a href="mailto:hoffmann@poli.ufrj.br">hoffmann@poli.ufrj.br</a></p> {# Use actual email #}
+            {# <p><strong>Location:</strong> San Francisco, California</p> #} {# Optional: Add location if desired #}
+            <p><strong>{{ i18n.connect_heading | default('Connect') }}:</strong> {# Add translation #}
+                 <a href="https://github.com/h0ff" target="_blank" rel="noopener noreferrer" style="margin-right: 0.75em;">GitHub</a> |
+                 <a href="https://linkedin.com/in/your-linkedin" target="_blank" rel="noopener noreferrer" style="margin: 0 0.75em;">LinkedIn</a> | {# Add actual LinkedIn #}
+                 <a href="https://twitter.com/your-twitter" target="_blank" rel="noopener noreferrer" style="margin-left: 0.75em;">Twitter</a> {# Add actual Twitter #}
+             </p>
+        </div>
+        <p style="margin-top: 1.5em; font-size: 0.9em; color: var(--color-text-secondary);">
+            {{ i18n.response_time | default('Response Time: Typically within 1-2 business days.') }} {# Add translation #}
+        </p>
+    </div>
 
-                    <div style="margin-top: 1.5em; font-size: 0.9em; color: var(--color-text-secondary);">
-                            Response Time: Typically within 1-2 business days.
-                        </p>
-                </div>
-
-            <div class="faq-section" style="margin-top: 3em; padding-top: 2em; border-top: 1px solid var(--color-border);">
-                <h2 class="text-3xl font-serif font-bold mb-10 text-center">Frequently Asked Questions</h2>
-                 <div class="space-y-6"> {# Adjust vertical spacing using simple margin #}
-                 <div style="margin-bottom: 2em;">
-                     <h3 style="font-weight: bold; margin-bottom: 0.5em;">Do you accept guest posts?</h3>
-                     <p style="font-size: 0.95em; color: var(--color-text-secondary);">
-                        Currently, I don't accept unsolicited guest posts. However, if you have a well-researched, unique perspective that aligns with the themes of this blog, feel free to reach out with a detailed pitch.
-                    </p>
-                 </div>
-                 <div style="margin-bottom: 2em;">
-                     <h3 style="font-weight: bold; margin-bottom: 0.5em;">Are you available for speaking engagements?</h3>
-                     <p style="font-size: 0.95em; color: var(--color-text-secondary);">
-                         Yes, I'm available for speaking at conferences, podcasts, and other events on topics related to philosophy, technology ethics, and digital well-being. Please use the contact form with details about your event.
-                    </p>
-                 </div>
-                 <div style="margin-bottom: 2em;">
-                     <h3 style="font-weight: bold; margin-bottom: 0.5em;">Can I reuse or republish your content?</h3>
-                     <p style="font-size: 0.95em; color: var(--color-text-secondary);">
-                         All content on this site is copyright protected. For educational use, you may quote short passages with proper attribution. For commercial use or republishing, please contact me for permission.
-                    </p>
-                 </div>
-                 <div style="margin-bottom: 2em;">
-                     <h3 style="font-weight: bold; margin-bottom: 0.5em;">How can I support your work?</h3>
-                     <p style="font-size: 0.95em; color: var(--color-text-secondary);">
-                        The best way to support this blog is to share articles you find valuable, subscribe to the newsletter, and engage with the content through comments. If you're interested in additional support options, please reach out.
-                     </p>
-                 </div>
+    {# FAQ Section (Simplified) - Optional, keep if relevant #}
+    <div class="faq-section" style="margin-top: 3em; padding-top: 2em; border-top: 1px solid var(--color-border);">
+        <h2 style="margin-bottom: 1.5em;">{{ i18n.faq_heading | default('Frequently Asked Questions') }}</h2> {# Add translation #}
+         <div>
+             <div style="margin-bottom: 2em;">
+                 <h3 style="font-weight: bold; margin-bottom: 0.5em;">{{ i18n.faq_q1_title | default('Do you accept guest posts?') }}</h3> {# Add translation #}
+                 <p style="font-size: 0.95em; color: var(--color-text-secondary);">
+                    {{ i18n.faq_q1_answer | default("Currently, I don't accept unsolicited guest posts. However, if you have a well-researched, unique perspective that aligns with the themes of this blog, feel free to reach out with a detailed pitch.") }} {# Add translation #}
+                </p>
              </div>
+             <div style="margin-bottom: 2em;">
+                 <h3 style="font-weight: bold; margin-bottom: 0.5em;">{{ i18n.faq_q2_title | default('Are you available for speaking engagements?') }}</h3> {# Add translation #}
+                 <p style="font-size: 0.95em; color: var(--color-text-secondary);">
+                     {{ i18n.faq_q2_answer | default("Yes, I'm available for speaking at conferences, podcasts, and other events on topics related to philosophy, technology ethics, and digital well-being. Please use the contact form with details about your event.") }} {# Add translation #}
+                </p>
              </div>
+             {# Add more FAQs as needed, using i18n variables #}
+         </div>
+     </div>
 </section>
-
 {% endblock %}
 
 {% block scripts %}
+{# Pass translations to JavaScript #}
 <script>
+    const i18nContact = {
+        sending: "{{ i18n.contact_sending | default('Sending...') }}",
+        success: "{{ i18n.contact_success_email | default('Message prepared in your email client!') }}",
+        errorPrefix: "{{ i18n.contact_error_prefix | default('Error: ') }}",
+        errorPrepare: "{{ i18n.contact_error_prepare | default('Error preparing message. Please copy manually or try again.') }}",
+        apiSuccess: "{{ i18n.contact_success_api | default('Message sent successfully via API.') }}", // Optional API success message
+        apiError: "{{ i18n.contact_error_api | default('API submission failed, but email client opened.') }}" // Optional API error message
+    };
+
     document.addEventListener('DOMContentLoaded', function() {
         const contactForm = document.getElementById('contact-form');
-         const formFeedback = document.getElementById('form-feedback');
+        const formFeedback = document.getElementById('form-feedback');
 
-        contactForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            formFeedback.textContent = 'Sending...';
-            formFeedback.style.color = 'var(--color-text-secondary)';
+        if (contactForm) {
+            contactForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                formFeedback.textContent = i18nContact.sending; // Use translated text
+                formFeedback.style.color = 'var(--color-text-secondary)';
 
-            const formData = {
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
-                subject: document.getElementById('subject').value,
-                message: document.getElementById('message').value,
-            };
-            try {
-                 // KEEP Existing email redirect logic as it was specifically coded
-                // Instead of making an API call, redirect to email client
-                const obfuscatedEmail = 'hoffmann' + '@' + 'poli.ufrj.br';
-                const emailLink = document.createElement('a');
-                emailLink.href = 'mailto:' + obfuscatedEmail +
-                            '?subject=' + encodeURIComponent(formData.subject) +
-                            '&body=' + encodeURIComponent('Name: ' + formData.name +
-                            '\nEmail: ' + formData.email +
-                            '\n\n' + formData.message);
-                emailLink.style.display = 'none';
-                document.body.appendChild(emailLink);
-                emailLink.click();
-                document.body.removeChild(emailLink);
+                const formData = {
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    subject: document.getElementById('subject').value,
+                    message: document.getElementById('message').value,
+                };
 
-                // Show success message and reset form
-                formFeedback.textContent = 'Message prepared in your email client!';
-                 formFeedback.style.color = 'var(--color-accent)';
-                contactForm.reset();
-                // Also try API if it exists (fallback)
-                fetch('/api/contact/message', {
-                   method: 'POST',
-                   headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData),
-                }).catch(err => console.log('API error, but email was sent:', err));
-            } catch (error) {
-                console.error('Error:', error);
-                 formFeedback.textContent = 'Error preparing message. Please copy manually or try again.';
-                 formFeedback.style.color = '#ff6b6b'; // Simple error red
-            }
-        });
+                // Basic validation
+                if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+                     formFeedback.textContent = i18nContact.errorPrefix + "{{ i18n.fill_all_fields | default('Please fill all fields.') }}"; // Add translation
+                     formFeedback.style.color = '#ff6b6b';
+                     return;
+                }
+
+                try {
+                    // --- Email Redirect Logic ---
+                    const obfuscatedEmail = 'hoffmann' + '@' + 'poli.ufrj.br'; // Keep your actual email
+                    const emailLink = document.createElement('a');
+                    emailLink.href = 'mailto:' + obfuscatedEmail +
+                                '?subject=' + encodeURIComponent(formData.subject) +
+                                '&body=' + encodeURIComponent('Name: ' + formData.name +
+                                '\nEmail: ' + formData.email +
+                                '\n\n' + formData.message);
+                    emailLink.style.display = 'none';
+                    document.body.appendChild(emailLink);
+                    emailLink.click();
+                    document.body.removeChild(emailLink);
+
+                    // Show success message for email client
+                    formFeedback.textContent = i18nContact.success; // Use translated text
+                    formFeedback.style.color = 'var(--color-accent)';
+                    contactForm.reset();
+
+                    // --- Optional: Attempt API Submission as Fallback/Record ---
+                    try {
+                        const apiResponse = await fetch('/api/contact/message', {
+                           method: 'POST',
+                           headers: { 'Content-Type': 'application/json' },
+                           body: JSON.stringify(formData),
+                        });
+                        if (!apiResponse.ok) {
+                            // Log API error but don't overwrite success message for email
+                            console.warn('API submission failed:', apiResponse.statusText);
+                            // Optionally show a subtle secondary message:
+                            // formFeedback.textContent += ` (${i18nContact.apiError})`;
+                        } else {
+                             console.info('Message also submitted via API.');
+                             // Optionally update feedback if API is primary:
+                             // formFeedback.textContent = i18nContact.apiSuccess;
+                        }
+                    } catch (apiErr) {
+                        console.warn('API submission failed:', apiErr);
+                        // Optionally show a subtle secondary message:
+                        // formFeedback.textContent += ` (${i18nContact.apiError})`;
+                    }
+                    // --- End Optional API Submission ---
+
+                } catch (error) {
+                    console.error('Error preparing mailto link:', error);
+                    formFeedback.textContent = i18nContact.errorPrepare; // Use translated text
+                    formFeedback.style.color = '#ff6b6b'; // Simple error red
+                } finally {
+                    // Optionally clear feedback after a few seconds
+                    setTimeout(() => { formFeedback.textContent = ''; }, 7000);
+                }
+            });
+        }
     });
 </script>
 {% endblock %}
