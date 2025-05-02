@@ -17,6 +17,7 @@ async def get_posts(
     page_size: int = Query(10, ge=1, le=100),
     tag: Optional[str] = None,
     search: Optional[str] = None,
+    lang: str = Query('en'),
     db: AsyncSession = Depends(get_session)
 ):
     blog_service = BlogService(db)
@@ -25,9 +26,10 @@ async def get_posts(
         posts_data = await blog_service.get_posts(
             page=page,
             page_size=page_size,
-            tag_slug=tag, # Pass tag as tag_slug
+            tag_slug=tag,
             search=search,
-            is_essay=False
+            is_essay=False,
+            lang=lang
         )
         return posts_data
     except Exception as e:
@@ -37,10 +39,11 @@ async def get_posts(
 @router.get("/{slug}", response_model=PostDetailRead)
 async def get_post(
     slug: str,
+    lang: str = Query('en'),
     db: AsyncSession = Depends(get_session)
 ):
     blog_service = BlogService(db)
-    post = await blog_service.get_post_by_slug(slug, is_essay=False)
+    post = await blog_service.get_post_by_slug(slug, is_essay=False, lang=lang)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
     return post

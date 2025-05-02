@@ -38,13 +38,22 @@ class BlogService:
         """
         self.db = db
 
+    def _get_localized_field(self, obj, field_name, lang):
+        """Get the appropriate field value based on language."""
+        if lang == 'pt':
+            pt_field = getattr(obj, f"{field_name}_pt", None)
+            if pt_field:
+                return pt_field
+        return getattr(obj, field_name)
+
     async def get_posts(
         self,
         page: int = 1,
         page_size: int = 10,
         tag_slug: Optional[str] = None,
         search: Optional[str] = None,
-        is_essay: bool = False
+        is_essay: bool = False,
+        lang: str = 'en'
     ) -> Dict[str, Any]:
         """
         Get posts (or essays) with pagination, filtering, and search.
@@ -89,6 +98,16 @@ class BlogService:
             # Calculate pages
             pages = (total + page_size - 1) // page_size if total > 0 else 1
 
+            # Localize content before returning
+            for post in posts:
+                if lang == 'pt':
+                    if hasattr(post, 'title_pt') and post.title_pt:
+                        post.title = post.title_pt
+                    if hasattr(post, 'content_pt') and post.content_pt:
+                        post.content = post.content_pt
+                    if hasattr(post, 'summary_pt') and post.summary_pt:
+                        post.summary = post.summary_pt
+            
             return {
                 "items": posts,
                 "total": total,
