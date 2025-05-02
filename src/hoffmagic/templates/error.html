@@ -4,11 +4,88 @@
 {% block content %}
 <section class="error-page" style="text-align: center; padding: 3em 0;">
     <h1 style="font-size: 5em; margin-bottom: 0.2em;">{{ error.code }}</h1>
-    <h2 style="margin-bottom: 1.5em;">{{ error.message }}</h2>
-    <p>
+    {# Use the generic message from i18n for the main heading #}
+    <h2 style="margin-bottom: 1.5em;">{{ i18n.get('error_general', 'An error occurred') }}</h2>
+
+    {# Display specific error details if available (like from the 500 handler) #}
+    {% if error.type or error.message or error.traceback %}
+    <div class="error-details" style="max-width: 800px; margin: 2em auto; padding: 1.5em; text-align: left; background-color: var(--color-bg-secondary); border: 1px solid var(--color-border-light); border-radius: 5px; font-family: var(--font-mono); font-size: 0.9em;">
+        {% if error.type %}
+            <p style="margin-bottom: 0.5em;"><strong>Type:</strong> {{ error.type }}</p>
+        {% endif %}
+        {% if error.message %}
+            {# Display the specific exception message #}
+            <p style="margin-bottom: 0.5em;"><strong>Message:</strong> {{ error.message }}</p>
+        {% endif %}
+        {% if error.traceback %}
+            <div style="position: relative; margin-top: 1em;">
+                 {# Use the new CSS class for the button #}
+                 <button id="copy-traceback-button" class="copy-error-button" aria-label="Copy Traceback" title="Copy Traceback">Copy</button>
+                 <h4 style="margin-bottom: 0.5em; font-family: var(--font-sans); font-weight: 600; color: var(--color-text-primary);">Traceback:</h4>
+                 {# Ensure pre tag styles allow wrapping and scrolling #}
+                 <pre id="error-traceback" style="white-space: pre-wrap; word-wrap: break-word; overflow-x: auto; background-color: #2d2d2d; padding: 1em; border-radius: 4px; color: #ccc; max-height: 400px;">{{ error.traceback }}</pre>
+             </div>
+        {% endif %}
+    </div>
+    {% elif error.message and error.code != 500 %}
+        {# For non-500 errors where only a message might be passed #}
+        <p style="color: var(--color-text-secondary);">{{ error.message }}</p>
+    {% endif %}
+
+    <p style="margin-top: 2em;">
         <a href="{{ url_for('home') }}?lang={{ lang }}" style="color: var(--color-accent); text-decoration: underline;">
             {{ i18n.get('back_to_home', 'Back to home') }}
         </a>
     </p>
 </section>
+{% endblock %}
+{% block scripts %}
+{{ super() }} {# Include scripts from base template if any #}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const copyButton = document.getElementById('copy-traceback-button');
+        const tracebackPre = document.getElementById('error-traceback');
+
+        if (copyButton && tracebackPre) {
+            copyButton.addEventListener('click', () => {
+                const tracebackText = tracebackPre.innerText;
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(tracebackText).then(() => {
+                        copyButton.textContent = 'Copied!';
+                        copyButton.classList.add('copied');
+                        setTimeout(() => {
+                            copyButton.textContent = 'Copy';
+                            copyButton.classList.remove('copied');
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Failed to copy traceback: ', err);
+                        copyButton.textContent = 'Error';
+                    });
+                } else {
+                    // Basic fallback (might not work everywhere)
+                    const textArea = document.createElement('textarea');
+                    textArea.value = tracebackText;
+                    textArea.style.position = 'absolute';
+                    textArea.style.left = '-9999px';
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    try {
+                        document.execCommand('copy');
+                        copyButton.textContent = 'Copied!';
+                         copyButton.classList.add('copied');
+                         setTimeout(() => {
+                             copyButton.textContent = 'Copy';
+                             copyButton.classList.remove('copied');
+                        }, 2000);
+                    } catch (err) {
+                        console.error('Fallback copy failed: ', err);
+                        copyButton.textContent = 'Error';
+                    } finally {
+                        document.body.removeChild(textArea);
+                    }
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}
