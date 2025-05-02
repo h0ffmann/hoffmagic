@@ -62,29 +62,45 @@ app.mount(
 # Setup Jinja2 templates
 templates = Jinja2Templates(directory=CONTAINER_APP_DIR / "templates")
 
-# Register markdown filter using pass_context
-@pass_context # Use pass_context to potentially access request context if needed later
-def markdown_filter(context, value):
-    """Convert Markdown to HTML with enhanced syntax highlighting using Pygments."""
-    if not value:
-        return ""
-    # Configure codehilite:
-    # - css_class='highlight': Wraps code blocks in <div class="highlight">...</div>
-    # - use_pygments=True: Explicitly use Pygments (usually default if installed)
-    # - noclasses=False: Pygments SHOULD add specific classes like .k, .s1 etc. (default)
-    # - lang_prefix='language-': Adds 'language-python' class to code tags (useful for some JS libraries, good practice)
-    extensions = [
-        'fenced_code',
-        'codehilite(css_class=highlight,use_pygments=True,noclasses=False,lang_prefix=\'language-\')',
-        'tables',
-        'nl2br', # Keep if desired, converts single newlines to <br>
-        'extra' # Keep for other markdown features
-    ]
-    # Note: Removed pygments_style from extension_configs as it's less common;
-    # CSS file handles styling. If needed, add it back within codehilite().
-    return md.markdown(value, extensions=extensions)
+import html # Import html for escaping in error handling
 
-# Make sure the filter is added to the Jinja environment
+# Register markdown filter using pass_context
+@pass_context
+def markdown_filter(context, value):
+    """Converts markdown text to HTML with specific extensions enabled."""
+    if not value:
+        return "" # Return empty string if value is None or empty
+
+    extensions = [
+        'fenced_code', # For ``` ``` code blocks
+        'codehilite',  # Name of the syntax highlighting extension
+        'tables',      # For Markdown tables
+        'nl2br',       # Convert single newlines to <br> (optional, keep if desired)
+        'extra'        # Includes abbreviations, attribute lists, definitions lists, footnotes, etc.
+    ]
+    extension_configs = {
+        'codehilite': {
+            'css_class': 'highlight', # The CSS class to wrap the <pre> tag
+            'noclasses': False,       # IMPORTANT: MUST be False to use Pygments CSS classes like .k, .s1 etc.
+            'use_pygments': True,     # Ensure Pygments is explicitly used
+            # 'pygments_style': 'dracula', # Example: Set style here INSTEAD of CSS file. Remove if using pygments.css.
+            # 'lang_prefix': 'language-' # Optional class prefix for <code> tags
+        }
+    }
+    try:
+        # Process the markdown using the imported 'md' alias
+        processed_html = md.markdown(
+            value,
+            extensions=extensions,
+            extension_configs=extension_configs
+        )
+        return processed_html
+    except Exception as e:
+        logger.error(f"Error processing markdown: {e}", exc_info=True)
+        # Return original value wrapped in pre tags or a safe HTML representation
+        return f"<pre>Error rendering markdown:\n{html.escape(str(value))}</pre>"
+
+# Make sure the filter is registered with the Jinja environment AFTER templates are defined
 templates.env.filters["markdown"] = markdown_filter
 
 # Define startup and shutdown events
