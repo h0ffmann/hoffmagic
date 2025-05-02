@@ -207,9 +207,8 @@
                     preElement.parentNode.insertBefore(wrapper, preElement);
                     wrapper.appendChild(preElement);
                 }
-
-                // 2. Create the button (only if one doesn't exist)
-                if (!wrapper.querySelector('.copy-code-button')) {
+                // 2. Create the button (only if one doesn't exist and wrapper exists)
+                if (wrapper && !wrapper.querySelector('.copy-code-button')) {
                     const copyButton = document.createElement('button');
                     copyButton.className = 'copy-code-button';
                     copyButton.textContent = 'Copy'; // Or use an icon
@@ -267,31 +266,30 @@
             }); // end forEach codeBlock
 
 
-            // --- Add Gist Embedding Logic ---
-            const gistPlaceholders = document.querySelectorAll('main .embed-gist');
-
-            gistPlaceholders.forEach(placeholder => {
-                const gistUrl = placeholder.getAttribute('data-gist-url');
-                if (gistUrl) {
-                    // Create a script tag
-                    const script = document.createElement('script');
-                    script.type = 'text/javascript';
-                    script.src = gistUrl;
-
-                    // Replace the placeholder div with the script tag
-                    // Place script *after* the placeholder initially to avoid disrupting DOM iteration
-                    placeholder.parentNode.insertBefore(script, placeholder.nextSibling);
-
-                    // Optional: Remove the placeholder text/div once script is potentially loading
-                    // placeholder.remove(); // This might cause layout shift if script loading is slow
-                    placeholder.style.display = 'none'; // Hide placeholder instead of removing
-
-                } else {
-                    placeholder.textContent = 'Error: Gist URL missing.';
-                    console.warn('Found .embed-gist element without data-gist-url attribute.');
-                }
-            });
-            // --- End Gist Embedding Logic ---
+             // --- Add Gist Embedding Logic ---
+             const gistPlaceholders = document.querySelectorAll('main .embed-gist');
+             gistPlaceholders.forEach(placeholder => {
+                 const gistUrl = placeholder.getAttribute('data-gist-url');
+                 if (gistUrl) {
+                     // Clear the placeholder text first
+                     placeholder.innerHTML = '';
+                     // Create a script tag
+                     const script = document.createElement('script');
+                     script.type = 'text/javascript';
+                     script.src = gistUrl;
+                     script.onerror = () => { // Add error handling
+                         placeholder.textContent = 'Error loading Gist.';
+                         placeholder.style.display = 'block'; // Show error
+                         console.error('Failed to load Gist script:', gistUrl);
+                     };
+                     // Append the script inside the placeholder div
+                     placeholder.appendChild(script);
+                 } else {
+                     placeholder.textContent = 'Error: Gist URL missing.';
+                     console.warn('Found .embed-gist element without data-gist-url attribute.');
+                  }
+             });
+             // --- End Gist Embedding Logic ---
 
 
         }); // End DOMContentLoaded

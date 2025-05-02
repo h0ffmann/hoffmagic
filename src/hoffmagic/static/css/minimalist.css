@@ -415,8 +415,8 @@ button:hover, input[type="submit"]:hover {
 }
 
 .copy-code-button.copied {
-    background-color: var(--color-accent); /* Success feedback */
-    color: var(--color-bg-primary);
+    background-color: #50fa7b; /* Use a success color like green */
+    color: var(--color-bg-primary); /* Keep dark text for contrast */
     opacity: 1;
 }
 
