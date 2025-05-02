@@ -1,0 +1,14 @@
+{
+    "title": "hoffmagic blog",
+    "description": "hoffmagic - a beautiful blog featuring insightful articles and essays",
+    "latest_writing": "Latest Writing",
+    "subscribe_heading": "Subscribe",
+    "subscribe_text": "Get new posts and essays delivered directly to your inbox.",
+    "email_label": "Email Address:",
+    "email_placeholder": "you@example.com",
+    "subscribe_button": "Subscribe",
+    "subscribing": "Subscribing...",
+    "subscribe_success": "Success! Check your inbox.",
+    "subscribe_error": "Error: {message}",
+    "subscribe_server_error": "Error: Could not reach server."
+}

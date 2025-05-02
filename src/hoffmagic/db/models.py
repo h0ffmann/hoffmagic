@@ -31,9 +31,12 @@ class Post(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(255), nullable=False)
+    title_pt = Column(String(255), nullable=True)
     slug = Column(String(255), unique=True, nullable=False, index=True)
     content = Column(Text, nullable=False)
+    content_pt = Column(Text, nullable=True)
     summary = Column(Text, nullable=True)
+    summary_pt = Column(Text, nullable=True)
     is_published = Column(Boolean, default=False)
     is_essay = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

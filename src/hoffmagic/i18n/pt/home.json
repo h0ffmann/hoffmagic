@@ -1,0 +1,14 @@
+{
+    "title": "blog hoffmagic",
+    "description": "hoffmagic - um blog bonito com artigos e ensaios inspiradores",
+    "latest_writing": "Publicações Recentes",
+    "subscribe_heading": "Inscreva-se",
+    "subscribe_text": "Receba novos posts e ensaios diretamente em seu e-mail.",
+    "email_label": "Endereço de E-mail:",
+    "email_placeholder": "voce@exemplo.com",
+    "subscribe_button": "Inscrever",
+    "subscribing": "Inscrevendo...",
+    "subscribe_success": "Sucesso! Verifique sua caixa de entrada.",
+    "subscribe_error": "Erro: {message}",
+    "subscribe_server_error": "Erro: Não foi possível conectar ao servidor."
+}
