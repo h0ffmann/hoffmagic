@@ -14,9 +14,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY pyproject.toml README.md ./
 
 COPY src /app/src
+
 RUN pip install --no-cache-dir --prefix="/install" .
 
-
+COPY scripts /app/scripts
+COPY alembic.ini /app/alembic.ini
 FROM python:3.12-slim AS final
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
