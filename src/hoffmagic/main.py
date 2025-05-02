@@ -39,6 +39,7 @@ async def log_requests(request: Request, call_next):
     return response
 
 # Include API routes
+from hoffmagic.api.routes import api_router
 app.include_router(api_router)
 
 # Mount static files

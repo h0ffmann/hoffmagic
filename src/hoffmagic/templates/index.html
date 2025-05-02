@@ -82,7 +82,7 @@ essays') }}{% endblock %}
                     ${dateFormatter.format(new Date(item.publish_date))}
                 </p>
                 ${item.summary ? `<p>${item.summary}</p>` : ''}
-                <a href="/${item.is_essay ? 'essays' : 'blog'}/${item.slug}?lang={{ lang }}" 
+                <a href="/${item.is_essay ? 'essays' : 'blog'}/${item.slug}?lang={{ lang }}"
                    style="font-size: 0.9em; color: var(--color-accent);">${i18n.readMore}</a>
             </article>
         `).join('');

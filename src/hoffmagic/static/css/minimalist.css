@@ -203,3 +203,46 @@ button:hover, input[type="submit"]:hover {
     width: 0;
     height: 0;
 } */
+
+/* Language Toggle Styles */
+.language-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.lang-option {
+    font-size: 0.9em;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+}
+
+.lang-option.active {
+    color: var(--color-text-primary);
+    font-weight: bold;
+}
+
+.lang-slider-container {
+    position: relative;
+    width: 40px;
+    height: 20px;
+    background-color: #333;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid #444;
+}
+
+.lang-slider-button {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background-color: var(--color-accent);
+    border-radius: 50%;
+    top: 1px;
+    left: 1px;
+    transition: transform 0.3s ease;
+}
+
+.lang-slider-button.on-pt {
+    transform: translateX(20px);
+}

@@ -1,17 +1,15 @@
 # This file ensures the routes directory is recognized as a Python package
-from fastapi import APIRouter, Depends, Query
-from typing import Optional
+from fastapi import APIRouter
+from .blog import router as blog_router
+from .essays import router as essays_router
+from .about import router as about_router
+from .contact import router as contact_router
 
 # Create main router (can be used to group API routes under /api)
-# Note: The individual route files (blog.py, essays.py, etc.) already define their own routers.
-# This api_router might not be strictly necessary if app.include_router is used directly in main.py
-# as is currently the case. Keeping it based on the diff provided.
 api_router = APIRouter(prefix="/api")
 
-# If you intended to include the specific routers here instead of main.py, you would do:
-# from . import blog, essays, contact, about # etc.
-# api_router.include_router(blog.router)
-# api_router.include_router(essays.router)
-# api_router.include_router(contact.router)
-# api_router.include_router(about.router)
-# Then in main.py: app.include_router(api_router)
+# Register all route modules with the main API router
+api_router.include_router(blog_router, prefix="/blog", tags=["blog"])
+api_router.include_router(essays_router, prefix="/essays", tags=["essays"])
+api_router.include_router(about_router, prefix="/about", tags=["about"])
+api_router.include_router(contact_router, prefix="/contact", tags=["contact"])

@@ -51,16 +51,18 @@
             <!-- Header Right: Language Toggle + Search -->
             <div class="header-right" style="display: flex; align-items: center; gap: 1.5em;">
                 <div class="language-toggle">
-                    {# Simple hardcoded language toggle for EN and PT #}
-                    <a href="?lang=en" class="lang-option {{ 'active' if lang == 'en' }}" aria-label="English"
-                        data-lang="en">
+                    <a href="?lang=en" class="lang-option {{ 'active' if lang == 'en' }}"
+                        aria-label="English" data-lang="en">
                         {{ i18n.get('lang_en_short', 'EN') }}
                     </a>
-                    <div class="lang-slider-container" title="{{ i18n.get('toggle_language', 'Toggle Language') }}">
-                        <div class="lang-slider-button {{ 'on-en' if lang == 'en' }}"></div>
+                    <div class="lang-slider-container"
+                         title="{{ i18n.get('toggle_language', 'Toggle Language') }}"
+                         id="lang-slider">
+                        <div class="lang-slider-button {{ 'on-pt' if lang == 'pt' }}"
+                             id="lang-slider-button"></div>
                     </div>
-                    <a href="?lang=pt" class="lang-option {{ 'active' if lang == 'pt' }}" aria-label="Português"
-                        data-lang="pt">
+                    <a href="?lang=pt" class="lang-option {{ 'active' if lang == 'pt' }}"
+                       aria-label="Português" data-lang="pt">
                         {{ i18n.get('lang_pt_short', 'PT') }}
                     </a>
                 </div>
@@ -92,21 +94,38 @@
     </main>
     {% block scripts %}
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // Language Slider Logic
-            const sliderContainer = document.querySelector('.lang-slider-container');
+            const sliderContainer = document.getElementById('lang-slider');
+            const sliderButton = document.getElementById('lang-slider-button');
             const currentLang = new URLSearchParams(window.location.search).get('lang') || 'en';
 
-            sliderContainer?.addEventListener('click', function () {
+            // Update slider position based on current language
+            if (currentLang === 'pt') {
+                sliderButton.classList.add('on-pt');
+            } else {
+                sliderButton.classList.remove('on-pt');
+            }
+
+            sliderContainer?.addEventListener('click', function() {
                 // Get the desired language based on current
                 const newLang = (currentLang === 'en') ? 'pt' : 'en';
+
+                // Visual feedback before navigation
+                if (newLang === 'pt') {
+                    sliderButton.classList.add('on-pt');
+                } else {
+                    sliderButton.classList.remove('on-pt');
+                }
 
                 // Preserve current URL path and other parameters
                 const currentUrl = new URL(window.location.href);
                 currentUrl.searchParams.set('lang', newLang);
 
-                // Navigate to the new URL
-                window.location.href = currentUrl.toString();
+                // Navigate to the new URL after a brief delay for the animation
+                setTimeout(() => {
+                    window.location.href = currentUrl.toString();
+                }, 300);
             });
 
             // Set a cookie to remember the language preference
