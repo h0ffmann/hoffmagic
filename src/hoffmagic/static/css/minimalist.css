@@ -3,11 +3,13 @@
 :root {
     /* Define CSS variables from Tailwind config for potential use */
     --color-bg-primary: #1a1a1a; /* Match Tailwind */
+    --color-bg-rgb: 26, 26, 26; /* RGB for opacity */
     --color-bg-secondary: #2c2c2c; /* Match Tailwind */
     --color-text-primary: #e0e0e0; /* Match Tailwind */
     --color-text-secondary: #a0a0a0;
     --color-accent: #2ecc71;
     --color-border: #333333;
+    --color-border-light: #444444; /* Lighter border for subtle separators */
     --font-sans: ui-sans-serif, system-ui, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
 }
