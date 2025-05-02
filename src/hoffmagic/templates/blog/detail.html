@@ -46,14 +46,14 @@
     <!-- Article Content -->
     {# Use the 'prose' class for Markdown content styling from minimalist.css #}
     <div class="prose" style="margin-bottom: 2.5em;">
-        {# Display summary if it exists and is different from main content start #}
-        {% if post.summary and not post.content.startswith(post.summary) %}
-        <p><em>{{ post.summary }}</em></p>
+        {# Display summary if it exists and is different from main content start - Use dictionary access #}
+        {% if post.get('summary') and post.get('content') and not post.get('content').startswith(post.get('summary')) %}
+        <p><em>{{ post.get('summary') }}</em></p>
         <hr class="minimal-separator"> {# Add separator if summary is distinct #}
         {% endif %}
 
-        {# Render main content safely #}
-        {{ post.content | safe }}
+        {# Render main content safely - Use dictionary access #}
+        {{ post.get('content', '') | safe }} {# Default to empty string if content is missing #}
     </div>
 
     <!-- Tags -->
