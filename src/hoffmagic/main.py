@@ -1,194 +1,230 @@
-# -*- coding: utf-8 -*-
-# type: ignore[name-defined] # ignore missing type hints for FastAPI
-
-import os
 import logging
-from contextlib import asynccontextmanager
-from pathlib import Path
-from typing import Any, Dict, List, AsyncGenerator
+import time
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, Optional
 
-import time # Add time import
-import time # Add time import
-from fastapi import Depends, FastAPI, HTTPException, Request, status
+from fastapi import Depends, FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
-from fastapi.middleware.cors import CORSMiddleware # Add CORS Middleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-
-# Assuming engine and logger are setup elsewhere and imported if needed
-# Assuming engine and logger are setup elsewhere and imported if needed
-from .config import settings # Import settings
-from .db.engine import SessionLocal, init_db, get_session # Add get_session
-from .logger import setup_logging
-from .api.routes import blog, essays, contact # Import API route modules
-from .i18n import get_translations # Assuming i18n.py exists here
-
 from sqlalchemy.ext.asyncio import AsyncSession
 
-# Set up logging
-# logger = logging.getLogger("hoffmagic") # Original - assumes setup elsewhere
+from .api.routes import api_router
+from .config import settings
+from .db.engine import get_session, init_db
+from .i18n import get_translations, DEFAULT_LANGUAGE
+from .logger import setup_logging
+
 logger = setup_logging()
-
-# Define base directory *inside* the container based on WorkingDir
 CONTAINER_APP_DIR = Path("/app")
-
 app = FastAPI(
-    title="Hoffmagic Blog",
-    description="Hoffmann's magical blog.",
+    title="HoffMagic Blog",
+    description="A beautiful blog built with FastAPI and Jinja2",
     version="0.1.0",
-    docs_url="/docs" if settings.DEBUG else None, # Use settings from config
-    redoc_url="/redoc" if settings.DEBUG else None, # Use settings from config
+    debug=settings.DEBUG,
 )
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"], # Allow all origins for simplicity, adjust in production
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# API routes
-app.include_router(blog.router, prefix="/api/blog", tags=["blog"])
-app.include_router(essays.router, prefix="/api/essays", tags=["essays"])
-app.include_router(contact.router, prefix="/api/contact", tags=["contact"])
 
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
+    """Log all requests with timing information."""
     start_time = time.time()
     response = await call_next(request)
     process_time = time.time() - start_time
-    logger.info(f"path: {request.url.path} | method: {request.method} | status: {response.status_code} | time: {process_time:.4f}s")
+    logger.info(
+        f"{request.client.host}:{request.client.port} - "
+        f"\"{request.method} {request.url.path}\" {response.status_code} "
+        f"- {process_time:.4f}s"
+    )
     return response
 
-# --- Configure Template and Static paths using CONTAINER_APP_DIR ---
-templates = Jinja2Templates(directory=CONTAINER_APP_DIR / "templates")
+# Include API routes
+app.include_router(api_router)
+
+# Mount static files
 app.mount(
     "/static",
     StaticFiles(directory=CONTAINER_APP_DIR / "static"),
-    name="static"
+    name="static",
 )
-# -------------------------------------------------------------------
 
-# Placeholder for your API routers - uncomment and implement later
-# from .api.routes import about, blog, contact, essays
+# Setup Jinja2 templates
+templates = Jinja2Templates(directory=CONTAINER_APP_DIR / "templates")
 
-# @asynccontextmanager
-# async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-#     """
-#     Initialize database connection and perform startup tasks.
-#     """
-#     logger.info("Starting hoffmagic application")
-#     await init_db()
-#     yield
-#     logger.info("Shutting down hoffmagic application")
-#
-# app = FastAPI(lifespan=lifespan) # Use lifespan if preferred over on_event
-
+# Define startup and shutdown events
 @app.on_event("startup")
 async def startup_event() -> None:
-    """
-    Initialize database connection and perform startup tasks.
-    """
-    logger.info("starting hoffmagic application")
+    """Initialize database connection and perform startup tasks."""
+    logger.info("Starting up hoffmagic blog application")
     await init_db()
-
+    logger.info("Database initialized")
 
 @app.on_event("shutdown")
 async def shutdown_event() -> None:
-    """
-    Close database connection and perform cleanup tasks (if any needed besides what context managers handle).
-    """
-    logger.info("shutting down hoffmagic application")
-
+    """Perform cleanup operations during shutdown."""
+    logger.info("Shutting down hoffmagic blog application")
 
 @app.get("/health")
 async def health_check() -> JSONResponse:
-    """
-    Health check endpoint for kubernetes/monitoring.
-    """
-    return JSONResponse(content={"status": "ok"})
+    """Health check endpoint for container orchestration."""
+    return JSONResponse({"status": "healthy", "time": datetime.now().isoformat()})
 
-# Define context processor for common template variables
-async def common_context(request: Request):
-    # Determine language (e.g., from query param, header, cookie)
-    lang = request.query_params.get("lang", "en") # Default to 'en'
-    i18n = get_translations(lang) # Get translations for the determined language
-    return {
+async def common_context(request: Request) -> Dict[str, Any]:
+    """Build common context data for templates.
+    
+    Args:
+        request: The current request object
+        
+    Returns:
+        Dict containing common template context variables
+    """
+    # Get language from query param, cookie, or default
+    lang = request.query_params.get("lang", None)
+    if not lang:
+        lang = request.cookies.get("lang", DEFAULT_LANGUAGE)
+        
+    # Get translations for the selected language
+    i18n = get_translations(lang)
+    
+    # Build common context
+    context = {
         "request": request,
-        "now": datetime.utcnow(),
+        "settings": settings,
         "lang": lang,
-        "i18n": i18n # Add i18n object to context
+        "i18n": i18n,
+        # We don't need to pass available_languages since we're hardcoding them in the template
+        "year": datetime.now().year,
     }
+    return context
 
 @app.get("/", response_class=HTMLResponse, name="home")
-async def home(request: Request) -> HTMLResponse:
-    # Fetch dynamic content here if needed (e.g., latest posts)
-    # blog_service = BlogService(...) etc.
-    # posts = await blog_service.get_posts(...)
+async def home(
+    request: Request, 
+    db: AsyncSession = Depends(get_session)
+) -> HTMLResponse:
+    """Render the home page."""
     context = await common_context(request)
-    # Add any page-specific data to context
-    # context["latest_posts"] = posts
     return templates.TemplateResponse("index.html", context)
 
-@app.get("/blog", response_class=HTMLResponse)
-async def blog_page(request: Request):
+@app.get("/blog", response_class=HTMLResponse, name="blog_page")
+async def blog_page(
+    request: Request,
+    page: int = 1,
+    tag: Optional[str] = None,
+    search: Optional[str] = None,
+    db: AsyncSession = Depends(get_session)
+) -> HTMLResponse:
+    """Render the blog listing page."""
+    from .services.blog import BlogService
+    
     context = await common_context(request)
-    # Fetch paginated posts in real implementation
-    # Fetch paginated posts in real implementation
-    context["posts"] = [] # Placeholder
+    blog_service = BlogService(db)
+    
+    # Get posts with pagination
+    posts_data = await blog_service.get_posts(
+        page=page,
+        page_size=10,
+        tag_slug=tag,
+        search=search,
+        is_essay=False
+    )
+    
+    context["posts_response"] = posts_data
     return templates.TemplateResponse("blog/list.html", context)
 
 @app.get("/blog/{slug}", response_class=HTMLResponse, name="blog_detail")
-async def blog_detail(request: Request, slug: str) -> HTMLResponse:
-    # Fetch actual post data using slug later
+async def blog_detail(
+    request: Request, 
+    slug: str,
+    db: AsyncSession = Depends(get_session)
+) -> HTMLResponse:
+    """Render a blog post detail page."""
+    from .services.blog import BlogService
+    
     context = await common_context(request)
-    # Example: Fetch post data (replace with actual service call)
-    # post_service = BlogService(db=...) # Assuming db dependency injection
-    # post_data = await post_service.get_post_by_slug(slug)
-    # if not post_data:
-    #     raise HTTPException(status_code=404, detail="Post not found")
-    # context["post"] = post_data # Add real data
-    context["post"] = {"title": "Sample Post", "slug": slug, "summary": "Summary here", "publish_date": datetime.utcnow(), "updated_at": datetime.utcnow(), "tags": [], "author": {"name": "Author"}} # Dummy data
-    # Dynamically set title based on post data if available
-    post_data = context.get("post")
-    # context["title"] = post_data.title if post_data else "Blog Post"
+    blog_service = BlogService(db)
+    
+    # Get the post by slug
+    post_data = await blog_service.get_post_by_slug(slug, is_essay=False)
+    context["post"] = post_data
+    
     return templates.TemplateResponse("blog/detail.html", context)
 
 @app.get("/essays", response_class=HTMLResponse, name="essays_page")
-async def essays_page(request: Request) -> HTMLResponse:
+async def essays_page(
+    request: Request,
+    db: AsyncSession = Depends(get_session)
+) -> HTMLResponse:
+    """Render the essays listing page."""
     context = await common_context(request)
-    # Fetch paginated essays in real implementation
-    context["essays"] = [] # Placeholder
     return templates.TemplateResponse("essays/list.html", context)
 
 @app.get("/essays/{slug}", response_class=HTMLResponse, name="essay_detail")
-async def essay_detail(request: Request, slug: str) -> HTMLResponse:
-    # Fetch actual essay data using slug later
+async def essay_detail(
+    request: Request, 
+    slug: str,
+    db: AsyncSession = Depends(get_session)
+) -> HTMLResponse:
+    """Render an essay detail page."""
+    from .services.essays import EssaysService
+    
     context = await common_context(request)
-    # Placeholder data structure matching the template usage
-    context["essay"] = {
-        "title": "Sample Essay", "slug": slug, "summary": "Essay summary.",
-        "publish_date": datetime.utcnow(), "updated_at": datetime.utcnow(),
-        "reading_time": 10, "featured_image": None, "content": "<p>Content here</p>",
-        "tags": [{"name": "Tag1", "slug": "tag1"}],
-        "author": {"name": "Author", "avatar": None, "bio": "Author bio", "email": "a@b.com"}
-    }
+    essays_service = EssaysService(db)
+    
+    # Get the essay by slug
+    essay = await essays_service.get_essay_by_slug(slug)
+    context["essay"] = essay
+    
     return templates.TemplateResponse("essays/detail.html", context)
 
 @app.get("/about", response_class=HTMLResponse, name="about_page")
-async def about_page(request: Request) -> HTMLResponse:
-     # Fetch author/stats data later
+async def about_page(
+    request: Request,
+    db: AsyncSession = Depends(get_session)
+) -> HTMLResponse:
+    """Render the about page."""
+    from .services.about import AboutService
+    
     context = await common_context(request)
-    # Dummy data matching template usage
-    context["author"] = {"name": "Default Author", "avatar": None, "email": "a@b.com"}
-    context["stats"] = {"post_count": 10, "essay_count": 2, "tag_count": 5, "comment_count": 20}
+    about_service = AboutService(db)
+    
+    # Get author info
+    author = await about_service.get_author_info()
+    context["author"] = author
+    
+    # Get blog stats
+    stats = await about_service.get_blog_stats()
+    context["stats"] = stats
+    
     return templates.TemplateResponse("about.html", context)
 
 @app.get("/contact", response_class=HTMLResponse, name="contact_page")
-async def contact_page(request: Request) -> HTMLResponse:
+async def contact_page(
+    request: Request,
+    db: AsyncSession = Depends(get_session)
+) -> HTMLResponse:
+    """Render the contact page."""
     context = await common_context(request)
     return templates.TemplateResponse("contact.html", context)
 
-# API routers are now included above
+# Add error handlers for common HTTP errors
+@app.exception_handler(404)
+async def not_found_handler(request: Request, exc):
+    """Handle 404 Not Found errors."""
+    context = await common_context(request)
+    context["error"] = {
+        "code": 404,
+        "message": context["i18n"].get("error_not_found", "Page not found")
+    }
+    return templates.TemplateResponse("error.html", context, status_code=404)
+
+@app.exception_handler(500)
+async def server_error_handler(request: Request, exc):
+    """Handle 500 Internal Server Error errors."""
+    context = await common_context(request)
+    context["error"] = {
+        "code": 500,
+        "message": context["i18n"].get("error_general", "An error occurred")
+    }
+    logger.error(f"Internal server error: {exc}")
+    return templates.TemplateResponse("error.html", context, status_code=500)

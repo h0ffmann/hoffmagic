@@ -1,94 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ lang }}">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{{ title if title else "hoffmagic blog" }}{% endblock %}</title>
-
-    <!-- Favicon -->
+    <title>{% block title %}{{ i18n.get('brand_name', 'hoffmagic blog') }}{% endblock %}</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', path='images/favicon-32x32.png') }}">
-
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Using Palatino via CSS font-family, ensure it's available or use a web font alternative if needed -->
-    <!-- <link href="https://fonts.googleapis.com/css2?family=Palatino:wght@300;400;500;600;700&display=swap" rel="stylesheet"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
         integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" /> <!-- Font Awesome -->
-
-    <!-- CSS -->
-    <!-- Option 1: If minimalist.css is used standalone -->
-    {#
-    <link rel="stylesheet" href="{{ url_for('static', path='css/minimalist.css') }}"> #}
-
-    <!-- Option 2: If using Tailwind configured for minimalism -->
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="{{ url_for('static', path='css/main.css') }}">
-    <!-- Link minimalist.css *AFTER* main.css for overrides -->
     <link rel="stylesheet" href="{{ url_for('static', path='css/minimalist.css') }}">
-    {#
-    <link rel="stylesheet" href="{{ url_for('static', path='css/custom.css') }}"> <!-- REMOVED --> #}
-
-
-    <!-- Meta tags -->
-    <meta name="description" content="{% block description %}a beautiful blog built with python{% endblock %}">
+    <meta name="description"
+        content="{% block description %}{{ i18n.get('tagline', 'a beautiful blog built with python') }}{% endblock %}">
     {% block meta %}{% endblock %}
 </head>
-<!-- Apply base dark background from Tailwind config if using Option 2 -->
 
 <body class="bg-brand-primary-bg text-brand-text-primary">
-    <!-- Header contains logo/title, nav, and search -->
     <header class="site-header">
         <div class="header-content"
             style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 1.5em; border-bottom: 1px solid var(--color-border); margin-bottom: 2.5em;">
             <div class="header-left" style="display: flex; align-items: center; gap: 2em;">
-                <!-- Site Title/Logo -->
                 <div class="logo" style="font-size: 1.1rem; font-weight: bold;">
                     <a href="{{ url_for('home') }}?lang={{ lang }}"
-                       style="text-decoration: none; color: var(--color-text-primary);">{{ i18n.get('brand_name', 'hoffmagic') }}</a>
+                        style="text-decoration: none; color: var(--color-text-primary);">{{ i18n.get('brand_name',
+                        'hoffmagic') }}</a>
                 </div>
-                <!-- Navigation -->
                 <nav class="nav-menu">
                     {# Determine current page slug to apply active class #}
                     {% set current_path = request.url.path %}
                     {# Define page mappings for highlighting #}
                     {% set page_map = {'/': 'home', '/blog': 'writing', '/essays': 'essays', '/about': 'about',
-                    '/contact': 'contact'} %} {# Changed misc to contact #}
+                    '/contact': 'contact'} %}
                     {% set active_page = page_map.get(current_path.rstrip('/')) or page_map.get(current_path) or '' %}
-                    {# Handle trailing slash #}
 
-                    {#<a href="{{ url_for('home', lang=lang) }}" class="{{ 'nav-active' if active_page == 'home' }}">{{ i18n.get('nav_home', 'Home') }}</a>#}
-                    <a href="{{ url_for('blog_page', lang=lang) }}"
-                        class="{{ 'nav-active' if active_page == 'writing' or active_page == 'essays' }}">{{ i18n.get('nav_writing', 'Writing') }}</a>
-                    <a href="{{ url_for('about_page', lang=lang) }}" class="{{ 'nav-active' if active_page == 'about' }}">{{ i18n.get('nav_about', 'About') }}</a>
-                    {#<a href="#projects" class="">{{ i18n.get('nav_projects', 'Projects') }}</a> #} {# Placeholder for Projects #}
-                    <a href="{{ url_for('contact_page', lang=lang) }}" class="{{ 'nav-active' if active_page == 'contact' }}">{{ i18n.get('nav_contact', 'Contact') }}</a> {# Renamed Misc to Contact #}
+                    <a href="{{ url_for('home') }}?lang={{ lang }}"
+                        class="{{ 'nav-active' if active_page == 'home' }}">{{ i18n.get('nav_home', 'Home') }}</a>
+                    <a href="{{ url_for('blog_page') }}?lang={{ lang }}"
+                        class="{{ 'nav-active' if active_page == 'writing' }}">{{ i18n.get('nav_writing', 'Writing')
+                        }}</a>
+                    <a href="{{ url_for('about_page') }}?lang={{ lang }}"
+                        class="{{ 'nav-active' if active_page == 'about' }}">{{ i18n.get('nav_about', 'About') }}</a>
+                    <a href="{{ url_for('contact_page') }}?lang={{ lang }}"
+                        class="{{ 'nav-active' if active_page == 'contact' }}">{{ i18n.get('nav_contact', 'Contact')
+                        }}</a>
                 </nav>
             </div>
             <!-- Header Right: Language Toggle + Search -->
             <div class="header-right" style="display: flex; align-items: center; gap: 1.5em;">
-                <!-- Language toggle -->
                 <div class="language-toggle">
-                    {# Use i18n for labels if available, otherwise fallback #}
-                    <a href="?lang=pt" class="lang-option {{ 'active' if lang == 'pt' }}" aria-label="Português" data-lang="pt">
-                       {{ i18n.get("lang_pt_short", "PT") }}
+                    {# Simple hardcoded language toggle for EN and PT #}
+                    <a href="?lang=en" class="lang-option {{ 'active' if lang == 'en' }}" aria-label="English"
+                        data-lang="en">
+                        {{ i18n.get('lang_en_short', 'EN') }}
                     </a>
                     <div class="lang-slider-container" title="{{ i18n.get('toggle_language', 'Toggle Language') }}">
-                         <div class="lang-slider-button {{ 'on-en' if lang == 'en' }}"></div>
+                        <div class="lang-slider-button {{ 'on-en' if lang == 'en' }}"></div>
                     </div>
-                    <a href="?lang=en" class="lang-option {{ 'active' if lang == 'en' }}" aria-label="English" data-lang="en">
-                        {{ i18n.get("lang_en_short", "EN") }}
+                    <a href="?lang=pt" class="lang-option {{ 'active' if lang == 'pt' }}" aria-label="Português"
+                        data-lang="pt">
+                        {{ i18n.get('lang_pt_short', 'PT') }}
                     </a>
                 </div>
-
-                <!-- Search Bar -->
-                <form id="search-form" action="/search" method="get" style="display: flex; align-items: center;">
-                    <input type="search" name="q" placeholder="{{ i18n.get('search_placeholder', 'Search...') if i18n else 'Search...' }}" required aria-label="Search"
+                <form id="search-form" action="{{ url_for('blog_page') }}" method="get"
+                    style="display: flex; align-items: center;">
+                    {# Pass language as query parameter #}
+                    <input type="hidden" name="lang" value="{{ lang }}">
+                    <input type="search" name="search" placeholder="{{ i18n.get('search_placeholder', 'Search...') }}"
+                        required aria-label="{{ i18n.get('search_button_label', 'Search') }}"
                         style="padding: 0.4em 0.8em; font-size: 0.9em; margin-right: 0.5em; background-color: #333; color: white; border: 1px solid #555;">
-                    {# Use SVG icon button #}
-                    {# Use SVG icon button maybe? #}
-                    <button type="submit" aria-label="Submit search"
+                    <button type="submit" aria-label="{{ i18n.get('search_button_label', 'Search') }}"
                         style="background: none; border: none; padding: 0.3em; cursor: pointer;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                             stroke="var(--color-text-secondary)" stroke-width="2" stroke-linecap="round"
@@ -104,34 +87,30 @@
     <main>
         {% block content %}{% endblock %}
         <footer class="site-footer">
-            {# Ensure 'now' context variable is passed or remove dynamic year #}
-            <p>🄯 2025 h0ffmann. All rights reversed.</p> {# Using copyleft symbol and fixed year #}
+            <p>{{ i18n.get('footer_copyright', '🄯 {year} h0ffmann. All rights reversed.').format(year=year) }}</p>
         </footer>
     </main>
-
     {% block scripts %}
-    <!-- Language Toggle Script -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-             // Language Slider Logic
-             const sliderContainer = document.querySelector('.lang-slider-container');
-             const currentLang = new URLSearchParams(window.location.search).get('lang') || 'en'; // Default 'en'
+        document.addEventListener('DOMContentLoaded', function () {
+            // Language Slider Logic
+            const sliderContainer = document.querySelector('.lang-slider-container');
+            const currentLang = new URLSearchParams(window.location.search).get('lang') || 'en';
 
-             sliderContainer?.addEventListener('click', function() {
-                 const newLang = (currentLang === 'en') ? 'pt' : 'en';
-                 const currentUrl = new URL(window.location.href);
-                 currentUrl.searchParams.set('lang', newLang);
-                 window.location.href = currentUrl.toString();
-             });
+            sliderContainer?.addEventListener('click', function () {
+                // Get the desired language based on current
+                const newLang = (currentLang === 'en') ? 'pt' : 'en';
 
-             // Optional: Update active class on links based on currentLang
-             document.querySelectorAll('.lang-option').forEach(link => {
-                 if (link.getAttribute('data-lang') === currentLang) {
-                     link.classList.add('active');
-                 } else {
-                     link.classList.remove('active');
-                 }
-             });
+                // Preserve current URL path and other parameters
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.set('lang', newLang);
+
+                // Navigate to the new URL
+                window.location.href = currentUrl.toString();
+            });
+
+            // Set a cookie to remember the language preference
+            document.cookie = `lang=${currentLang}; path=/; max-age=31536000`; // 1 year expiry
         });
     </script>
     {% endblock %}

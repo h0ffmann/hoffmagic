@@ -1,95 +1,103 @@
 {% extends "base.html" %}
-{% block title %}hoffmagic blog{% endblock %}
-{% block description %}hoffmagic - a beautiful blog featuring insightful articles and essays{% endblock %}
+{% block title %}{{ i18n.get('home:title', 'hoffmagic blog') }}{% endblock %}
+{% block description %}{{ i18n.get('home:description', 'hoffmagic - a beautiful blog featuring insightful articles and
+essays') }}{% endblock %}
 {% block content %}
-
-    <section id="latest-content">
-        {# Content will be loaded dynamically or passed via context #}
-        <h2>Latest Writing</h2>
-        <div id="posts-list">
-             <p>Loading...</p>
-             {# Example structure for dynamically loaded posts #}
-             <!--
-             <article style="margin-bottom: 2.5em;">
-                 <h3><a href="/blog/{post.slug}">Post Title</a></h3>
-                 <p style="font-size: 0.9em; color: var(--color-text-secondary); margin-bottom: 0.5em;">{Formatted Date}</p>
-                 <p>{post.summary}</p>
-                 <a href="/blog/{post.slug}" style="font-size: 0.9em; color: var(--color-accent);">Read More →</a>
-             </article>
-             -->
-        </div>
-
-         {# Optional: Separator or more space before newsletter #}
-         <hr> {# Use the globally styled hr #}
-
-        {# Plain newsletter signup #}
-        <div class="newsletter-section">
-             <h3>Subscribe</h3>
-             <p>Get new posts and essays delivered directly to your inbox.</p>
-            <form id="home-newsletter-form" style="margin-top: 1em;">
-                <label for="newsletter-email" style="display: block; margin-bottom: 0.5em; font-size: 0.9em;">Email Address:</label>
-                <div style="display: flex; gap: 0.5em;">
-                     <input type="email" id="newsletter-email" name="email" placeholder="you@example.com" required
-                            style="flex-grow: 1;"> {# Input inherits base styles #}
-                     <button type="submit">Subscribe</button> {# Button inherits base styles #}
-                </div>
-             <p id="newsletter-feedback" style="font-size: 0.9em; margin-top: 0.5em;"></p>
-            </form>
-        </div>
-
-    </section>
-
+<section id="latest-content">
+    <h2>{{ i18n.get('home:latest_writing', 'Latest Writing') }}</h2>
+    <div id="posts-list">
+        <p>{{ i18n.get('loading', 'Loading...') }}</p>
+    </div>
+    <hr>
+    <div class="newsletter-section">
+        <h3>{{ i18n.get('home:subscribe_heading', 'Subscribe') }}</h3>
+        <p>{{ i18n.get('home:subscribe_text', 'Get new posts and essays delivered directly to your inbox.') }}</p>
+        <form id="home-newsletter-form" style="margin-top: 1em;">
+            <label for="newsletter-email" style="display: block; margin-bottom: 0.5em; font-size: 0.9em;">
+                {{ i18n.get('home:email_label', 'Email Address:') }}
+            </label>
+            <div style="display: flex; gap: 0.5em;">
+                <input type="email" id="newsletter-email" name="email"
+                    placeholder="{{ i18n.get('home:email_placeholder', 'you@example.com') }}" required
+                    style="flex-grow: 1;">
+                <button type="submit">{{ i18n.get('home:subscribe_button', 'Subscribe') }}</button>
+            </div>
+            <p id="newsletter-feedback" style="font-size: 0.9em; margin-top: 0.5em;"></p>
+        </form>
+    </div>
+</section>
 {% endblock %}
-
 {% block scripts %}
 <script>
+    // Translation strings for JavaScript
+    const i18n = {
+        loading: "{{ i18n.get('loading', 'Loading...') }}",
+        readMore: "{{ i18n.get('read_more', 'Read More →') }}",
+        noResults: "{{ i18n.get('no_results', 'No results found') }}",
+        subscribing: "{{ i18n.get('home:subscribing', 'Subscribing...') }}",
+        subscribeSuccess: "{{ i18n.get('home:subscribe_success', 'Success! Check your inbox.') }}",
+        subscribeError: "{{ i18n.get('home:subscribe_error', 'Error: {message}') }}",
+        subscribeServerError: "{{ i18n.get('home:subscribe_server_error', 'Error: Could not reach server.') }}"
+    };
+
     // Simplified content loading for the homepage
     async function loadLatestContent() {
         const container = document.getElementById('posts-list');
-        container.innerHTML = '<p>Loading...</p>'; // Reset container
+        container.innerHTML = `<p>${i18n.loading}</p>`;
 
         try {
-            // Fetch both posts and essays (or adjust API to return merged list)
-            // Let's assume API fetches latest 5 blog posts for now
-            const response = await fetch('/api/blog?page=1&page_size=5'); // Adjust endpoint/params as needed
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            // Fetch the latest posts
+            const response = await fetch('/api/blog?page=1&page_size=5');
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
             const data = await response.json();
 
             if (data.items && data.items.length > 0) {
                 renderLatest(data.items);
             } else {
-                container.innerHTML = '<p>No recent posts found.</p>';
+                container.innerHTML = `<p>${i18n.noResults}</p>`;
             }
         } catch (error) {
             console.error('Error loading latest content:', error);
-            container.innerHTML = `<p>Failed to load content. Please try again later.</p>`;
+            container.innerHTML = `<p>${i18n.noResults}</p>`;
         }
     }
 
-    // Function to render latest posts/essays to the DOM in minimalist style
+    // Function to render latest posts/essays
     function renderLatest(items) {
         const container = document.getElementById('posts-list');
-        const dateFormatter = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        const dateFormatter = new Intl.DateTimeFormat('{{ lang }}', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
 
         container.innerHTML = items.map(item => `
             <article style="margin-bottom: 2.5em;">
-                 <h3><a href="/${item.is_essay ? 'essays' : 'blog'}/${item.slug}">${item.title}</a></h3>
-                 <p style="font-size: 0.9em; color: var(--color-text-secondary); margin-top: 0.2em; margin-bottom: 0.5em;">
+                <h3><a href="/${item.is_essay ? 'essays' : 'blog'}/${item.slug}?lang={{ lang }}">${item.title}</a></h3>
+                <p style="font-size: 0.9em; color: var(--color-text-secondary); margin-top: 0.2em; margin-bottom: 0.5em;">
                     ${dateFormatter.format(new Date(item.publish_date))}
-                 </p>
+                </p>
                 ${item.summary ? `<p>${item.summary}</p>` : ''}
-                <a href="/${item.is_essay ? 'essays' : 'blog'}/${item.slug}" style="font-size: 0.9em; color: var(--color-accent);">Read More →</a>
-             </article>
-         `).join('');
+                <a href="/${item.is_essay ? 'essays' : 'blog'}/${item.slug}?lang={{ lang }}" 
+                   style="font-size: 0.9em; color: var(--color-accent);">${i18n.readMore}</a>
+            </article>
+        `).join('');
     }
 
     // Newsletter form submission
     async function handleNewsletterSubmit(event) {
         event.preventDefault();
+
         const form = event.target;
         const emailInput = form.querySelector('#newsletter-email');
         const feedbackP = document.getElementById('newsletter-feedback');
-        feedbackP.textContent = 'Subscribing...';
+
+        feedbackP.textContent = i18n.subscribing;
+        feedbackP.style.color = 'var(--color-text-secondary)';
 
         try {
             const response = await fetch('/api/contact/subscribe', {
@@ -99,26 +107,27 @@
             });
 
             if (response.ok) {
-                feedbackP.textContent = 'Success! Check your inbox.';
+                feedbackP.textContent = i18n.subscribeSuccess;
                 feedbackP.style.color = 'var(--color-accent)';
                 form.reset();
             } else {
                 const error = await response.json();
-                feedbackP.textContent = `Error: ${(error && error.detail) || 'Subscription failed.'}`;
-                feedbackP.style.color = '#ff6b6b'; // Simple error color
+                const errorMsg = i18n.subscribeError.replace('{message}',
+                    (error && error.detail) || 'Subscription failed.');
+                feedbackP.textContent = errorMsg;
+                feedbackP.style.color = '#ff6b6b';
             }
         } catch (error) {
             console.error('Newsletter subscription error:', error);
-            feedbackP.textContent = 'Error: Could not reach server.';
+            feedbackP.textContent = i18n.subscribeServerError;
             feedbackP.style.color = '#ff6b6b';
         } finally {
-             // Optionally clear feedback after a few seconds
-             setTimeout(() => { feedbackP.textContent = ''; }, 5000);
+            setTimeout(() => { feedbackP.textContent = ''; }, 5000);
         }
     }
 
-
-    document.addEventListener('DOMContentLoaded', function() {
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function () {
         loadLatestContent();
 
         const newsletterForm = document.getElementById('home-newsletter-form');
