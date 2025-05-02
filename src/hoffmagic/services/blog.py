@@ -21,6 +21,7 @@ from sqlalchemy.future import select # Keep this if used elsewhere, or consolida
 
 from hoffmagic.config import settings
 from hoffmagic.db.models import Post, Author, Tag, Comment, post_tags # Ensure Comment is imported
+from hoffmagic.api.schemas import BlogPostsResponse
 from hoffmagic.api.schemas import (
     PostCreate, PostUpdate, CommentCreate,
     BlogPostsResponse
@@ -60,9 +61,10 @@ class BlogService:
         search: Optional[str] = None,
         is_essay: bool = False,
         lang: str = 'en'
-    ) -> Dict[str, Any]:
+    ) -> BlogPostsResponse:
         """
         Get posts (or essays) with pagination, filtering, and search.
+        Returns a BlogPostsResponse with localized content.
         """
         try:
             query = (
@@ -101,31 +103,26 @@ class BlogService:
             query = query.offset((page - 1) * page_size).limit(page_size)
             posts = (await self.db.execute(query)).scalars().all()
 
-            # Calculate pages
-            pages = (total + page_size - 1) // page_size if total > 0 else 1
-
-            # Localize content before returning
+            # Localize posts
+            localized_posts = []
             for post in posts:
                 if lang == 'pt':
                     if hasattr(post, 'title_pt') and post.title_pt:
                         post.title = post.title_pt
-                    if hasattr(post, 'content_pt') and post.content_pt:
-                        post.content = post.content_pt
                     if hasattr(post, 'summary_pt') and post.summary_pt:
                         post.summary = post.summary_pt
-                    # Ensure comments are localized too if they exist
-                    if post.comments and hasattr(post.comments[0], 'content_pt'):
-                        for comment in post.comments:
-                            if comment.content_pt:
-                                comment.content = comment.content_pt
-            
-            return {
-                "items": posts,
-                "total": total,
-                "page": page,
-                "page_size": page_size,
-                "pages": pages
-            }
+                localized_posts.append(post)
+
+            # Calculate pages
+            pages = (total + page_size - 1) // page_size if total > 0 else 1
+
+            return BlogPostsResponse(
+                items=localized_posts,
+                total=total,
+                page=page,
+                page_size=page_size,
+                pages=pages
+            )
         except Exception as e:
             logger.error(f"Error getting posts: {str(e)}")
             raise
