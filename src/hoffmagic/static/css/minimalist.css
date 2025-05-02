@@ -16,7 +16,7 @@
 
 body {
     font-family: var(--font-sans);
-    color: var(--color-text-primary);
+    color: #e0e0e0; /* Explicit primary text color */
     background-color: var(--color-bg-primary); /* Use this as the *only* background */
     line-height: 1.7; /* Increase line height slightly for readability */
     margin: 2em auto; /* Center content */
@@ -44,28 +44,33 @@ a:hover {
     text-decoration: underline;
 }
 
-nav {
-    display: flex; /* Arrange nav items horizontally */
-    gap: 1.5em; /* Spacing between nav items */
-    margin-bottom: 1em;
+/* Updated Nav Styles */
+.nav-menu { /* Target the specific nav element if needed */
+    display: flex;
+    align-items: center;
+    gap: 1.5em; /* Spacing between items */
+    margin-right: 2em; /* Add some margin to the right if needed */
+    /* Remove margin-bottom if it was from a generic 'nav' tag */
 }
 
-nav a {
-    margin-right: 1.5em;
+.nav-menu a {
     color: var(--color-text-secondary);
-    padding-bottom: 2px; /* Space for potential border */
-    border-bottom: 2px solid transparent; /* Placeholder for active state */
+    text-decoration: none;
+    padding: 0.4em 0.6em; /* Adjust padding */
+    font-size: 0.95em; /* Slightly adjust font size */
+    transition: color 0.2s ease;
+    border-bottom: none; /* Remove previous border */
+    margin-right: 0; /* Remove previous margin */
 }
 
-nav a:hover {
+.nav-menu a:hover {
     color: var(--color-text-primary);
     text-decoration: none;
 }
 
-.nav-active { /* Class to add to the active navigation link */
-    color: var(--color-accent) !important; /* Use accent color */
-    font-weight: 500;
-    /* Optional: border-bottom: 2px solid var(--color-accent); */
+.nav-active { /* Class for the active navigation link */
+    color: var(--color-text-primary) !important; /* Use primary text color for active */
+    font-weight: 600; /* Make active link bolder */
 }
 
 /* Targeting prose generated from Markdown */

@@ -122,7 +122,7 @@ async def blog_page(
     blog_service = BlogService(db)
     
     # Get posts with pagination
-    posts_data = await blog_service.get_posts(
+    posts_response = await blog_service.get_posts(
         page=page,
         page_size=10,
         tag_slug=tag,

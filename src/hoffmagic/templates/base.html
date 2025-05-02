@@ -23,29 +23,23 @@
         <div class="header-content"
             style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 1.5em; border-bottom: 1px solid var(--color-border); margin-bottom: 2.5em;">
             <div class="header-left" style="display: flex; align-items: center; gap: 2em;">
-                <div class="logo" style="font-size: 1.1rem; font-weight: bold;">
-                    <a href="{{ url_for('home') }}?lang={{ lang }}"
-                        style="text-decoration: none; color: var(--color-text-primary);">{{ i18n.get('brand_name',
-                        'hoffmagic') }}</a>
-                </div>
-                <nav class="nav-menu">
+                {# Logo removed as per diff #}
+                <nav class="nav-menu" style="display: flex; align-items: center; gap: 1.5em;">
                     {# Determine current page slug to apply active class #}
                     {% set current_path = request.url.path %}
-                    {# Define page mappings for highlighting #}
-                    {% set page_map = {'/': 'home', '/blog': 'writing', '/essays': 'essays', '/about': 'about',
-                    '/contact': 'contact'} %}
+                    {# Define page mappings for highlighting - Added projects #}
+                    {% set page_map = {'/': 'home', '/blog': 'writing', '/essays': 'essays', '/about': 'about', '/projects': 'projects'} %}
                     {% set active_page = page_map.get(current_path.rstrip('/')) or page_map.get(current_path) or '' %}
 
                     <a href="{{ url_for('home') }}?lang={{ lang }}"
-                        class="{{ 'nav-active' if active_page == 'home' }}">{{ i18n.get('nav_home', 'Home') }}</a>
+                        class="{{ 'nav-active' if active_page == 'home' }}">{{ i18n.get('nav_home', 'home') }}</a>
                     <a href="{{ url_for('blog_page') }}?lang={{ lang }}"
-                        class="{{ 'nav-active' if active_page == 'writing' }}">{{ i18n.get('nav_writing', 'Writing')
-                        }}</a>
+                        class="{{ 'nav-active' if active_page == 'writing' }}">{{ i18n.get('nav_writing', 'writing') }}</a>
+                    <a href="/projects?lang={{ lang }}"
+                        class="{{ 'nav-active' if active_page == 'projects' }}">{{ i18n.get('nav_projects', 'projects') }}</a>
                     <a href="{{ url_for('about_page') }}?lang={{ lang }}"
-                        class="{{ 'nav-active' if active_page == 'about' }}">{{ i18n.get('nav_about', 'About') }}</a>
-                    <a href="{{ url_for('contact_page') }}?lang={{ lang }}"
-                        class="{{ 'nav-active' if active_page == 'contact' }}">{{ i18n.get('nav_contact', 'Contact')
-                        }}</a>
+                        class="{{ 'nav-active' if active_page == 'about' }}">{{ i18n.get('nav_about', 'about') }}</a>
+                    {# Contact link removed as per diff #}
                 </nav>
             </div>
             <!-- Header Right: Language Toggle + Search -->
@@ -98,6 +92,8 @@
             // Language Slider Logic
             const sliderContainer = document.getElementById('lang-slider');
             const sliderButton = document.getElementById('lang-slider-button');
+            // Get all language option links
+            const langOptions = document.querySelectorAll('.lang-option');
             const currentLang = new URLSearchParams(window.location.search).get('lang') || 'en';
 
             // Update slider position based on current language
@@ -122,10 +118,19 @@
                 const currentUrl = new URL(window.location.href);
                 currentUrl.searchParams.set('lang', newLang);
 
-                // Navigate to the new URL after a brief delay for the animation
-                setTimeout(() => {
+                // Navigate to the new URL immediately
+                window.location.href = currentUrl.toString();
+            });
+
+            // Also add click handlers to the language option links for consistency
+            langOptions.forEach(option => {
+                option.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const lang = this.getAttribute('data-lang');
+                    const currentUrl = new URL(window.location.href);
+                    currentUrl.searchParams.set('lang', lang);
                     window.location.href = currentUrl.toString();
-                }, 300);
+                });
             });
 
             // Set a cookie to remember the language preference
