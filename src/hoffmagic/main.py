@@ -14,6 +14,7 @@ from fastapi import Depends, FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+import markdown as md
 from markdown import markdown
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -58,6 +59,8 @@ app.mount(
 
 # Setup Jinja2 templates
 templates = Jinja2Templates(directory=CONTAINER_APP_DIR / "templates")
+# Register markdown filter
+templates.env.filters["markdown"] = lambda text: md.markdown(text, extensions=['extra', 'codehilite'])
 
 # Define startup and shutdown events
 @app.on_event("startup")
