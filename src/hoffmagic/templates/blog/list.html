@@ -29,11 +29,12 @@
 
 
     <div id="posts-list" style="margin-top: 2em;">
-        {# Check if 'posts' context variable exists and has items #}
-        {% if posts and posts.items %}
-            {% for post in posts.items %}
+        {# Check if 'posts_response' context variable exists and has items #}
+        {% if posts_response and posts_response.items %}
+            {% for post in posts_response.items %}
             <article style="margin-bottom: 2.5em; padding-bottom: 1.5em; border-bottom: 1px solid var(--color-border-light);">
-                <h2 style="font-size: 1.4em; margin-bottom: 0.3em;">
+                {# Changed h2 to h3 for better semantic structure if h1 is page title #}
+                <h3 style="font-size: 1.4em; margin-bottom: 0.3em;">
                     {# Ensure slug exists before creating URL #}
                     {% if post.slug %}
                     <a href="{{ url_for('blog_detail', slug=post.slug) }}?lang={{ lang }}">{{ post.title }}</a>
@@ -56,13 +57,16 @@
                         {% endfor %}
                     {% endif %}
                 </p>
-                {# Display summary safely #}
+                {# Display summary or truncated content preview #}
                 {% if post.summary %}
-                <p>{{ post.summary }}</p>
+                    <p>{{ post.summary }}</p>
+                {% elif post.content %}
+                    {# Basic truncation - consider a filter or server-side truncation for safety #}
+                    <div class="content-preview">{{ post.content[:250] ~ '...' if post.content|length > 250 else post.content }}</div>
                 {% endif %}
                 {# Read more link #}
                 {% if post.slug %}
-                <a href="{{ url_for('blog_detail', slug=post.slug) }}?lang={{ lang }}" style="font-size: 0.9em; color: var(--color-accent);">{{ i18n.read_more }}</a>
+                <a href="{{ url_for('blog_detail', slug=post.slug) }}?lang={{ lang }}" style="font-size: 0.9em; color: var(--color-accent); display: inline-block; margin-top: 10px;">{{ i18n.get("read_more", "Read More →") }}</a>
                 {% endif %}
             </article>
             {% endfor %}
