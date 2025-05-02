@@ -421,3 +421,31 @@ button:hover, input[type="submit"]:hover {
 }
 
 /* Removed ::after pseudo-element for simplicity, text is changed via JS */
+
+/* Error page copy button - similar style */
+.copy-error-button {
+    position: absolute;
+    top: 0.5em;
+    right: 0.5em;
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border-light);
+    padding: 0.3em 0.6em;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8em;
+    font-family: var(--font-sans); /* Match button font */
+    transition: background-color 0.2s, color 0.2s;
+    z-index: 10; /* Ensure it's above traceback */
+    text-transform: none; /* Override body lowercase */
+}
+.copy-error-button:hover {
+    background-color: color-mix(in srgb, var(--color-accent) 90%, white); /* Slightly lighter accent */
+    color: var(--color-bg-primary);
+    border-color: var(--color-accent);
+}
+.copy-error-button.copied {
+    background-color: var(--color-accent);
+    color: var(--color-bg-primary);
+    opacity: 1;
+}
