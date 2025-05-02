@@ -130,7 +130,7 @@ async def blog_page(
         is_essay=False
     )
     
-    context["posts_response"] = posts_data
+    context["posts_response"] = posts_response
     return templates.TemplateResponse("blog/list.html", context)
 
 @app.get("/blog/{slug}", response_class=HTMLResponse, name="blog_detail")
