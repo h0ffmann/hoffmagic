@@ -59,8 +59,9 @@
     <!-- Tags -->
     {% if post.tags %}
     <div class="post-tags" style="margin-bottom: 2.5em;">
-        <span style="color: var(--color-text-secondary);">{{ i18n.tags_label }}</span>
+        <span style="color: var(--color-text-secondary);">{{ i18n.get('tags', 'Tags') }}:</span> {# Use i18n.get for safety #}
         {% for tag in post.tags %}
+            {# Correctly append query parameters #}
             <a href="{{ url_for('blog_page') }}?tag={{ tag.slug }}&lang={{ lang }}"
                style="margin-left: 0.5em; color: var(--color-text-secondary); text-decoration: underline;">{{ tag.name }}</a>{% if not loop.last %},{% endif %}
         {% endfor %}

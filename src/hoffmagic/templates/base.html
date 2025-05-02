@@ -45,7 +45,7 @@
             <div class="header-left" style="display: flex; align-items: center; gap: 2em;">
                 <!-- Site Title/Logo -->
                 <div class="logo" style="font-size: 1.1rem; font-weight: bold;">
-                    <a href="{{ url_for('home', lang=lang) }}"
+                    <a href="{{ url_for('home') }}?lang={{ lang }}"
                        style="text-decoration: none; color: var(--color-text-primary);">{{ i18n.get('brand_name', 'hoffmagic') }}</a>
                 </div>
                 <!-- Navigation -->
