@@ -157,14 +157,56 @@ hr, .minimal-separator {
     margin: 3em 0;
 }
 
-/* Basic footer style */
+/* Footer styling */
 .site-footer {
-    margin-top: 3em;
-    padding-top: 1em;
+    padding: 2em 0;
     border-top: 1px solid var(--color-border);
+    margin-top: 3em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     font-size: 0.9em;
     color: var(--color-text-secondary);
-    text-align: center;
+}
+
+.social-buttons {
+    display: flex;
+    gap: 1.2em;
+}
+
+.social-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #333;
+    color: var(--color-text-secondary);
+    transition: all 0.2s ease;
+}
+
+.social-button:hover {
+    background-color: var(--color-accent);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Responsive adjustments for small screens */
+@media (max-width: 600px) {
+    .site-footer {
+        flex-direction: column;
+        gap: 1em;
+        text-align: center;
+    }
+    
+    .footer-left {
+        order: 2;
+    }
+    
+    .footer-right {
+        order: 1;
+    }
 }
 
 /* Input/Button Styles (remove card styles) */
