@@ -122,34 +122,49 @@ async def common_context(request: Request):
         "i18n": i18n # Add i18n object to context
     }
 
-@app.get("/", response_class=HTMLResponse)
-async def home(request: Request):
+@app.get("/", response_class=HTMLResponse, name="home")
+async def home(request: Request) -> HTMLResponse:
+    # Fetch dynamic content here if needed (e.g., latest posts)
+    # blog_service = BlogService(...) etc.
+    # posts = await blog_service.get_posts(...)
     context = await common_context(request)
+    # Add any page-specific data to context
+    # context["latest_posts"] = posts
     return templates.TemplateResponse("index.html", context)
 
 @app.get("/blog", response_class=HTMLResponse)
 async def blog_page(request: Request):
     context = await common_context(request)
     # Fetch paginated posts in real implementation
+    # Fetch paginated posts in real implementation
     context["posts"] = [] # Placeholder
     return templates.TemplateResponse("blog/list.html", context)
 
-@app.get("/blog/{slug}", response_class=HTMLResponse)
-async def blog_detail(request: Request, slug: str):
+@app.get("/blog/{slug}", response_class=HTMLResponse, name="blog_detail")
+async def blog_detail(request: Request, slug: str) -> HTMLResponse:
     # Fetch actual post data using slug later
     context = await common_context(request)
+    # Example: Fetch post data (replace with actual service call)
+    # post_service = BlogService(db=...) # Assuming db dependency injection
+    # post_data = await post_service.get_post_by_slug(slug)
+    # if not post_data:
+    #     raise HTTPException(status_code=404, detail="Post not found")
+    # context["post"] = post_data # Add real data
     context["post"] = {"title": "Sample Post", "slug": slug, "summary": "Summary here", "publish_date": datetime.utcnow(), "updated_at": datetime.utcnow(), "tags": [], "author": {"name": "Author"}} # Dummy data
+    # Dynamically set title based on post data if available
+    post_data = context.get("post")
+    # context["title"] = post_data.title if post_data else "Blog Post"
     return templates.TemplateResponse("blog/detail.html", context)
 
-@app.get("/essays", response_class=HTMLResponse)
-async def essays_page(request: Request):
+@app.get("/essays", response_class=HTMLResponse, name="essays_page")
+async def essays_page(request: Request) -> HTMLResponse:
     context = await common_context(request)
     # Fetch paginated essays in real implementation
     context["essays"] = [] # Placeholder
     return templates.TemplateResponse("essays/list.html", context)
 
-@app.get("/essays/{slug}", response_class=HTMLResponse)
-async def essay_detail(request: Request, slug: str):
+@app.get("/essays/{slug}", response_class=HTMLResponse, name="essay_detail")
+async def essay_detail(request: Request, slug: str) -> HTMLResponse:
     # Fetch actual essay data using slug later
     context = await common_context(request)
     # Placeholder data structure matching the template usage
@@ -162,8 +177,8 @@ async def essay_detail(request: Request, slug: str):
     }
     return templates.TemplateResponse("essays/detail.html", context)
 
-@app.get("/about", response_class=HTMLResponse)
-async def about_page(request: Request):
+@app.get("/about", response_class=HTMLResponse, name="about_page")
+async def about_page(request: Request) -> HTMLResponse:
      # Fetch author/stats data later
     context = await common_context(request)
     # Dummy data matching template usage
@@ -171,8 +186,8 @@ async def about_page(request: Request):
     context["stats"] = {"post_count": 10, "essay_count": 2, "tag_count": 5, "comment_count": 20}
     return templates.TemplateResponse("about.html", context)
 
-@app.get("/contact", response_class=HTMLResponse)
-async def contact_page(request: Request):
+@app.get("/contact", response_class=HTMLResponse, name="contact_page")
+async def contact_page(request: Request) -> HTMLResponse:
     context = await common_context(request)
     return templates.TemplateResponse("contact.html", context)
 

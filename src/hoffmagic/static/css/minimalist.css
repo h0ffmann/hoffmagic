@@ -127,17 +127,23 @@ input::placeholder, textarea::placeholder {
 }
 
 button, input[type="submit"] {
-    background-color: var(--color-accent);
-    color: var(--color-bg-primary); /* Contrast text */
-    border: 1px solid var(--color-accent);
-    padding: 0.6em 1.2em;
-    border-radius: 3px;
-    font-size: 0.9em;
+    padding: 0.5em 1em; /* Basic padding */
+    border: 1px solid var(--color-accent); /* Use accent color for border */
+    color: var(--color-accent); /* Text color matches accent */
+    background-color: transparent; /* No background */
     cursor: pointer;
-    font-weight: 500;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    text-transform: inherit; /* Override default button uppercase */
+    font-size: 0.9em; /* Slightly smaller font */
+    border-radius: 4px; /* Slightly rounded corners */
+    margin: 0; /* Reset margin */
+
+     /* Dark theme specific styles if needed, but base works */
 }
 button:hover, input[type="submit"]:hover {
-    opacity: 0.9;
+    background-color: rgba(var(--color-accent-rgb), 0.1); /* Subtle hover */
+    color: var(--color-accent); /* Keep text color */
+    text-decoration: none; /* Ensure no underline on hover */
 }
 
 /* Remove old sidebar/complex styles if they existed */

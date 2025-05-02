@@ -53,7 +53,7 @@
         {% endif %}
 
         {# Render main content safely - Use direct attribute access #}
-        {{ post.content | safe if post and post.content else '' }} {# Default to empty string if content is missing #}
+        {{ post.content | safe if post and post.content else '' }}
     </div>
 
     <!-- Tags -->

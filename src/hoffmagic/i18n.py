@@ -26,6 +26,7 @@ en = {
     "nav_contact": "Contact",
     # Language Toggle
     "lang_en_short": "EN",
+    "lang_en_long": "English",
     "lang_pt_short": "PT",
     "toggle_language": "Toggle Language",
 
@@ -87,6 +88,7 @@ pt = {
     "nav_contact": "Contato",
     # Language Toggle
     "lang_en_short": "EN",
+    "lang_en_long": "English",
     "lang_pt_short": "PT",
     "toggle_language": "Alternar Idioma",
 
