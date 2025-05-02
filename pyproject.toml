@@ -29,6 +29,7 @@ dependencies = [
     "email-validator>=2.1.0",
     "typer>=0.9.0",
     "rich>=13.6.0",
+    "pygments>=2.16.1",  # For syntax highlighting
 ]
 
 [project.optional-dependencies]
