@@ -199,6 +199,63 @@ button:hover, input[type="submit"]:hover {
     /* display: none; or remove definitions */
 }
 
+/* Header layout improvements */
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1.5em;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 2.5em;
+}
+
+.header-left {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  gap: 2em;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5em;
+  flex-shrink: 0;
+}
+
+#search-form {
+  display: flex;
+  align-items: center;
+  max-width: 180px;
+}
+
+#search-form input[type="search"] {
+  width: 130px;
+  padding: 0.4em 0.8em;
+  font-size: 0.9em;
+  margin-right: 0.5em;
+  background-color: #333;
+  color: white;
+  border: 1px solid #555;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1em;
+  }
+  
+  .header-right {
+    align-self: flex-end;
+  }
+  
+  #search-form input[type="search"] {
+    width: 100px;
+  }
+}
+
 /* Language Slider Styles */
 .language-toggle {
     display: flex;

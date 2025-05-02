@@ -43,7 +43,7 @@
                 </nav>
             </div>
             <!-- Header Right: Language Toggle + Search -->
-            <div class="header-right" style="display: flex; align-items: center; gap: 1.5em;">
+            <div class="header-right" style="display: flex; align-items: center; gap: 1.5em; flex-shrink: 0; max-width: 300px;">
                 <div class="language-toggle">
                     <a href="?lang=en" class="lang-option {{ 'active' if lang == 'en' }}" 
                        aria-label="English" data-lang="en">
@@ -63,12 +63,12 @@
                     </a>
                 </div>
                 <form id="search-form" action="{{ url_for('blog_page') }}" method="get"
-                    style="display: flex; align-items: center;">
+                    style="display: flex; align-items: center; max-width: 180px;">
                     {# Pass language as query parameter #}
                     <input type="hidden" name="lang" value="{{ lang }}">
                     <input type="search" name="search" placeholder="{{ i18n.get('search_placeholder', 'Search...') }}"
                         required aria-label="{{ i18n.get('search_button_label', 'Search') }}"
-                        style="padding: 0.4em 0.8em; font-size: 0.9em; margin-right: 0.5em; background-color: #333; color: white; border: 1px solid #555;">
+                        style="padding: 0.4em 0.8em; font-size: 0.9em; margin-right: 0.5em; background-color: #333; color: white; border: 1px solid #555; width: 130px;">
                     <button type="submit" aria-label="{{ i18n.get('search_button_label', 'Search') }}"
                         style="background: none; border: none; padding: 0.3em; cursor: pointer;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
