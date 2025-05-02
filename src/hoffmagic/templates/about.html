@@ -100,11 +100,16 @@
             <h3>Join the Newsletter</h3>
             <p>Get notified about new posts and essays delivered directly to your inbox.</p>
              <form id="about-newsletter-form" style="margin-top: 1em;">
+                 <div style="margin-bottom: 1em;">
+                     <label for="about-newsletter-name" style="display: block; margin-bottom: 0.5em; font-size: 0.9em;">Name (optional):</label>
+                     <input type="text" id="about-newsletter-name" name="name" placeholder="Your name"
+                            style="width: 100%; padding: 0.4em 0.8em; font-size: 0.9em;">
+                 </div>
                  <label for="about-newsletter-email" style="display: block; margin-bottom: 0.5em; font-size: 0.9em;">Email Address:</label>
                 <div style="display: flex; gap: 0.5em;">
                     <input type="email" id="about-newsletter-email" name="email" placeholder="you@example.com" required
-                           style="flex-grow: 1;"> {# Inherits styles #}
-                    <button type="submit">Subscribe</button> {# Inherits styles #}
+                           style="flex-grow: 1;">
+                    <button type="submit">Subscribe</button>
                     </div>
                  <p id="newsletter-feedback" style="font-size: 0.9em; margin-top: 0.5em;"></p>
              </form>
@@ -120,6 +125,7 @@
         event.preventDefault();
         const form = event.target;
         const emailInput = form.querySelector('#about-newsletter-email');
+        const nameInput = form.querySelector('#about-newsletter-name');
         const feedbackP = document.getElementById('newsletter-feedback');
         feedbackP.textContent = 'Subscribing...';
         feedbackP.style.color = 'var(--color-text-secondary)';
@@ -128,7 +134,10 @@
             const response = await fetch('/api/contact/subscribe', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: emailInput.value }),
+                body: JSON.stringify({
+                    email: emailInput.value,
+                    name: nameInput ? nameInput.value : ''
+                }),
             });
 
             if (response.ok) {

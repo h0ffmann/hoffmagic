@@ -13,6 +13,14 @@ essays') }}{% endblock %}
         <h3>{{ i18n.get('home:subscribe_heading', 'Subscribe') }}</h3>
         <p>{{ i18n.get('home:subscribe_text', 'Get new posts and essays delivered directly to your inbox.') }}</p>
         <form id="home-newsletter-form" style="margin-top: 1em;">
+            <div style="margin-bottom: 1em;">
+                <label for="newsletter-name" style="display: block; margin-bottom: 0.5em; font-size: 0.9em;">
+                    {{ i18n.get('home:name_label', 'Name (optional):') }}
+                </label>
+                <input type="text" id="newsletter-name" name="name"
+                    placeholder="{{ i18n.get('home:name_placeholder', 'Your name') }}"
+                    style="width: 100%; padding: 0.4em 0.8em; font-size: 0.9em;">
+            </div>
             <label for="newsletter-email" style="display: block; margin-bottom: 0.5em; font-size: 0.9em;">
                 {{ i18n.get('home:email_label', 'Email Address:') }}
             </label>
@@ -103,7 +111,10 @@ essays') }}{% endblock %}
             const response = await fetch('/api/contact/subscribe', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: emailInput.value }),
+                body: JSON.stringify({
+                    email: emailInput.value,
+                    name: nameInput ? nameInput.value : ''
+                }),
             });
 
             if (response.ok) {
