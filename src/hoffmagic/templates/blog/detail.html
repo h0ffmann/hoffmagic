@@ -1,354 +1,271 @@
 {% extends "base.html" %}
 
-{% block title %}{{ post.title }} | hoffmagic blog{% endblock %}
-{% block description %}{{ post.summary }}{% endblock %}
+{# Use post title from context, fallback to generic title #}
+{% block title %}{{ post.title if post else i18n.blog_title }} | hoffmagic{% endblock %}
+{# Use post summary if available, else generic description #}
+{% block description %}{{ post.summary if post else i18n.blog_description }}{% endblock %}
 
 {% block meta %}
+{# Basic meta tags, add more if needed #}
+{% if post %}
 <meta property="og:title" content="{{ post.title }}" />
 <meta property="og:description" content="{{ post.summary }}" />
 {% if post.featured_image %}
 <meta property="og:image" content="{{ post.featured_image }}" />
 {% endif %}
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="{{ post.publish_date }}" />
-<meta property="article:modified_time" content="{{ post.updated_at }}" />
+{% if post.publish_date %}
+<meta property="article:published_time" content="{{ post.publish_date.isoformat() }}" />
+{% endif %}
+{% if post.updated_at %}
+<meta property="article:modified_time" content="{{ post.updated_at.isoformat() }}" />
+{% endif %}
 {% for tag in post.tags %}
 <meta property="article:tag" content="{{ tag.name }}" />
 {% endfor %}
+{% endif %}
 {% endblock %}
 
 {% block content %}
-<!-- Article Header -->
-<header class="relative">
-    {% if post.featured_image %}
-    <div class="w-full h-96 bg-center bg-cover" style="background-image: url('{{ post.featured_image }}')">
-        <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-70"></div>
+{# Check if post data exists #}
+{% if post %}
+<article class="post-detail">
+    <!-- Simplified Article Header -->
+    <header style="margin-bottom: 2em;">
+        <h1 style="font-size: 2em; margin-bottom: 0.2em;">{{ post.title }}</h1>
+        <p style="font-size: 0.9em; color: var(--color-text-secondary); margin-top: 0;">
+            {# Display author name if available #}
+            {% if post.author and post.author.name %}
+                By {{ post.author.name }} |
+            {% endif %}
+            {# Format date safely #}
+            {{ post.publish_date.strftime('%B %d, %Y') if post.publish_date else 'No date' }}
+        </p>
+    </header>
+
+    <!-- Article Content -->
+    {# Use the 'prose' class for Markdown content styling from minimalist.css #}
+    <div class="prose" style="margin-bottom: 2.5em;">
+        {# Display summary if it exists and is different from main content start #}
+        {% if post.summary and not post.content.startswith(post.summary) %}
+        <p><em>{{ post.summary }}</em></p>
+        <hr class="minimal-separator"> {# Add separator if summary is distinct #}
+        {% endif %}
+
+        {# Render main content safely #}
+        {{ post.content | safe }}
     </div>
-    {% else %}
-    <div class="w-full h-96 bg-gradient-to-r from-brand-primary to-brand-dark">
-        <div class="absolute inset-0 opacity-20 bg-pattern"></div>
+
+    <!-- Tags -->
+    {% if post.tags %}
+    <div class="post-tags" style="margin-bottom: 2.5em;">
+        <span style="color: var(--color-text-secondary);">{{ i18n.tags_label }}</span>
+        {% for tag in post.tags %}
+            <a href="{{ url_for('blog_page') }}?tag={{ tag.slug }}&lang={{ lang }}"
+               style="margin-left: 0.5em; color: var(--color-text-secondary); text-decoration: underline;">{{ tag.name }}</a>{% if not loop.last %},{% endif %}
+        {% endfor %}
     </div>
     {% endif %}
-    
-    <div class="container mx-auto px-4 md:px-6 absolute inset-0 flex items-center justify-center">
-        <div class="max-w-4xl text-center text-white">
-            <div class="mb-6 flex justify-center space-x-2">
-                {% for tag in post.tags %}
-                <span class="bg-brand-accent bg-opacity-80 px-3 py-1 rounded-full text-sm font-medium">
-                    {{ tag.name }}
-                </span>
-                {% endfor %}
-            </div>
-            <h1 class="text-3xl md:text-4xl lg:text-5xl font-serif font-bold mb-4">{{ post.title }}</h1>
-            <div class="flex items-center justify-center space-x-4">
-                <div class="flex items-center">
-                    <img src="{{ post.author.avatar or 'https://source.unsplash.com/random/100x100/?portrait' }}" alt="{{ post.author.name }}" class="w-10 h-10 rounded-full mr-2">
-                    <span class="text-lg">{{ post.author.name }}</span>
-                </div>
-                <span class="text-brand-light">{{ post.publish_date.strftime('%B %d, %Y') }}</span>
-            </div>
-        </div>
-    </div>
-</header>
 
-<!-- Article Content -->
-<article class="py-12 bg-white">
-    <div class="container mx-auto px-4 md:px-6">
-        <div class="max-w-3xl mx-auto">
-            {% if post.summary %}
-            <div class="text-xl text-gray-600 mb-8 font-serif italic border-l-4 border-brand-primary pl-6 py-2">
-                {{ post.summary }}
-            </div>
+    {# Separator before author/comments #}
+    <hr class="minimal-separator">
+
+    <!-- Author Bio (Simplified) -->
+    {% if post.author %}
+    <div class="author-bio" style="margin-top: 2.5em; margin-bottom: 2.5em; display: flex; align-items: center; gap: 1em;">
+        {% if post.author.avatar %}
+        <img src="{{ post.author.avatar }}" alt="{{ post.author.name }}" style="width: 60px; height: 60px; border-radius: 50%;">
+        {% endif %}
+        <div>
+            <h3 style="margin: 0 0 0.3em 0; font-size: 1.1em;">{{ post.author.name }}</h3>
+            {% if post.author.bio %}
+            <p style="margin: 0; font-size: 0.9em; color: var(--color-text-secondary);">{{ post.author.bio }}</p>
             {% endif %}
-            
-            <div class="prose prose-lg mx-auto">
-                {{ post.content | safe }}
-            </div>
-            
-            <!-- Tags and Share -->
-            <div class="mt-10 pt-6 border-t border-gray-200 flex flex-wrap justify-between items-center">
-                <div class="flex flex-wrap gap-2 mb-4 md:mb-0">
-                    {% for tag in post.tags %}
-                    <a href="/blog?tag={{ tag.slug }}" class="px-3 py-1 rounded-full text-sm font-medium bg-gray-200 text-brand-dark hover:bg-gray-300 transition">
-                        {{ tag.name }}
-                    </a>
-                    {% endfor %}
-                </div>
-                
-                <div class="flex space-x-3">
-                    <button class="text-gray-500 hover:text-brand-accent transition" id="share-button">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                        </svg>
-                    </button>
-                    <button class="text-gray-500 hover:text-brand-accent transition" id="bookmark-button">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Author Bio -->
-            <div class="mt-10 bg-gray-50 rounded-lg p-6 flex flex-col md:flex-row items-center md:items-start">
-                <img src="{{ post.author.avatar or 'https://source.unsplash.com/random/200x200/?portrait' }}" alt="{{ post.author.name }}" class="w-24 h-24 rounded-full mb-4 md:mb-0 md:mr-6">
-                <div>
-                    <h3 class="text-xl font-bold mb-2">{{ post.author.name }}</h3>
-                    <p class="text-gray-600 mb-4">{{ post.author.bio or 'writer at hoffmagic blog' }}</p>
-                    <div class="flex space-x-3">
-                        <a href="#" class="text-brand-primary hover:text-brand-accent transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path>
-                            </svg>
-                        </a>
-                        <a href="#" class="text-brand-primary hover:text-brand-accent transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-                            </svg>
-                        </a>
-                        <a href="mailto:{{ post.author.email }}" class="text-brand-primary hover:text-brand-accent transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-            </div>
+            {# Add social links if needed, styled minimally #}
         </div>
     </div>
+    {% endif %}
+
 </article>
 
 <!-- Comments Section -->
-<section class="py-12 bg-gray-50">
-    <div class="container mx-auto px-4 md:px-6">
-        <div class="max-w-3xl mx-auto">
-            <h2 class="text-2xl font-serif font-bold mb-8">Comments</h2>
-            
-            <!-- Comment Form -->
-            <form id="comment-form" class="mb-10 bg-white rounded-lg p-6 shadow-md">
-                <div class="mb-4">
-                    <label for="comment-name" class="block text-gray-700 mb-2">Name</label>
-                    <input type="text" id="comment-name" name="author_name" required
-                           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-accent">
-                </div>
-                <div class="mb-4">
-                    <label for="comment-email" class="block text-gray-700 mb-2">Email</label>
-                    <input type="email" id="comment-email" name="author_email" required
-                           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-accent">
-                    <p class="text-sm text-gray-500 mt-1">Your email will not be published</p>
-                </div>
-                <div class="mb-4">
-                    <label for="comment-content" class="block text-gray-700 mb-2">Comment</label>
-                    <textarea id="comment-content" name="content" rows="5" required
-                              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-accent"></textarea>
-                </div>
-                <button type="submit" class="bg-brand-primary hover:bg-opacity-90 text-white px-6 py-3 rounded-md font-medium transition duration-200">
-                    Post Comment
-                </button>
-            </form>
-            
-            <!-- Comments List -->
-            <div id="comments-list" class="space-y-8">
-                <!-- Comments will be loaded dynamically -->
-                <div class="text-center py-10">
-                    <p class="text-gray-500">Loading comments...</p>
-                </div>
-            </div>
+<section class="comments-section" style="margin-top: 3em;">
+    <h2 style="margin-bottom: 1.5em;">{{ i18n.comments_heading | default('Comments') }}</h2>
+
+    <!-- Comment Form -->
+    <form id="comment-form" style="margin-bottom: 2.5em; background-color: var(--color-bg-secondary); padding: 1.5em; border-radius: 4px; border: 1px solid var(--color-border);">
+        <h3 style="margin-top: 0; margin-bottom: 1em;">{{ i18n.leave_comment | default('Leave a Comment') }}</h3>
+        <div style="margin-bottom: 1em;">
+            <label for="comment-name" style="display: block; margin-bottom: 0.3em; font-size: 0.9em;">{{ i18n.comment_name | default('Name') }}</label>
+            <input type="text" id="comment-name" name="author_name" required style="width: 100%; box-sizing: border-box;"> {# Inherits styles from minimalist.css #}
         </div>
+        <div style="margin-bottom: 1em;">
+            <label for="comment-email" style="display: block; margin-bottom: 0.3em; font-size: 0.9em;">{{ i18n.comment_email | default('Email') }}</label>
+            <input type="email" id="comment-email" name="author_email" required style="width: 100%; box-sizing: border-box;">
+            <p style="font-size: 0.8em; color: var(--color-text-secondary); margin-top: 0.3em;">{{ i18n.email_not_published | default('Your email will not be published.') }}</p>
+        </div>
+        <div style="margin-bottom: 1.5em;">
+            <label for="comment-content" style="display: block; margin-bottom: 0.3em; font-size: 0.9em;">{{ i18n.comment_content | default('Comment') }}</label>
+            <textarea id="comment-content" name="content" rows="5" required style="width: 100%; box-sizing: border-box;"></textarea>
+        </div>
+        <button type="submit">{{ i18n.post_comment_button | default('Post Comment') }}</button> {# Inherits styles #}
+        <p id="comment-feedback" style="font-size: 0.9em; margin-top: 1em;"></p>
+    </form>
+
+    <!-- Comments List -->
+    <div id="comments-list" style="margin-top: 2em;">
+        <p>{{ i18n.loading_comments | default('Loading comments...') }}</p>
+        {# Comments will be loaded dynamically here #}
     </div>
 </section>
 
-<!-- Related Posts -->
-<section class="py-12 bg-white">
-    <div class="container mx-auto px-4 md:px-6">
-        <h2 class="text-2xl font-serif font-bold mb-8 text-center">You May Also Like</h2>
-        
-        <div id="related-posts" class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Related posts will be loaded dynamically -->
-        </div>
-    </div>
-</section>
+{% else %}
+{# Fallback if post data is not available #}
+<p>{{ i18n.post_not_found | default('Post not found.') }}</p>
+<p><a href="{{ url_for('blog_page') }}?lang={{ lang }}">{{ i18n.back_to_blog | default('Back to blog list') }}</a></p>
+{% endif %}
 {% endblock %}
 
+
 {% block scripts %}
+{# Only include script if post data is likely available #}
+{% if post %}
+{# Pass translations needed by the script #}
 <script>
+    const i18nCommentStrings = {
+        loading: "{{ i18n.loading_comments | default('Loading comments...') }}",
+        noComments: "{{ i18n.no_comments | default('No comments yet. Be the first!') }}",
+        loadError: "{{ i18n.failed_load_comments | default('Failed to load comments.') }}",
+        submitting: "{{ i18n.submitting_comment | default('Submitting...') }}",
+        submitSuccess: "{{ i18n.comment_success | default('Comment submitted and awaiting approval.') }}",
+        submitErrorPrefix: "{{ i18n.comment_error_prefix | default('Error: ') }}",
+        submitErrorGeneric: "{{ i18n.comment_error_generic | default('Could not submit comment.') }}",
+        submitErrorServer: "{{ i18n.comment_error_server | default('Could not connect to server.') }}"
+    };
+
     document.addEventListener('DOMContentLoaded', function() {
-        const slug = window.location.pathname.split('/').pop();
-        
-        // Fetch post data if not already available
-        if (!window.postData) {
-            fetchPostData(slug);
-        }
-        
+        const slug = '{{ post.slug }}'; // Get slug from template context
+        const postId = {{ post.id | default(0) }}; // Get post ID from template context
+
+        // Load comments initially
+        loadComments(slug);
+
         // Handle comment form submission
         const commentForm = document.getElementById('comment-form');
-        
-        commentForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const formData = {
-                author_name: document.getElementById('comment-name').value,
-                author_email: document.getElementById('comment-email').value,
-                content: document.getElementById('comment-content').value,
-                post_id: window.postData?.id || 0
-            };
-            
-            try {
-                const response = await fetch(`/api/blog/${slug}/comments`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData),
-                });
-                
-                if (response.ok) {
-                    alert('Your comment has been submitted and is awaiting approval.');
-                    commentForm.reset();
-                    loadComments(slug);
-                } else {
-                    const error = await response.json();
-                    alert(`Error: ${error.detail || 'Something went wrong'}`);
+        const feedbackP = document.getElementById('comment-feedback');
+
+        if (commentForm) {
+            commentForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                feedbackP.textContent = i18nCommentStrings.submitting;
+                feedbackP.style.color = 'inherit';
+
+                const formData = {
+                    author_name: document.getElementById('comment-name').value,
+                    author_email: document.getElementById('comment-email').value,
+                    content: document.getElementById('comment-content').value,
+                    post_id: postId // Use post ID from context
+                };
+
+                // Basic validation
+                if (!formData.author_name || !formData.author_email || !formData.content) {
+                    feedbackP.textContent = i18nCommentStrings.submitErrorPrefix + 'Please fill all fields.'; // Add translation later
+                    feedbackP.style.color = '#ff6b6b';
+                    return;
                 }
-            } catch (error) {
-                alert('Error: Could not connect to the server');
-                console.error('Error:', error);
-            }
-        });
-        
-        // Share button
-        document.getElementById('share-button').addEventListener('click', function() {
-            if (navigator.share) {
-                navigator.share({
-                    title: document.title,
-                    url: window.location.href
-                })
-                .catch(console.error);
-            } else {
-                // Fallback for browsers that don't support Web Share API
-                prompt("Copy this link:", window.location.href);
-            }
-        });
-        
-        // Load related posts
-        loadRelatedPosts(slug);
-    });
-    
-    async function fetchPostData(slug) {
-        try {
-            const response = await fetch(`/api/blog/${slug}`);
-            
-            if (!response.ok) {
-                throw new Error('Post not found');
-            }
-            
-            const data = await response.json();
-            window.postData = data;
-            
-            // Load comments
-            loadComments(slug);
-            
-            return data;
-        } catch (error) {
-            console.error('Error fetching post data:', error);
-            return null;
+
+                try {
+                    // Use the correct API endpoint for adding a comment to a specific post
+                    const response = await fetch(`/api/blog/${slug}/comments`, { // Assuming this is the correct endpoint structure
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData),
+                    });
+
+                    if (response.ok) {
+                        feedbackP.textContent = i18nCommentStrings.submitSuccess;
+                        feedbackP.style.color = 'var(--color-accent)';
+                        commentForm.reset();
+                        // Reload comments after a short delay to allow server processing
+                        setTimeout(() => loadComments(slug), 1000);
+                    } else {
+                        let errorMessage = i18nCommentStrings.submitErrorGeneric;
+                        try {
+                            const errorData = await response.json();
+                            errorMessage = (errorData && errorData.detail) || errorMessage;
+                        } catch (e) { /* Ignore if response is not JSON */ }
+                        feedbackP.textContent = i18nCommentStrings.submitErrorPrefix + errorMessage;
+                        feedbackP.style.color = '#ff6b6b';
+                    }
+                } catch (error) {
+                    console.error('Comment submission error:', error);
+                    feedbackP.textContent = i18nCommentStrings.submitErrorPrefix + i18nCommentStrings.submitErrorServer;
+                    feedbackP.style.color = '#ff6b6b';
+                } finally {
+                    // Optionally clear feedback after a few seconds
+                    setTimeout(() => { feedbackP.textContent = ''; }, 7000);
+                }
+            });
         }
-    }
-    
+    });
+
+    // Function to fetch and display comments
     async function loadComments(slug) {
         const commentsContainer = document.getElementById('comments-list');
-        
+        commentsContainer.innerHTML = `<p>${i18nCommentStrings.loading}</p>`;
+
         try {
-            const postData = window.postData || await fetchPostData(slug);
-            
-            if (!postData || !postData.comments) {
-                commentsContainer.innerHTML = `
-                    <div class="text-center py-10">
-                        <p class="text-gray-500">No comments yet. Be the first to share your thoughts!</p>
-                    </div>
-                `;
+            // Fetch comments specifically for this post slug
+            // Adjust the API endpoint if necessary. This assumes comments are part of the post detail endpoint.
+            // If there's a separate comments endpoint, use that.
+            const response = await fetch(`/api/blog/${slug}`); // Fetch the whole post detail again
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const postData = await response.json();
+
+            if (!postData || !postData.comments || postData.comments.length === 0) {
+                commentsContainer.innerHTML = `<p>${i18nCommentStrings.noComments}</p>`;
                 return;
             }
-            
+
+            // Filter for approved comments only
             const approvedComments = postData.comments.filter(comment => comment.is_approved);
-            
+
             if (approvedComments.length === 0) {
-                commentsContainer.innerHTML = `
-                    <div class="text-center py-10">
-                        <p class="text-gray-500">No comments yet. Be the first to share your thoughts!</p>
-                    </div>
-                `;
+                commentsContainer.innerHTML = `<p>${i18nCommentStrings.noComments}</p>`;
                 return;
             }
-            
+
+            // Render comments using minimalist style
             commentsContainer.innerHTML = approvedComments.map(comment => `
-                <div class="mb-8 border-b pb-8 last:border-b-0">
-                    <div class="flex items-start">
-                        <div class="flex-shrink-0 mr-4">
-                            <div class="w-12 h-12 rounded-full bg-brand-primary flex items-center justify-center text-white font-bold">
-                                ${comment.author_name[0].toUpperCase()}
-                            </div>
+                <div class="comment-item" style="margin-bottom: 1.5em; padding-bottom: 1.5em; border-bottom: 1px solid var(--color-border-light); display: flex; gap: 1em;">
+                    <div style="flex-shrink: 0;">
+                        {# Simple initial avatar #}
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--color-bg-secondary); display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--color-text-secondary);">
+                            ${comment.author_name ? comment.author_name[0].toUpperCase() : '?'}
                         </div>
-                        <div class="flex-grow">
-                            <div class="flex items-center mb-2">
-                                <h4 class="font-bold text-lg">${comment.author_name}</h4>
-                                <span class="ml-2 text-sm text-gray-500">${new Date(comment.created_at).toLocaleDateString()}</span>
-                            </div>
-                            <div class="prose prose-sm">
-                                ${comment.content}
-                            </div>
-                        </div>
+                    </div>
+                    <div style="flex-grow: 1;">
+                        <p style="margin: 0 0 0.5em 0;">
+                            <strong style="font-weight: 600;">${comment.author_name}</strong>
+                            <span style="font-size: 0.85em; color: var(--color-text-secondary); margin-left: 0.5em;">
+                                - ${new Date(comment.created_at).toLocaleDateString()}
+                            </span>
+                        </p>
+                        {# Basic content display, assumes plain text or safe HTML #}
+                        <p style="margin: 0;">${comment.content.replace(/\n/g, '<br>')}</p> {# Basic newline handling #}
                     </div>
                 </div>
             `).join('');
+
         } catch (error) {
             console.error('Error loading comments:', error);
-            commentsContainer.innerHTML = `
-                <div class="text-center py-10">
-                    <p class="text-gray-500">Failed to load comments. Please try again later.</p>
-                </div>
-            `;
-        }
-    }
-    
-    async function loadRelatedPosts(slug) {
-        const container = document.getElementById('related-posts');
-        
-        try {
-            // Fetch related posts - we'll just get the latest 3 posts
-            const response = await fetch(`/api/blog?page=1&page_size=4`);
-            const data = await response.json();
-            
-            // Filter out the current post
-            const relatedPosts = data.items.filter(post => post.slug !== slug).slice(0, 3);
-            
-            if (relatedPosts.length === 0) {
-                container.style.display = 'none';
-                return;
-            }
-            
-            container.innerHTML = relatedPosts.map(post => `
-                <article class="bg-white rounded-lg overflow-hidden shadow-md transition duration-300 hover:shadow-xl">
-                    <img src="${post.featured_image || 'https://source.unsplash.com/random/800x600/?nature'}" alt="Related post" class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <h3 class="text-lg font-serif font-bold mb-2">
-                            <a href="/blog/${post.slug}" class="text-brand-dark hover:text-brand-accent transition duration-200">
-                                ${post.title}
-                            </a>
-                        </h3>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-500">${new Date(post.publish_date).toLocaleDateString()}</span>
-                            <a href="/blog/${post.slug}" class="text-brand-primary hover:text-brand-accent transition duration-200 text-sm font-medium">
-                                Read →
-                            </a>
-                        </div>
-                    </div>
-                </article>
-            `).join('');
-        } catch (error) {
-            console.error('Error loading related posts:', error);
-            container.style.display = 'none';
+            commentsContainer.innerHTML = `<p>${i18nCommentStrings.loadError}</p>`;
         }
     }
 </script>
+{% endif %}
 {% endblock %}
