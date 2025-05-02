@@ -1,16 +1,43 @@
-# hoffmagic blog
+# HoffMagic Blog
 
-a beautiful python-based blog application built with fastapi, jinja2, and tailwindcss.
+![HoffMagic Logo](https://via.placeholder.com/150x50?text=HoffMagic)  
+*A beautiful Python-based blog application built with FastAPI, Jinja2, and TailwindCSS*
+
+## Table of Contents
+- [Features](#features)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Development](#development)
+- [Justfile Commands](#justfile-commands)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [License](#license)
+- [TODO](#todo)
 
 ## Features
 
-- Modern and clean blog interface
-- Separate sections for Blog Posts and Essays
-- About Me and Contact pages
-- Markdown support for content (manual sync/management recommended)
-- Fully deployable to Kubernetes or VPS
-- Built with Python, UV, Nix
-- Mobile-responsive design
+### Core Features
+- 🚀 FastAPI backend with async database operations
+- ✨ Jinja2 templating with TailwindCSS for beautiful, responsive design
+- 📝 Dual content types: Blog Posts and Essays
+- 🌍 Multi-language support (English/Portuguese)
+- 🔍 Full-text search capabilities
+- 🏷️ Tagging system for content organization
+
+### Technical Highlights
+- 🐳 Docker and Kubernetes ready
+- 📦 Nix flakes for reproducible development environments
+- 🔄 Automatic database migrations with Alembic
+- 📊 Built-in analytics and statistics
+- ✉️ Contact form with email validation
+- 📰 RSS feed support
+
+### Developer Experience
+- ⚡ Justfile for common tasks
+- ✅ Comprehensive test suite
+- 📈 Code coverage reporting
+- 🧹 Pre-commit hooks for code quality
+- 📜 Detailed logging configuration
 
 ## Getting Started
 
@@ -94,10 +121,39 @@ If you have `just` installed, you can use these commands for common tasks:
 ./scripts/deploy_vps.sh
 ```
 
+## Contributing
+
+We welcome contributions! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/your-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin feature/your-feature`)
+5. Open a Pull Request
+
+### Development Guidelines
+- Follow PEP 8 style guide
+- Write tests for new features
+- Document any API changes
+- Keep commit messages clear and descriptive
+
 ## License
 
-MIT
+MIT License - See [LICENSE](LICENSE) for details.
 
 ## TODO
-- infer tags
-- time spent in each post automation (x minutes, y words)
+
+### High Priority
+- 🔍 Auto-tagging system for content
+- ⏱️ Reading time estimation (x minutes, y words)
+- 📊 Enhanced analytics dashboard
+
+### Medium Priority
+- 🔄 Automated content sync from Markdown files
+- 📱 Progressive Web App (PWA) support
+- 🔐 OAuth authentication options
+
+### Future Ideas
+- 🎨 Theme customization system
+- 📚 Series/collections for posts
+- 🤖 AI-assisted content suggestions
