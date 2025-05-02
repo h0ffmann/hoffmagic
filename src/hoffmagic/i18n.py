@@ -4,12 +4,31 @@ Internationalization module for hoffmagic blog.
 
 # English translations
 en = {
-    # Navigation
+    # General
+    "brand_name": "hoffmagic",
     "home": "Home",
-    "writing": "Writing",
     "about": "About",
-    "projects": "Projects",
-    
+    "writing": "Writing",
+    "essays": "Essays",
+    "contact": "Contact",
+    "tags": "Tags",
+    "search_placeholder": "Search...",
+    "search_button_label": "Submit search",
+    "read_more": "Read More →",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page",
+    "of": "of",
+    # Header Nav
+    "nav_writing": "Writing",
+    "nav_about": "About",
+    "nav_projects": "Projects", # Future use
+    "nav_contact": "Contact",
+    # Language Toggle
+    "lang_en_short": "EN",
+    "lang_pt_short": "PT",
+    "toggle_language": "Toggle Language",
+
     # Home page
     "latest_writing": "Latest Writing",
     "subscribe": "Subscribe",
@@ -46,12 +65,31 @@ en = {
 
 # Portuguese translations
 pt = {
-    # Navigation
+    # General
+    "brand_name": "hoffmagic",
     "home": "Início",
-    "writing": "Textos",
     "about": "Sobre",
-    "projects": "Projetos",
-    
+    "writing": "Textos",
+    "essays": "Ensaios",
+    "contact": "Contato",
+    "tags": "Etiquetas",
+    "search_placeholder": "Buscar...",
+    "search_button_label": "Enviar busca",
+    "read_more": "Ler Mais →",
+    "previous": "Anterior",
+    "next": "Próximo",
+    "page": "Página",
+    "of": "de",
+    # Header Nav
+    "nav_writing": "Textos",
+    "nav_about": "Sobre",
+    "nav_projects": "Projetos", # Uso futuro
+    "nav_contact": "Contato",
+    # Language Toggle
+    "lang_en_short": "EN",
+    "lang_pt_short": "PT",
+    "toggle_language": "Alternar Idioma",
+
     # Home page
     "latest_writing": "Últimos Textos",
     "subscribe": "Inscreva-se",

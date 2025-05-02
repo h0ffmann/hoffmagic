@@ -45,24 +45,25 @@
             <div class="header-left" style="display: flex; align-items: center; gap: 2em;">
                 <!-- Site Title/Logo -->
                 <div class="logo" style="font-size: 1.1rem; font-weight: bold;">
-                    <a href="{{ url_for('home') }}"
-                        style="text-decoration: none; color: var(--color-text-primary);">h0ffmann</a>
+                    <a href="{{ url_for('home', lang=lang) }}"
+                       style="text-decoration: none; color: var(--color-text-primary);">{{ i18n.get('brand_name', 'hoffmagic') }}</a>
                 </div>
                 <!-- Navigation -->
                 <nav class="nav-menu">
                     {# Determine current page slug to apply active class #}
                     {% set current_path = request.url.path %}
-                    {# Define simple page mappings for highlighting #}
+                    {# Define page mappings for highlighting #}
                     {% set page_map = {'/': 'home', '/blog': 'writing', '/essays': 'essays', '/about': 'about',
-                    '/contact': 'misc'} %}
+                    '/contact': 'contact'} %} {# Changed misc to contact #}
                     {% set active_page = page_map.get(current_path.rstrip('/')) or page_map.get(current_path) or '' %}
                     {# Handle trailing slash #}
 
-                    {#<a href="{{ url_for('home') }}" class="{{ 'nav-active' if active_page == 'home' }}">Home</a>#}
-                    <a href="{{ url_for('blog_page') }}"
-                        class="{{ 'nav-active' if active_page == 'writing' or active_page == 'essays' }}">Writing</a>
-                    <a href="{{ url_for('about_page') }}" class="{{ 'nav-active' if active_page == 'about' }}">About</a>
-                    <a href="{{ url_for('contact_page') }}" class="{{ 'nav-active' if active_page == 'misc' }}">Misc</a>
+                    {#<a href="{{ url_for('home', lang=lang) }}" class="{{ 'nav-active' if active_page == 'home' }}">{{ i18n.get('nav_home', 'Home') }}</a>#}
+                    <a href="{{ url_for('blog_page', lang=lang) }}"
+                        class="{{ 'nav-active' if active_page == 'writing' or active_page == 'essays' }}">{{ i18n.get('nav_writing', 'Writing') }}</a>
+                    <a href="{{ url_for('about_page', lang=lang) }}" class="{{ 'nav-active' if active_page == 'about' }}">{{ i18n.get('nav_about', 'About') }}</a>
+                    {#<a href="#projects" class="">{{ i18n.get('nav_projects', 'Projects') }}</a> #} {# Placeholder for Projects #}
+                    <a href="{{ url_for('contact_page', lang=lang) }}" class="{{ 'nav-active' if active_page == 'contact' }}">{{ i18n.get('nav_contact', 'Contact') }}</a> {# Renamed Misc to Contact #}
                 </nav>
             </div>
             <!-- Header Right: Language Toggle + Search -->
@@ -70,15 +71,14 @@
                 <!-- Language toggle -->
                 <div class="language-toggle">
                     {# Use i18n for labels if available, otherwise fallback #}
-                    <a href="?lang=pt" class="{{ 'active' if lang == 'pt' }}" aria-label="Português">
-                        {{ i18n.get("lang_pt", "PT") if i18n else "PT" }}
+                    <a href="?lang=pt" class="lang-option {{ 'active' if lang == 'pt' }}" aria-label="Português" data-lang="pt">
+                       {{ i18n.get("lang_pt_short", "PT") }}
                     </a>
-                    <label class="switch" title="{{ i18n.get('toggle_language', 'Toggle Language') if i18n else 'Toggle Language' }}">
-                        <input type="checkbox" id="language-toggle" {% if lang == 'en' %}checked="checked"{% endif %}>
-                        <span class="slider round"></span>
-                    </label>
-                    <a href="?lang=en" class="{{ 'active' if lang == 'en' }}" aria-label="English">
-                        {{ i18n.get("lang_en", "EN") if i18n else "EN" }}
+                    <div class="lang-slider-container" title="{{ i18n.get('toggle_language', 'Toggle Language') }}">
+                         <div class="lang-slider-button {{ 'on-en' if lang == 'en' }}"></div>
+                    </div>
+                    <a href="?lang=en" class="lang-option {{ 'active' if lang == 'en' }}" aria-label="English" data-lang="en">
+                        {{ i18n.get("lang_en_short", "EN") }}
                     </a>
                 </div>
 
@@ -113,20 +113,25 @@
     <!-- Language Toggle Script -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const langToggle = document.getElementById('language-toggle');
-            if (langToggle) {
-                langToggle.addEventListener('change', function() {
-                    const newLang = this.checked ? 'en' : 'pt';
-                    // Preserve current URL parameters except 'lang'
-                    const currentUrl = new URL(window.location.href);
-                    currentUrl.searchParams.set('lang', newLang);
-                    window.location.href = currentUrl.toString();
-                });
+             // Language Slider Logic
+             const sliderContainer = document.querySelector('.lang-slider-container');
+             const currentLang = new URLSearchParams(window.location.search).get('lang') || 'en'; // Default 'en'
 
-                // Ensure toggle state matches current language on load
-                const currentLang = new URLSearchParams(window.location.search).get('lang') || 'en'; // Default to 'en' if not set
-                langToggle.checked = (currentLang === 'en');
-            }
+             sliderContainer?.addEventListener('click', function() {
+                 const newLang = (currentLang === 'en') ? 'pt' : 'en';
+                 const currentUrl = new URL(window.location.href);
+                 currentUrl.searchParams.set('lang', newLang);
+                 window.location.href = currentUrl.toString();
+             });
+
+             // Optional: Update active class on links based on currentLang
+             document.querySelectorAll('.lang-option').forEach(link => {
+                 if (link.getAttribute('data-lang') === currentLang) {
+                     link.classList.add('active');
+                 } else {
+                     link.classList.remove('active');
+                 }
+             });
         });
     </script>
     {% endblock %}
