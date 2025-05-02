@@ -7,7 +7,7 @@
     --color-bg-secondary: #2c2c2c; /* Match Tailwind */
     --color-text-primary: #e0e0e0; /* Match Tailwind */
     --color-text-secondary: #a0a0a0;
-    --color-accent: #2ecc71;
+    --color-accent: #10b981; /* Consistent green accent color */
     --color-border: #333333;
     --color-border-light: #444444; /* Lighter border for subtle separators */
     --font-sans: ui-sans-serif, system-ui, sans-serif;
@@ -41,6 +41,7 @@ a {
 }
 
 a:hover {
+    color: color-mix(in srgb, var(--color-accent) 80%, white);
     text-decoration: underline;
 }
 
@@ -77,6 +78,12 @@ a:hover {
 .prose p {
     margin-bottom: 1.25em;
     color: var(--color-text-primary); /* Ensure prose paragraphs have primary text color */
+}
+
+.prose strong,
+.prose b {
+    color: var(--color-accent);
+    font-weight: 600;
 }
 
 pre, code, .prose pre, .prose code {
@@ -295,8 +302,7 @@ button:hover, input[type="submit"]:hover {
     position: absolute;
     width: 18px;
     height: 18px;
-    /* Keep the button green */
-    background-color: #10b981;  /* Tailwind's emerald-500 color */
+    background-color: var(--color-accent);
     border-radius: 50%;
     top: 1px;
     left: 1px;
