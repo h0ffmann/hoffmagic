@@ -107,6 +107,11 @@ class BlogService:
                         post.content = post.content_pt
                     if hasattr(post, 'summary_pt') and post.summary_pt:
                         post.summary = post.summary_pt
+                    # Ensure comments are localized too if they exist
+                    if post.comments and hasattr(post.comments[0], 'content_pt'):
+                        for comment in post.comments:
+                            if comment.content_pt:
+                                comment.content = comment.content_pt
             
             return {
                 "items": posts,
