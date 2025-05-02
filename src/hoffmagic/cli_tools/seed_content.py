@@ -188,7 +188,11 @@ async def _seed_logic(directory: Path, is_essay: bool, overwrite: bool, dry_run:
                     "title": title, "content": content, "summary": summary,
                     "is_published": is_published, "is_essay": is_essay,
                     "author_id": author.id, "publish_date": publish_date,
-                    "featured_image": str(featured_image) if featured_image else None
+                    "featured_image": str(featured_image) if featured_image else None,
+                    # Add Portuguese fields
+                    "title_pt": title_pt,
+                    "content_pt": content_pt,
+                    "summary_pt": summary_pt
                 }
 
                 # --- Perform Create or Update ---
