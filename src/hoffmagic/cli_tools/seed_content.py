@@ -136,6 +136,14 @@ async def _seed_logic(directory: Path, is_essay: bool, overwrite: bool, dry_run:
                 tag_names = metadata.get("tags", [])
                 featured_image = metadata.get("featured_image", None)
                 publish_date_str = metadata.get("publish_date", None)
+                
+                # --- Extract Portuguese metadata fields ---
+                title_pt = metadata.get("title_pt", None)
+                title_pt = str(title_pt) if title_pt is not None else None
+                content_pt = metadata.get("content_pt", None)
+                content_pt = str(content_pt) if content_pt is not None else None
+                summary_pt = metadata.get("summary_pt", None)
+                summary_pt = str(summary_pt) if summary_pt is not None else None
 
                 # --- Sanitize/Process metadata ---
                 if isinstance(tag_names, list) and all(isinstance(t, str) for t in tag_names):
@@ -214,6 +222,13 @@ async def _seed_logic(directory: Path, is_essay: bool, overwrite: bool, dry_run:
                     try:
                         await db.commit()
                         logger.info(f"Successfully {action.lower()} post '{title}' (slug: {slug})")
+                        # Log Portuguese content status
+                        if title_pt:
+                            logger.info(f"Portuguese title added for {slug}: '{title_pt}'")
+                        if content_pt:
+                            logger.info(f"Portuguese content added for {slug} ({len(content_pt)} characters)")
+                        if summary_pt:
+                            logger.info(f"Portuguese summary added for {slug}")
                         processed_count += 1
                     except IntegrityError as e:
                         await db.rollback()
@@ -263,6 +278,11 @@ def seed( # REMOVED async
 
     Parses files with YAML frontmatter. Requires Author records to exist.
     Tags will be created if they don't exist.
+    
+    Now supports Portuguese (_pt) fields in the frontmatter:
+    - title_pt: Portuguese title
+    - content_pt: Portuguese content
+    - summary_pt: Portuguese summary
     """
     try:
         # Explicitly run the async logic using asyncio.run
