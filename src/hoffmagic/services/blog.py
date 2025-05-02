@@ -131,45 +131,64 @@ class BlogService:
             raise
 
     async def get_post_by_slug(
-        self, 
+        self,
         slug: str,
         is_essay: bool = False,
         lang: str = 'en'
     ) -> Optional[Post]:
         """
-        Get a post by its slug.
-        
+        Get a post by its slug, applying localization if necessary.
+
         Args:
             slug: Post slug
             is_essay: Whether the post is an essay
             lang: Language code ('en' or 'pt')
-            
+
         Returns:
             Post object if found, None otherwise
         """
+        logger.debug(f"Fetching post/essay by slug: {slug}, is_essay: {is_essay}, lang: {lang}")
         query = (
             select(Post)
-            .where(and_(Post.slug == slug, Post.is_essay == is_essay))
+            .where(Post.slug == slug, Post.is_essay == is_essay) # Combined where clause
             .options(
-                joinedload(Post.author),
-                joinedload(Post.tags),
-                joinedload(Post.comments)
+                selectinload(Post.tags),
+                selectinload(Post.author),
+                # Load approved comments eagerly
+                selectinload(Post.comments).where(Comment.is_approved == True)
             )
         )
-        
         result = await self.db.execute(query)
-        post = result.scalars().first()
-        
+        post = result.scalars().first() # Use scalars().first() as before
+
         if post and lang == 'pt':
-            if hasattr(post, 'title_pt') and post.title_pt:
-                post.title = post.title_pt
-            if hasattr(post, 'content_pt') and post.content_pt:
-                post.content = post.content_pt
-            if hasattr(post, 'summary_pt') and post.summary_pt:
-                post.summary = post.summary_pt
-        
+            logger.debug(f"Post found, attempting to localize fields to Portuguese for slug: {slug}")
+            # Overwrite fields with Portuguese versions if they exist and are not empty
+            title_pt = getattr(post, 'title_pt', None)
+            content_pt = getattr(post, 'content_pt', None)
+            summary_pt = getattr(post, 'summary_pt', None)
+
+            if title_pt:
+                post.title = title_pt
+                logger.debug(f"Applied title_pt for slug: {slug}")
+            if content_pt:
+                post.content = content_pt
+                logger.debug(f"Applied content_pt for slug: {slug}")
+            if summary_pt:
+                post.summary = summary_pt
+                logger.debug(f"Applied summary_pt for slug: {slug}")
+            # Localize comments (already loaded and filtered by approved status)
+            if post.comments:
+                 for comment in post.comments:
+                     if hasattr(comment, 'content_pt') and comment.content_pt:
+                         comment.content = comment.content_pt
+                         logger.debug(f"Applied content_pt for comment ID: {comment.id} on post slug: {slug}")
+
+
+        # Removed potentially incorrect comment count logic mentioned in the prompt
+
         return post
-    
+
     async def create_post(self, post_data: Dict[str, Any]) -> Post:
         """
         Create a new blog post.

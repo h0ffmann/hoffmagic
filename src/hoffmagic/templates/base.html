@@ -13,6 +13,8 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="{{ url_for('static', path='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', path='css/minimalist.css') }}">
+    <!-- Load Pygments CSS *after* main styles to ensure precedence -->
+    <link rel="stylesheet" href="{{ url_for('static', path='css/pygments.css') }}"> {# Link the correct Pygments CSS #}
     <meta name="description"
         content="{% block description %}{{ i18n.get('tagline', 'a beautiful blog built with python') }}{% endblock %}">
     {% block meta %}{% endblock %}

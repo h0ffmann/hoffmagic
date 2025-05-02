@@ -107,29 +107,57 @@ class EssaysService:
             logger.error(f"Error getting essays: {str(e)}")
             raise
 
-    async def get_essay_by_slug(self, slug: str) -> Optional[Post]:
+    async def get_essay_by_slug(self, slug: str, lang: str = 'en') -> Optional[Post]:
         """
-        Get an essay by its slug.
-        
+        Get an essay by its slug, applying localization if necessary.
+
         Args:
             slug: Essay slug
-            
+            lang: Language code ('en' or 'pt')
+
         Returns:
             Essay object if found, None otherwise
         """
+        logger.debug(f"Fetching essay by slug: {slug}, lang: {lang}")
+        # Essays are just posts with is_essay=True
         query = (
             select(Post)
-            .where(and_(Post.slug == slug, Post.is_essay == True))
+            .where(Post.slug == slug, Post.is_essay == True) # Combined where
             .options(
-                joinedload(Post.author),
-                joinedload(Post.tags),
-                joinedload(Post.comments)
+                selectinload(Post.tags), # Use selectinload for collections
+                selectinload(Post.author) # Use selectinload for one-to-one/many-to-one
+                # Comments might not be relevant for essays, adjust as needed
+                # If needed: selectinload(Post.comments).where(Comment.is_approved == True)
             )
         )
-        
         result = await self.db.execute(query)
-        return result.scalars().first()
-    
+        essay = result.scalars().first() # Use scalars().first()
+
+        if essay and lang == 'pt':
+            logger.debug(f"Essay found, attempting to localize fields to Portuguese for slug: {slug}")
+            # Overwrite fields with Portuguese versions if they exist and are not empty
+            title_pt = getattr(essay, 'title_pt', None)
+            content_pt = getattr(essay, 'content_pt', None)
+            summary_pt = getattr(essay, 'summary_pt', None)
+
+            if title_pt:
+                essay.title = title_pt
+                logger.debug(f"Applied title_pt for essay slug: {slug}")
+            if content_pt:
+                essay.content = content_pt
+                logger.debug(f"Applied content_pt for essay slug: {slug}")
+            if summary_pt:
+                essay.summary = summary_pt
+                logger.debug(f"Applied summary_pt for essay slug: {slug}")
+            # Localize comments if loaded and relevant
+            # if essay.comments:
+            #      for comment in essay.comments:
+            #          if hasattr(comment, 'content_pt') and comment.content_pt:
+            #              comment.content = comment.content_pt
+            #              logger.debug(f"Applied content_pt for comment ID: {comment.id} on essay slug: {slug}")
+
+        return essay
+
     async def create_essay(self, essay_data: Dict[str, Any]) -> Post:
         """
         Create a new essay.

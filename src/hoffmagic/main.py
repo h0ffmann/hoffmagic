@@ -61,8 +61,31 @@ app.mount(
 
 # Setup Jinja2 templates
 templates = Jinja2Templates(directory=CONTAINER_APP_DIR / "templates")
-# Register markdown filter
-templates.env.filters["markdown"] = lambda text: md.markdown(text, extensions=['extra', 'codehilite'])
+
+# Register markdown filter using pass_context
+@pass_context # Use pass_context to potentially access request context if needed later
+def markdown_filter(context, value):
+    """Convert Markdown to HTML with enhanced syntax highlighting using Pygments."""
+    if not value:
+        return ""
+    # Configure codehilite:
+    # - css_class='highlight': Wraps code blocks in <div class="highlight">...</div>
+    # - use_pygments=True: Explicitly use Pygments (usually default if installed)
+    # - noclasses=False: Pygments SHOULD add specific classes like .k, .s1 etc. (default)
+    # - lang_prefix='language-': Adds 'language-python' class to code tags (useful for some JS libraries, good practice)
+    extensions = [
+        'fenced_code',
+        'codehilite(css_class=highlight,use_pygments=True,noclasses=False,lang_prefix=\'language-\')',
+        'tables',
+        'nl2br', # Keep if desired, converts single newlines to <br>
+        'extra' # Keep for other markdown features
+    ]
+    # Note: Removed pygments_style from extension_configs as it's less common;
+    # CSS file handles styling. If needed, add it back within codehilite().
+    return md.markdown(value, extensions=extensions)
+
+# Make sure the filter is added to the Jinja environment
+templates.env.filters["markdown"] = markdown_filter
 
 # Define startup and shutdown events
 @app.on_event("startup")
