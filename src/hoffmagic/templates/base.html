@@ -65,12 +65,28 @@
                     <a href="{{ url_for('contact_page') }}" class="{{ 'nav-active' if active_page == 'misc' }}">Misc</a>
                 </nav>
             </div>
-            <!-- Search Bar Top Right -->
-            <div class="header-right">
+            <!-- Header Right: Language Toggle + Search -->
+            <div class="header-right" style="display: flex; align-items: center; gap: 1.5em;">
+                <!-- Language toggle -->
+                <div class="language-toggle">
+                    {# Use i18n for labels if available, otherwise fallback #}
+                    <a href="?lang=pt" class="{{ 'active' if lang == 'pt' }}" aria-label="Português">
+                        {{ i18n.get("lang_pt", "PT") if i18n else "PT" }}
+                    </a>
+                    <label class="switch" title="{{ i18n.get('toggle_language', 'Toggle Language') if i18n else 'Toggle Language' }}">
+                        <input type="checkbox" id="language-toggle" {{ 'checked' if lang == 'en' }}>
+                        <span class="slider round"></span>
+                    </label>
+                    <a href="?lang=en" class="{{ 'active' if lang == 'en' }}" aria-label="English">
+                        {{ i18n.get("lang_en", "EN") if i18n else "EN" }}
+                    </a>
+                </div>
+
+                <!-- Search Bar -->
                 <form id="search-form" action="/search" method="get" style="display: flex; align-items: center;">
-                    <input type="search" name="q" placeholder="Search..." required aria-label="Search"
-                        style="padding: 0.4em 0.8em; font-size: 0.9em; margin-right: 0.5em;">
-                    {# <button type="submit" style="padding: 0.4em 0.6em; font-size: 0.9em;">Go</button> #}
+                    <input type="search" name="q" placeholder="{{ i18n.get('search_placeholder', 'Search...') if i18n else 'Search...' }}" required aria-label="Search"
+                        style="padding: 0.4em 0.8em; font-size: 0.9em; margin-right: 0.5em; background-color: #333; color: white; border: 1px solid #555;">
+                    {# Use SVG icon button #}
                     {# Use SVG icon button maybe? #}
                     <button type="submit" aria-label="Submit search"
                         style="background: none; border: none; padding: 0.3em; cursor: pointer;">
@@ -93,7 +109,27 @@
         </footer>
     </main>
 
-    {% block scripts %}{% endblock %}
+    {% block scripts %}
+    <!-- Language Toggle Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const langToggle = document.getElementById('language-toggle');
+            if (langToggle) {
+                langToggle.addEventListener('change', function() {
+                    const newLang = this.checked ? 'en' : 'pt';
+                    // Preserve current URL parameters except 'lang'
+                    const currentUrl = new URL(window.location.href);
+                    currentUrl.searchParams.set('lang', newLang);
+                    window.location.href = currentUrl.toString();
+                });
+
+                // Ensure toggle state matches current language on load
+                const currentLang = new URLSearchParams(window.location.search).get('lang') || 'en'; // Default to 'en' if not set
+                langToggle.checked = (currentLang === 'en');
+            }
+        });
+    </script>
+    {% endblock %}
 </body>
 
 </html>
