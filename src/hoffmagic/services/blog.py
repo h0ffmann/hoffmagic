@@ -154,8 +154,8 @@ class BlogService:
             .options(
                 selectinload(Post.tags),
                 selectinload(Post.author),
-                # Load approved comments eagerly
-                selectinload(Post.comments).where(Comment.is_approved == True)
+                # Load ALL comments eagerly; filtering happens in frontend/template
+                selectinload(Post.comments)
             )
         )
         result = await self.db.execute(query)
