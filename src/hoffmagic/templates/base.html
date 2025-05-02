@@ -74,7 +74,7 @@
                         {{ i18n.get("lang_pt", "PT") if i18n else "PT" }}
                     </a>
                     <label class="switch" title="{{ i18n.get('toggle_language', 'Toggle Language') if i18n else 'Toggle Language' }}">
-                        <input type="checkbox" id="language-toggle" {{ 'checked' if lang == 'en' }}>
+                        <input type="checkbox" id="language-toggle" {% if lang == 'en' %}checked{% endif %}>
                         <span class="slider round"></span>
                     </label>
                     <a href="?lang=en" class="{{ 'active' if lang == 'en' }}" aria-label="English">
