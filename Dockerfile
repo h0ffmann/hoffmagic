@@ -5,7 +5,7 @@ FROM python:3.12-slim AS builder
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     # PIP_NO_CACHE_DIR is set via flag in RUN command
-    PIP_DISABLE_PIP_VERSION_CHECK=on
+    PIP_DISABLE_PIP_VERSION_CHECK=1 # Use '1' for boolean true
 
 WORKDIR /app
 
