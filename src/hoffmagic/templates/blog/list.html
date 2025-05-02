@@ -76,26 +76,26 @@
         {% endif %}
     </div>
 
-    {# Pagination Controls - Check if 'posts' context variable exists #}
-    {% if posts and posts.total_pages and posts.total_pages > 1 %}
+    {# Pagination Controls - Use 'posts_response' #}
+    {% if posts_response and posts_response.total_pages and posts_response.total_pages > 1 %}
     <nav class="pagination" aria-label="Pagination" style="margin-top: 3em; text-align: center;">
         {# Previous Page Link #}
-        {% if posts.page and posts.page > 1 %}
-            <a href="{{ url_for('blog_page') }}?page={{ posts.page - 1 }}{{ ('&tag=' + request.query_params.get('tag')) if request.query_params.get('tag') else '' }}{{ ('&search=' + request.query_params.get('search')) if request.query_params.get('search') else '' }}&lang={{ lang }}" style="margin-right: 1em;">&laquo; {{ i18n.previous }}</a>
+        {% if posts_response.page and posts_response.page > 1 %}
+            <a href="{{ url_for('blog_page') }}?page={{ posts_response.page - 1 }}{{ ('&tag=' + request.query_params.get('tag')) if request.query_params.get('tag') else '' }}{{ ('&search=' + request.query_params.get('search')) if request.query_params.get('search') else '' }}&lang={{ lang }}" style="margin-right: 1em;">&laquo; {{ i18n.get("previous", "Previous") }}</a>
         {% else %}
-            <span style="margin-right: 1em; color: var(--color-text-secondary); opacity: 0.5;">&laquo; {{ i18n.previous }}</span>
+            <span style="margin-right: 1em; color: var(--color-text-secondary); opacity: 0.5;">&laquo; {{ i18n.get("previous", "Previous") }}</span>
         {% endif %}
 
         {# Page Number Indicator #}
         <span style="font-size: 0.9em; color: var(--color-text-secondary);">
-            {{ i18n.page }} {{ posts.page if posts.page else '?' }} {{ i18n.of }} {{ posts.total_pages if posts.total_pages else '?' }}
+            {{ i18n.get("page", "Page") }} {{ posts_response.page if posts_response.page else '?' }} {{ i18n.get("of", "of") }} {{ posts_response.total_pages if posts_response.total_pages else '?' }}
         </span>
 
         {# Next Page Link #}
-        {% if posts.page and posts.total_pages and posts.page < posts.total_pages %}
-            <a href="{{ url_for('blog_page') }}?page={{ posts.page + 1 }}{{ ('&tag=' + request.query_params.get('tag')) if request.query_params.get('tag') else '' }}{{ ('&search=' + request.query_params.get('search')) if request.query_params.get('search') else '' }}&lang={{ lang }}" style="margin-left: 1em;">{{ i18n.next }} &raquo;</a>
+        {% if posts_response.page and posts_response.total_pages and posts_response.page < posts_response.total_pages %}
+            <a href="{{ url_for('blog_page') }}?page={{ posts_response.page + 1 }}{{ ('&tag=' + request.query_params.get('tag')) if request.query_params.get('tag') else '' }}{{ ('&search=' + request.query_params.get('search')) if request.query_params.get('search') else '' }}&lang={{ lang }}" style="margin-left: 1em;">{{ i18n.get("next", "Next") }} &raquo;</a>
         {% else %}
-            <span style="margin-left: 1em; color: var(--color-text-secondary); opacity: 0.5;">{{ i18n.next }} &raquo;</span>
+            <span style="margin-left: 1em; color: var(--color-text-secondary); opacity: 0.5;">{{ i18n.get("next", "Next") }} &raquo;</span>
         {% endif %}
     </nav>
     {% endif %}
