@@ -18,7 +18,7 @@ body {
     font-family: var(--font-sans);
     color: #e0e0e0; /* Explicit primary text color */
     background-color: var(--color-bg-primary); /* Use this as the *only* background */
-    line-height: 1.7; /* Increase line height slightly for readability */
+    line-height: 1.6; /* Adjusted line height */
     margin: 2em auto; /* Center content */
     padding: 1em;
     max-width: 800px; /* Set max width */

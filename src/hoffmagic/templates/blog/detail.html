@@ -53,7 +53,7 @@
         {% endif %}
 
         {# Render main content safely - Use direct attribute access #}
-        {{ post.content | safe if post and post.content else '' }}
+        {{ post.content | markdown | safe if post and post.content else '' }}
     </div>
 
     <!-- Tags -->

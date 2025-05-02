@@ -103,7 +103,8 @@
                 sliderButton.classList.remove('on-pt');
             }
 
-            sliderContainer?.addEventListener('click', function() {
+            // Add click listener to both container and button elements
+            function switchLanguage() {
                 // Get the desired language based on current
                 const newLang = (currentLang === 'en') ? 'pt' : 'en';
 
@@ -118,9 +119,15 @@
                 const currentUrl = new URL(window.location.href);
                 currentUrl.searchParams.set('lang', newLang);
 
-                // Navigate to the new URL immediately
-                window.location.href = currentUrl.toString();
-            });
+                // Navigate to the new URL after a brief delay for the animation
+                setTimeout(() => {
+                    window.location.href = currentUrl.toString();
+                }, 300);
+            }
+
+            // Add click listeners to both container and button
+            if (sliderContainer) sliderContainer.addEventListener('click', switchLanguage);
+            if (sliderButton) sliderButton.addEventListener('click', switchLanguage);
 
             // Also add click handlers to the language option links for consistency
             langOptions.forEach(option => {

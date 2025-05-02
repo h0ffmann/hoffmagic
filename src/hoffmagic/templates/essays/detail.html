@@ -60,7 +60,7 @@
 
              {# Main content - rely on prose or base styles #}
             <div class="prose prose-invert max-w-none"> {# Ensure prose styles match dark theme #}
-                {{ essay.content | safe }}
+                {{ essay.content | markdown | safe }}
             </div>
 
             {# Footer: Simplified tags and removed share/bookmark complexity #}
