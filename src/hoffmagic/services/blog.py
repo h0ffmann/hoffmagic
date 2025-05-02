@@ -128,6 +128,7 @@ class BlogService:
         self, 
         slug: str,
         is_essay: bool = False,
+        lang: str = 'en'
     ) -> Optional[Post]:
         """
         Get a post by its slug.
@@ -135,6 +136,7 @@ class BlogService:
         Args:
             slug: Post slug
             is_essay: Whether the post is an essay
+            lang: Language code ('en' or 'pt')
             
         Returns:
             Post object if found, None otherwise
@@ -150,7 +152,17 @@ class BlogService:
         )
         
         result = await self.db.execute(query)
-        return result.scalars().first()
+        post = result.scalars().first()
+        
+        if post and lang == 'pt':
+            if hasattr(post, 'title_pt') and post.title_pt:
+                post.title = post.title_pt
+            if hasattr(post, 'content_pt') and post.content_pt:
+                post.content = post.content_pt
+            if hasattr(post, 'summary_pt') and post.summary_pt:
+                post.summary = post.summary_pt
+        
+        return post
     
     async def create_post(self, post_data: Dict[str, Any]) -> Post:
         """
