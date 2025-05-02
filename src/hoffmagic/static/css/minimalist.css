@@ -420,6 +420,73 @@ button:hover, input[type="submit"]:hover {
     opacity: 1;
 }
 
+/* Enhanced Code Copy Button Styling */
+
+/* Wrapper for code blocks with relative positioning */
+.code-block-wrapper {
+  position: relative;
+  margin: 1.5em 0;
+  overflow: visible;
+}
+
+/* Style for the copy button */
+.copy-code-button {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  background-color: rgba(45, 45, 45, 0.8);
+  color: #e0e0e0;
+  border: 1px solid #555;
+  border-radius: 4px;
+  padding: 0.3em 0.7em;
+  font-size: 0.85em;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+  opacity: 0.8;
+}
+
+/* Hover state for the button */
+.copy-code-button:hover {
+  background-color: rgba(60, 60, 60, 0.9);
+  color: #fff;
+  border-color: #777;
+  opacity: 1;
+}
+
+/* Active/pressed state */
+.copy-code-button:active {
+  transform: scale(0.95);
+}
+
+/* Success state after copying */
+.copy-code-button.copied {
+  background-color: #2a603b;
+  color: #fff;
+  border-color: #2a803b;
+}
+
+/* Make button visible on hover for a cleaner look */
+.code-block-wrapper:hover .copy-code-button {
+  opacity: 1;
+}
+
+/* Ensure the code block maintains proper spacing */
+.code-block-wrapper pre {
+  margin: 0;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .copy-code-button {
+    top: 0.3em;
+    right: 0.3em;
+    padding: 0.2em 0.5em;
+    font-size: 0.8em;
+  }
+}
+
 /* Removed ::after pseudo-element for simplicity, text is changed via JS */
 
 /* Styles for the code copy button */

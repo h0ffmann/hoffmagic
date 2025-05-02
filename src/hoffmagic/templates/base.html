@@ -123,172 +123,242 @@
         </footer>
     </main>
     {% block scripts %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Language Slider Logic
-            const sliderContainer = document.getElementById('lang-slider');
-            const sliderButton = document.getElementById('lang-slider-button');
-            // Get all language option links
-            const langOptions = document.querySelectorAll('.lang-option');
-            const currentLang = new URLSearchParams(window.location.search).get('lang') || 'en';
-
-            // Update slider position based on current language
-            if (currentLang === 'pt') {
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Language Slider Logic
+        const sliderContainer = document.getElementById('lang-slider');
+        const sliderButton = document.getElementById('lang-slider-button');
+        // Get all language option links
+        const langOptions = document.querySelectorAll('.lang-option');
+        const currentLang = new URLSearchParams(window.location.search).get('lang') || 'en';
+        
+        // Update slider position based on current language
+        if (currentLang === 'pt') {
+            sliderButton.classList.add('on-pt');
+        } else {
+            sliderButton.classList.remove('on-pt');
+        }
+        
+        // Function to toggle language
+        function toggleLanguage(e) {
+            // Prevent default action if coming from a link or button
+            if (e) e.preventDefault();
+            // Get the desired language based on current
+            const newLang = (currentLang === 'en') ? 'pt' : 'en';
+            // Visual feedback before navigation
+            if (newLang === 'pt') {
                 sliderButton.classList.add('on-pt');
             } else {
                 sliderButton.classList.remove('on-pt');
             }
-
-            // Function to toggle language
-            function toggleLanguage(e) {
-                // Prevent default action if coming from a link or button
-                if (e) e.preventDefault();
-                
-                // Get the desired language based on current
-                const newLang = (currentLang === 'en') ? 'pt' : 'en';
-                
-                // Visual feedback before navigation
-                if (newLang === 'pt') {
-                    sliderButton.classList.add('on-pt');
-                } else {
-                    sliderButton.classList.remove('on-pt');
+            // Preserve current URL path and other parameters
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('lang', newLang);
+            // Navigate to the new URL after a brief delay for animation
+            setTimeout(() => {
+                window.location.href = currentUrl.toString();
+            }, 200);
+        }
+        
+        // Add click handlers to both the container and button
+        if (sliderContainer) {
+            sliderContainer.addEventListener('click', toggleLanguage);
+        }
+        
+        // Stop propagation on the button to avoid double-triggering
+        if (sliderButton) {
+            sliderButton.addEventListener('click', function(e) {
+                e.stopPropagation();  // Prevent event from bubbling to container
+                toggleLanguage(e);
+            });
+        }
+        
+        // Also add click handlers to the language option links for consistency
+        langOptions.forEach(option => {
+            option.addEventListener('click', function(e) {
+                e.preventDefault();
+                const lang = this.getAttribute('data-lang');
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.set('lang', lang);
+                window.location.href = currentUrl.toString();
+            });
+        });
+        
+        // Set a cookie to remember the language preference
+        document.cookie = `lang=${currentLang}; path=/; max-age=31536000`; // 1 year expiry
+        
+        // --- ENHANCED CODE COPY BUTTON FUNCTIONALITY ---
+        // Function to add copy buttons to code blocks
+        function addCopyButtonsToCodeBlocks() {
+            // Select all pre elements - both direct and those inside highlight divs
+            const allPreElements = document.querySelectorAll('pre');
+            
+            allPreElements.forEach(preElement => {
+                // Skip if this pre is not a code block (e.g., if it's used for other formatting)
+                if (!preElement.querySelector('code') && !preElement.classList.contains('highlight')) {
+                    return;
                 }
                 
-                // Preserve current URL path and other parameters
-                const currentUrl = new URL(window.location.href);
-                currentUrl.searchParams.set('lang', newLang);
+                // Check if this pre is already inside a wrapper
+                let wrapper = preElement.closest('.code-block-wrapper');
                 
-                // Navigate to the new URL after a brief delay for animation
-                setTimeout(() => {
-                    window.location.href = currentUrl.toString();
-                }, 200);
-            }
-            
-            // Add click handlers to both the container and button
-            if (sliderContainer) {
-                sliderContainer.addEventListener('click', toggleLanguage);
-            }
-            
-            // Stop propagation on the button to avoid double-triggering
-            if (sliderButton) {
-                sliderButton.addEventListener('click', function(e) {
-                    e.stopPropagation();  // Prevent event from bubbling to container
-                    toggleLanguage(e);
-                });
-            }
-
-            // Also add click handlers to the language option links for consistency
-            langOptions.forEach(option => {
-                option.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const lang = this.getAttribute('data-lang');
-                    const currentUrl = new URL(window.location.href);
-                    currentUrl.searchParams.set('lang', lang);
-                    window.location.href = currentUrl.toString();
-                });
+                // If not wrapped, create a wrapper
+                if (!wrapper) {
+                    wrapper = document.createElement('div');
+                    wrapper.className = 'code-block-wrapper';
+                    
+                    // Insert the wrapper before the pre element and move the pre inside
+                    preElement.parentNode.insertBefore(wrapper, preElement);
+                    wrapper.appendChild(preElement);
+                }
+                
+                // Check if the wrapper already has a copy button
+                if (!wrapper.querySelector('.copy-code-button')) {
+                    const copyButton = document.createElement('button');
+                    copyButton.className = 'copy-code-button';
+                    copyButton.textContent = 'Copy';
+                    copyButton.setAttribute('aria-label', 'Copy code to clipboard');
+                    
+                    // Add button to the wrapper
+                    wrapper.appendChild(copyButton);
+                    
+                    // Add click event listener
+                    copyButton.addEventListener('click', () => {
+                        // Find the code text (either from code element or pre text content)
+                        const codeElement = preElement.querySelector('code');
+                        const codeToCopy = codeElement ? codeElement.innerText : preElement.innerText;
+                        
+                        // Copy to clipboard
+                        if (navigator.clipboard && window.isSecureContext) {
+                            // Modern async clipboard API
+                            navigator.clipboard.writeText(codeToCopy).then(() => {
+                                // Success feedback
+                                copyButton.textContent = 'Copied!';
+                                copyButton.classList.add('copied');
+                                setTimeout(() => {
+                                    copyButton.textContent = 'Copy';
+                                    copyButton.classList.remove('copied');
+                                }, 2000); // Reset after 2 seconds
+                            }).catch(err => {
+                                console.error('Failed to copy code: ', err);
+                                copyButton.textContent = 'Error';
+                            });
+                        } else {
+                            // Fallback for older browsers or insecure contexts
+                            const textArea = document.createElement('textarea');
+                            textArea.value = codeToCopy;
+                            textArea.style.position = 'absolute';
+                            textArea.style.left = '-9999px'; // Move off screen
+                            document.body.appendChild(textArea);
+                            textArea.select();
+                            try {
+                                document.execCommand('copy');
+                                copyButton.textContent = 'Copied!';
+                                copyButton.classList.add('copied');
+                                setTimeout(() => {
+                                    copyButton.textContent = 'Copy';
+                                    copyButton.classList.remove('copied');
+                                }, 2000);
+                            } catch (err) {
+                                console.error('Fallback copy failed: ', err);
+                                copyButton.textContent = 'Error';
+                            } finally {
+                                document.body.removeChild(textArea);
+                            }
+                        }
+                    });
+                }
             });
+        }
+        
+        // Call the function to add copy buttons
+        addCopyButtonsToCodeBlocks();
+        
+        // --- FIXED GITHUB GIST EMBEDDING ---
+        function embedGitHubGists() {
+            // Find all gist placeholder elements
+            const gistPlaceholders = document.querySelectorAll('.embed-gist');
+            
+            gistPlaceholders.forEach(placeholder => {
+                // Get the Gist URL from the data attribute
+                const gistUrl = placeholder.getAttribute('data-gist-url');
+                
+                if (!gistUrl) {
+                    placeholder.textContent = 'Error: Gist URL missing';
+                    console.warn('Found .embed-gist element without data-gist-url attribute');
+                    return;
+                }
+                
+                // Clear any placeholder text
+                placeholder.innerHTML = '<p>Loading Gist...</p>';
+                
+                // Extract the Gist ID and filename (if any) from the URL
+                let gistId = '';
+                
+                // Handle different URL formats
+                if (gistUrl.includes('github.com/')) {
+                    // It's a full GitHub URL
+                    const urlParts = gistUrl.split('/');
+                    // Look for the gist ID in the URL
+                    for (let i = 0; i < urlParts.length; i++) {
+                        // Check for gist.github.com or github.com/username/gist/gistid
+                        if (urlParts[i] === 'gist.github.com' || (urlParts[i] === 'gist' && i > 0)) {
+                            gistId = urlParts[i + 1];
+                            break;
+                        }
+                    }
+                    // Clean up potential .js suffix if present in path
+                    if (gistId) gistId = gistId.replace('.js', '');
 
-            // Set a cookie to remember the language preference
-            document.cookie = `lang=${currentLang}; path=/; max-age=31536000`; // 1 year expiry
-
-
-             // --- Add Copy Button Logic for Regular Code Blocks ---
-             const codeBlocks = document.querySelectorAll('main .highlight > pre');
-             codeBlocks.forEach(preElement => {
-                 // 1. Wrap the <pre> element if not already wrapped
-                 let wrapper = preElement.closest('.code-block-wrapper');
-                 if (!wrapper) {
-                     wrapper = document.createElement('div');
-                     wrapper.className = 'code-block-wrapper';
-                      // Insert the wrapper before the pre element and move the pre inside
-                      preElement.parentNode.insertBefore(wrapper, preElement);
-                      wrapper.appendChild(preElement);
-                 }
-                 // 2. Create the button (only if one doesn't exist)
-                 if (wrapper && !wrapper.querySelector('.copy-code-button')) { // Add check for wrapper
-                     const copyButton = document.createElement('button');
-                     copyButton.className = 'copy-code-button';
-                     copyButton.textContent = 'Copy'; // Or use an icon
-                      copyButton.setAttribute('aria-label', 'Copy code to clipboard');
-                      // 3. Add button to the wrapper
-                      wrapper.appendChild(copyButton);
-                      // 4. Add click event listener
-                      copyButton.addEventListener('click', () => {
-                         // Find the 'code' element inside the 'pre'
-                         const codeElement = preElement.querySelector('code');
-                         const codeToCopy = codeElement ? codeElement.innerText : preElement.innerText;
-                          if (navigator.clipboard && window.isSecureContext) {
-                              // Modern async clipboard API
-                              navigator.clipboard.writeText(codeToCopy).then(() => {
-                                 // Success feedback
-                                 copyButton.textContent = 'Copied!';
-                                  copyButton.classList.add('copied');
-                                  setTimeout(() => {
-                                     copyButton.textContent = 'Copy';
-                                     copyButton.classList.remove('copied');
-                                 }, 2000); // Reset after 2 seconds
-                              }).catch(err => {
-                                 console.error('Failed to copy code: ', err);
-                                  copyButton.textContent = 'Error';
-                                  // Optionally provide fallback mechanism here
-                              });
-                          } else {
-                              // Fallback for older browsers or insecure contexts (e.g., http)
-                              const textArea = document.createElement('textarea');
-                              textArea.value = codeToCopy;
-                              textArea.style.position = 'absolute';
-                              textArea.style.left = '-9999px'; // Move off screen
-                              document.body.appendChild(textArea);
-                              textArea.select();
-                              try {
-                                  document.execCommand('copy');
-                                  copyButton.textContent = 'Copied!';
-                                   copyButton.classList.add('copied');
-                                   setTimeout(() => {
-                                      copyButton.textContent = 'Copy';
-                                      copyButton.classList.remove('copied');
-                                  }, 2000);
-                              } catch (err) {
-                                  console.error('Fallback copy failed: ', err);
-                                   copyButton.textContent = 'Error';
-                              } finally {
-                                 document.body.removeChild(textArea);
-                              }
-                          }
-                      });
-                 } // end if button doesn't exist
-             }); // end forEach codeBlock
-
-             // --- Add Gist Embedding Logic ---
-             // (Keep your existing Gist embedding logic here)
-             const gistPlaceholders = document.querySelectorAll('main .embed-gist');
-             gistPlaceholders.forEach(placeholder => {
-                 const gistUrl = placeholder.getAttribute('data-gist-url');
-                 if (gistUrl) {
-                     // Clear the placeholder text first
-                     placeholder.innerHTML = '';
-                     // Create a script tag
-                     const script = document.createElement('script');
-                     script.type = 'text/javascript';
-                     script.src = gistUrl;
-                     script.onerror = () => { // Add error handling
-                         placeholder.textContent = 'Error loading Gist.';
-                         placeholder.style.display = 'block'; // Show error
-                         console.error('Failed to load Gist script:', gistUrl);
-                     };
-                     // Append the script inside the placeholder div
-                     placeholder.appendChild(script);
-                 } else {
-                     placeholder.textContent = 'Error: Gist URL missing.';
-                     console.warn('Found .embed-gist element without data-gist-url attribute.');
-                  }
-             });
-             // --- End Gist Embedding Logic ---
-
-
-        }); // End DOMContentLoaded
-    </script>
-    {% endblock %}
+                } else if (gistUrl.endsWith('.js')) {
+                    // It's likely just the script URL part like username/gistid.js or gistid.js
+                    const urlParts = gistUrl.split('/');
+                    gistId = urlParts[urlParts.length - 1].replace('.js', '');
+                } else {
+                    // Assume it's just the Gist ID
+                    gistId = gistUrl;
+                }
+                
+                // If we couldn't extract an ID, show an error
+                if (!gistId || gistId.includes('/')) { // Basic check if ID extraction failed
+                    placeholder.innerHTML = 'Error: Could not determine Gist ID from URL';
+                    console.error('Invalid Gist URL format or failed ID extraction:', gistUrl);
+                    return;
+                }
+                
+                // Create the correct script URL format for GitHub Gists
+                // The script URL doesn't need the username, just the ID.
+                const scriptUrl = `https://gist.github.com/${gistId}.js`;
+                
+                // Create a script element
+                const script = document.createElement('script');
+                script.src = scriptUrl;
+                script.onload = () => {
+                    // Success - the Gist content will be injected by the script
+                    // Remove the loading message once loaded
+                    const loadingMsg = placeholder.querySelector('p');
+                    if (loadingMsg && loadingMsg.textContent === 'Loading Gist...') {
+                        // Check if placeholder still exists before removing child
+                        if (placeholder.contains(loadingMsg)) {
+                             placeholder.removeChild(loadingMsg);
+                        }
+                    }
+                };
+                script.onerror = () => {
+                    placeholder.innerHTML = 'Error: Failed to load Gist';
+                    console.error('Failed to load Gist:', scriptUrl);
+                };
+                
+                // Append the script to the placeholder
+                placeholder.appendChild(script);
+            });
+        }
+        
+        // Call the function to embed Gists
+        embedGitHubGists();
+    }); // End DOMContentLoaded
+</script>
+{% endblock %}
 </body>
 
 </html>
