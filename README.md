@@ -1,7 +1,4 @@
-# HoffMagic Blog
-
-![HoffMagic Logo](https://via.placeholder.com/150x50?text=HoffMagic)  
-*A beautiful Python-based blog application built with FastAPI, Jinja2, and TailwindCSS*
+# hoffmagic Blog
 
 ## Table of Contents
 - [Features](#features)
